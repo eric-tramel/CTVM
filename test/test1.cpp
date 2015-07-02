@@ -8,6 +8,9 @@ int main()
     using namespace boost::numeric::ublas;
     vector<double> v (10);
 
+    // Test Library Linking
+    foo();
+
     for (unsigned i = 0; i < v.size (); ++ i)
     v (i) = i;
 
