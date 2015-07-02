@@ -13,7 +13,7 @@ LDLIBS=-lboost_system
 DEPS=$(INCLUDE_DIR)/ctvm.h
 
 
-all: ctvmlib test1
+all: checkdir ctvmlib test1
 
 # $(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
 # 	$(CXX) -c -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
@@ -35,3 +35,16 @@ clean:
 	rm -f $(SRC_DIR)/*.o
 	rm -f $(TEST_DIR)/*.o
 	rm -f $(LIB_DIR)/*
+
+checkdir: 
+	if [ -d "$(LIB_DIR)" ]; then \
+		echo " "; \
+	else \
+		mkdir $(LIB_DIR); \
+	fi
+
+	if [ -d "$(BIN_DIR)" ]; then \
+		echo " "; \
+	else \
+		mkdir $(BIN_DIR); \
+	fi
