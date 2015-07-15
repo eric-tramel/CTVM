@@ -12,10 +12,6 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
 *
 * return -- A random matrix of type `matrix<double>` 
 */
-
-    /* Set Namespace */
-    // using namespace boost::numeric::ublas;
-
     /* Matrix Allocation */
     BoostDoubleMatrix RandomMatrix (rows,cols);
 
@@ -24,7 +20,7 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     boost::mt19937 RNG (static_cast<unsigned int>(CurrentTick.time_of_day().total_milliseconds()));     // Set the integer RNG engine. Time Based Seed.
     boost::normal_distribution<> NormDist (0.0,1.0);   // Specify the distribution with zero mean and unit variance
     boost::variate_generator<boost::mt19937&,
-                             boost::normal_distribution<> > RandNormValue(RNG,NormDist);
+                             boost::normal_distribution<> > RandNormValue(RNG,NormDist);    // Finally, build the number generator itself.
 
     /* Loop and Assign */
     for(unsigned i=0; i < RandomMatrix.size1(); ++i){
