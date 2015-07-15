@@ -33,5 +33,6 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
         }
     }
 
+    /* Return Filled Random Matrix */
     return RandomMatrix;
 }
