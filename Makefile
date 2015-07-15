@@ -37,6 +37,10 @@ clean:
 	rm -f $(TEST_DIR)/*.o
 	rm -f $(LIB_DIR)/*
 
+test: clean all
+	$(BIN_DIR)/test1
+
+
 checkdir: 
 	if [ -d "$(LIB_DIR)" ]; then \
 		echo " "; \
