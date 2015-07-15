@@ -32,3 +32,43 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     /* Return Filled Random Matrix */
     return RandomMatrix;
 }
+
+// BoostDoubleMatrix LoadImage(const char* ImageFileName,ImageFileType FileType){
+// /*
+// * Function: LoadImage
+// * ----------------------------
+// * Attempts to load an image file from the specified location using GIL. Subsequently,
+// * the GIL image file is convereted to a matrix<double> and returned.
+// *
+// * return -- A random matrix of type `matrix<double>`.
+// */
+//     // using namespace boost::gil;
+
+//     // rgb8_image_t Image;
+
+//     // /* Attempt to Load Image */
+//     // switch(FileType){
+//     //     case JPG: 
+//     //         jpeg_read_image(ImageFileName,Image);
+//     //         break;
+//     //     case TIFF:
+//     //         tiff_read_image(ImageFileName,Image);
+//     //         break;
+//     //     case PNG:
+//     //         png_read_image(ImageFileName,Image);
+//     //         break;     
+//     // }
+    
+
+//     Image RunTimeImage;
+//     // try{
+//         RunTimeImage.read(ImageFileName);        
+//     // }
+//     // catch(Exception &error_){
+//     //     std::cout << "Caught exception: "<<error_.what() <<std::endl;
+//     // }
+    
+//     BoostDoubleMatrix DBMImage (10,10);
+
+// return DBMImage;
+// }

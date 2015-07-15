@@ -6,30 +6,26 @@ LIB_DIR=lib
 MK_BOOST_LIB=$(BOOST_LIBDIR)
 MK_BOOST_INC=$(BOOST_INCDIR)
 
-CXX=g++-5
-CPPFLAGS=-I$(INCLUDE_DIR) -I$(MK_BOOST_INC)
-LDFLAGS=-L$(MK_BOOST_LIB)
-LDLIBS=-lboost_system -lboost_random -lboost_date_time
-DEPS=$(INCLUDE_DIR)/ctvm.h
+MAGICK_CFLAG=`Magick++-config --cppflags --cxxflags`
+MAGICK_LDFLAG=`Magick++-config --ldflags --libs`
 
+CXX=g++
+CPPFLAGS=-I$(INCLUDE_DIR) -I$(MK_BOOST_INC) $(MAGICK_CFLAG)
+LDLIBS=-lboost_system -lboost_random -lboost_date_time
+LDFLAGS=-L$(MK_BOOST_LIB) $(MAGICK_LDFLAG) $(LDLIBS)
+DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
 all: checkdir ctvmlib test1
 
-# $(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
-# 	$(CXX) -c -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
-
 ctvmlib: $(DEPS)
-	$(CXX) -dynamiclib -fPIC -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
-	$(CXX) -dynamiclib -fPIC -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
-
-# $(LIB_DIR)/%.dylib: $(SRC_DIR)/%.c $(DEPS)
-# 	$(CXX) -dynamiclib -fPIC -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
+	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp 
+	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp 
 
 $(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_DIR)/ctvm.dylib $(LIB_DIR)/ctvm_util.dylib
-	$(CXX) -c -o $@ $< $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $< 
 
 test1: $(TEST_DIR)/test1.o
-	$(CXX) -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o $(LDFLAGS) $(LDLIBS) -Llib -lctvm -lctvm_util
+	$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o 
 
 clean:
 	rm -f $(BIN_DIR)/*
