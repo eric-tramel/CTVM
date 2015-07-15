@@ -7,34 +7,19 @@
 
 int main()
 {
-    using namespace boost::numeric::ublas;
-    vector<double> v (10);
 
     /* Test CTVM.dylib Link */
+    std::cout<<"Testing libctvm Link."<<std::endl;
     foo();
-
+    std::cout<<"    "<<"Passed."<<std::endl;
+    
     /* Test CTVM_util.dylib Link */
+    std::cout<<"Allocating tiny(3x3) random matrix..."<<std::endl;
     BoostDoubleMatrix RandomMatrix = CreateRandomMatrix(3,3);
-    std::cout << RandomMatrix << std::endl;
+    std::cout <<"    "<<RandomMatrix << std::endl;
+    std::cout<<"    "<<"Passed."<<std::endl;
 
-    for (unsigned i = 0; i < v.size (); ++ i)
-    v (i) = i;
-
-    std::cout << v << std::endl;
-
-    //Using functions of vector
-    v.resize(15,1);
-    std::cout << "nsize increased to 15 "<< v << std::endl;
-
-    v.resize(10,1);
-    std::cout << v << std::endl;
-
-    v.insert_element(0,10);
-    std::cout << "nInserted 10 " << v << std::endl;
-
-    v.erase_element(0);
-    std::cout << "nRemoving " << v << std::endl;
-
-    v.clear();
-    std::cout << "nClearing " << v << std::endl;
+    std::cout<<"Allocating large(1000x1000) random matrix..."<<std::endl;
+    BoostDoubleMatrix RandomMatrixLarge = CreateRandomMatrix(1000,1000);
+    std::cout<<"    "<<"Passed."<<std::endl;
 }
