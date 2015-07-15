@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ctvm.h"
+#include "ctvm_util.h"
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
 int main()
@@ -8,8 +10,12 @@ int main()
     using namespace boost::numeric::ublas;
     vector<double> v (10);
 
-    // Test Library Linking
+    /* Test CTVM.dylib Link */
     foo();
+
+    /* Test CTVM_util.dylib Link */
+    BoostDoubleMatrix RandomMatrix = CreateRandomMatrix(3,3);
+    std::cout << RandomMatrix << std::endl;
 
     for (unsigned i = 0; i < v.size (); ++ i)
     v (i) = i;

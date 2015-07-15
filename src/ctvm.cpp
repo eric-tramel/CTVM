@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ctvm.h"
 
 void foo(void){
