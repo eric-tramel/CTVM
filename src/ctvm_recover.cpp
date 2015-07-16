@@ -33,6 +33,10 @@ int main(int argc, char **argv){
     /* Load Sinogram */
     cout<<"Loading Sinogram."<<endl;
     BoostDoubleMatrix Sinogram = LoadImage(SinogramFile);
+
+
+    /* Call Reconstruction */
+    BoostDoubleMatrix Reconstruction = tval3_reconstruction(Sinogram,TiltAngles);    
     
 
 return 0;
