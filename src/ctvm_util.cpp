@@ -33,42 +33,48 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     return RandomMatrix;
 }
 
-// BoostDoubleMatrix LoadImage(const char* ImageFileName,ImageFileType FileType){
-// /*
-// * Function: LoadImage
-// * ----------------------------
-// * Attempts to load an image file from the specified location using GIL. Subsequently,
-// * the GIL image file is convereted to a matrix<double> and returned.
-// *
-// * return -- A random matrix of type `matrix<double>`.
-// */
-//     // using namespace boost::gil;
-
-//     // rgb8_image_t Image;
-
-//     // /* Attempt to Load Image */
-//     // switch(FileType){
-//     //     case JPG: 
-//     //         jpeg_read_image(ImageFileName,Image);
-//     //         break;
-//     //     case TIFF:
-//     //         tiff_read_image(ImageFileName,Image);
-//     //         break;
-//     //     case PNG:
-//     //         png_read_image(ImageFileName,Image);
-//     //         break;     
-//     // }
+BoostDoubleMatrix LoadImage(const char* ImageFileName){
+/*
+* Function: LoadImage
+* ----------------------------
+* Attempts to load an image file from the specified location using ImageMagick. 
+* Subsequently,
+* the ImageMagick image file is convereted to a matrix<double> and returned.
+*
+* return -- A random matrix of type `matrix<double>`.
+*/
+    using namespace Magick;
     
 
-//     Image RunTimeImage;
-//     // try{
-//         RunTimeImage.read(ImageFileName);        
-//     // }
-//     // catch(Exception &error_){
-//     //     std::cout << "Caught exception: "<<error_.what() <<std::endl;
-//     // }
+    Image RunTimeImage;
+    try{
+        RunTimeImage.read(ImageFileName);        
+    }
+    catch(Exception &error_){
+        std::cout << "Caught exception: "<<error_.what() <<std::endl;
+    }
     
-//     BoostDoubleMatrix DBMImage (10,10);
+    /* Image Properties */
+    int rows = RunTimeImage.rows();
+    int cols = RunTimeImage.columns();
 
-// return DBMImage;
-// }
+    /* Convert to Grayscale */
+    RunTimeImage.quantizeColorSpace( GRAYColorspace );
+    RunTimeImage.quantizeColors(256);
+    RunTimeImage.quantize();
+
+    /* Assignment to BoostDoubleMatrix */
+    BoostDoubleMatrix DBMImage (rows,cols);
+    Pixels View(RunTimeImage);
+    PixelPacket *AllPixels = View.get(0,0,cols,rows);
+
+    for(int i=0; i<rows; ++i){
+        for(int j=0; j< cols; ++j){
+            Quantum thisPixel = (*AllPixels++).red;
+            DBMImage(i,j) = ColorGray::scaleQuantumToDouble(thisPixel);
+        }
+    }
+
+
+return DBMImage;
+}

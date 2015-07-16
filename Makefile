@@ -18,8 +18,8 @@ DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 all: checkdir ctvmlib test1
 
 ctvmlib: $(DEPS)
-	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp 
-	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp 
+	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
+	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
 
 $(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_DIR)/ctvm.dylib $(LIB_DIR)/ctvm_util.dylib
 	$(CXX) $(CPPFLAGS) -c -o $@ $< 

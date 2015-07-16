@@ -32,4 +32,9 @@ int main(int argc, char **argv)
     Image someImage;
     someImage.read("test/data/peppers.jpg");
     std::cout<<"    "<<"Passed."<<std::endl;
+
+    /* Test CTVM Image Load */
+    std::cout<<"Testing CTVM Image Load."<<std::endl;
+    BoostDoubleMatrix ImageMatrix = LoadImage("test/data/peppers.jpg");
+    std::cout<<"    "<<"Passed."<<std::endl;
 }
