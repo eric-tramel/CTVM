@@ -64,17 +64,65 @@ BoostDoubleMatrix LoadImage(const char* ImageFileName){
     RunTimeImage.quantize();
 
     /* Assignment to BoostDoubleMatrix */
-    BoostDoubleMatrix DBMImage (rows,cols);
-    Pixels View(RunTimeImage);
-    PixelPacket *AllPixels = View.get(0,0,cols,rows);
+    BoostDoubleMatrix DBMImage (rows,cols);     // Allocate the matrix
+    Pixels View(RunTimeImage);  // Specify the "view" into the image
+    PixelPacket *AllPixels = View.get(0,0,cols,rows);   // Get the pointer to the pixel array
 
+    /* Loop over Pixels */
     for(int i=0; i<rows; ++i){
         for(int j=0; j< cols; ++j){
+            // The entire image should be cast into grayscale, so all of the
+            // RGB components should be equal to the same values. Hence, we
+            // take the red pixel value.
+            // Additionally, it is necessary to increment the pixel pointer.
             Quantum thisPixel = (*AllPixels++).red;
+            // Finally, we have to cast the Quantum type into a double.
             DBMImage(i,j) = ColorGray::scaleQuantumToDouble(thisPixel);
         }
     }
 
 
 return DBMImage;
+}
+
+BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
+/*
+* Function: MatrixToVector
+* ----------------------------
+* Take a matrix and rasterize into a vector in a column-by-column 
+* manner.
+*
+*/
+    unsigned int N = AMatrix.size1()*AMatrix.size2();
+
+    BoostDoubleVector AVector (N);
+    
+    unsigned int VectorIndex = 0;
+    for(unsigned int i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned int j = 0; j < AMatrix.size2(); ++j){
+            AVector(VectorIndex++) = AMatrix(i,j);
+        }
+    }
+
+return AVector;
+}
+
+BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols){
+/*
+* Function: VectorToMatrix
+* ----------------------------
+* Take a vector and convert it to a matrix given the specified 
+* dimensions.
+*
+*/
+    BoostDoubleMatrix AMatrix (rows,cols);    
+
+    unsigned int VectorIndex = 0;
+    for(unsigned int i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned int j = 0; j < AMatrix.size2(); ++j){
+            AMatrix(i,j) = AVector(VectorIndex++);
+        }
+    }
+
+return AMatrix;
 }

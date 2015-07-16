@@ -19,6 +19,14 @@ int main(int argc, char **argv)
     std::cout <<"    "<<RandomMatrix << std::endl;
     std::cout<<"    "<<"Passed."<<std::endl;
 
+    std::cout<<"Rasterized Version..."<<std::endl;
+    std::cout<<"    "<<MatrixToVector(RandomMatrix)<<std::endl;
+    std::cout<<"    "<<"Passed."<<std::endl;
+
+    std::cout<<"Back to Matrix..."<<std::endl;
+    std::cout<<"    "<<VectorToMatrix(MatrixToVector(RandomMatrix),3,3)<<std::endl;
+    std::cout<<"    "<<"Passed."<<std::endl;
+
     std::cout<<"Allocating large(1000x1000) random matrix..."<<std::endl;
     BoostDoubleMatrix RandomMatrixLarge = CreateRandomMatrix(1000,1000);
     std::cout<<"    "<<"Passed."<<std::endl;

@@ -12,3 +12,5 @@ enum ImageFileType {PNG,JPG,TIFF};
 
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleMatrix LoadImage(const char* ImageFileName);
+BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix);
+BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols);
