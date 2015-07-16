@@ -15,7 +15,7 @@ LDLIBS=-lboost_system -lboost_random -lboost_date_time
 LDFLAGS=-L$(MK_BOOST_LIB) $(MAGICK_LDFLAG) $(LDLIBS)
 DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
-all: checkdir ctvmlib test1
+all: checkdir ctvmlib executable test1 
 
 ctvmlib: $(DEPS)
 	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
@@ -26,6 +26,9 @@ $(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_DIR)/ctvm.dylib $(LIB_DIR)/ctvm_util.dyli
 
 test1: $(TEST_DIR)/test1.o
 	$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o 
+
+executable: ctvmlib
+	$(CXX) $(CPPFLAGS) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/ctvm-recover $(SRC_DIR)/ctvm_recover.cpp
 
 clean:
 	rm -f $(BIN_DIR)/*
