@@ -10,7 +10,9 @@ int main(int argc, char **argv)
 {
     /* Test CTVM.dylib Link */
     std::cout<<"Testing libctvm Link."<<std::endl;
-    foo();
+    BoostDoubleMatrix DummySinogram(0,0);
+    BoostDoubleVector DummyAngles(0);
+    BoostDoubleMatrix DummyReconstruction = tval3_reconstruction(DummySinogram,DummyAngles);
     std::cout<<"    "<<"Passed."<<std::endl;
     
     /* Test CTVM_util.dylib Link */

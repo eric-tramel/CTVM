@@ -1,3 +1,5 @@
+#ifndef CTVM_UTIL_H
+#define CTVM_UTIL_H
 #include <iostream>
 #include <fstream>
 #include <boost/numeric/ublas/io.hpp>
@@ -16,3 +18,5 @@ BoostDoubleMatrix LoadImage(const char* ImageFileName);
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols);
 BoostDoubleVector ReadTiltAngles(char* TiltAngleFile);
+
+#endif
