@@ -24,10 +24,16 @@ int main(int argc, char **argv){
     cout<<"TiltAngleFile: "<<TiltAngleFile<<endl;
     cout<<"RecoveredOutput: "<<RecoveredOutput<<endl;
     cout<<endl;
+
     /* Load Tilt Anlges */
     cout<<"Loading Tilt Angles."<<endl;
     BoostDoubleVector TiltAngles = ReadTiltAngles(TiltAngleFile);
     cout<<TiltAngles<<endl;
+
+    /* Load Sinogram */
+    cout<<"Loading Sinogram."<<endl;
+    BoostDoubleMatrix Sinogram = LoadImage(SinogramFile);
+    
 
 return 0;
 }

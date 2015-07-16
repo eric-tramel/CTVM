@@ -38,6 +38,7 @@ clean:
 
 test: clean all
 	$(BIN_DIR)/test1
+	$(BIN_DIR)/ctvm-recover test/data/testSino.png test/data/testAngles.dat a3
 
 
 checkdir: 
