@@ -126,3 +126,43 @@ BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, un
 
 return AMatrix;
 }
+
+BoostDoubleVector ReadTiltAngles(char* TiltAngleFile){
+    using namespace std;
+    BoostDoubleVector TiltAngles (1000);
+
+    /* Define File Buffer */
+    filebuf TAFileBuffer;
+    
+    /* Attempt to Open file */
+    if(TAFileBuffer.open(TiltAngleFile,ios::in)){
+        istream TAInputStream(&TAFileBuffer);
+
+        /* Loop through file */
+        double thisTiltAngle;
+        unsigned int VectorIndex = 0;
+        while(TAInputStream){
+            TAInputStream>>thisTiltAngle;
+            TiltAngles(VectorIndex++) = thisTiltAngle;
+        }
+
+        /* Check for Double Count */
+        // It can happen that, if we have an additional new lines at the
+        // end of the datafile we can end up double-counting the last entry
+        // of the TiltAngle series. Since we should have no duplicates in
+        // the list of angle files, anyway, we will simply remove this
+        // repeated value.
+        if(TiltAngles(VectorIndex-1) == TiltAngles(VectorIndex-2)){
+            TiltAngles.resize(VectorIndex-1,1);
+        }else{
+            TiltAngles.resize(VectorIndex,1);
+        }
+
+        TAFileBuffer.close();
+    }else{
+        /* File Not Found */
+        cout<<"Specified tilt angle file ("<<TiltAngleFile<<") could not be opened."<<endl;
+    }
+
+return TiltAngles;
+}

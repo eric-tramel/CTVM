@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/random.hpp>
@@ -14,3 +15,4 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleMatrix LoadImage(const char* ImageFileName);
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols);
+BoostDoubleVector ReadTiltAngles(char* TiltAngleFile);
