@@ -33,7 +33,13 @@ int main(int argc, char **argv)
     BoostDoubleMatrix RandomMatrixLarge = CreateRandomMatrix(1000,1000);
     std::cout<<"    "<<"Passed."<<std::endl;
 
-    /* A Hardcoded Image Test */
+    std::cout<<"Testing Normalization"<<std::endl;
+    BoostDoubleMatrix TestMatrix(3,3);
+    TestMatrix(0,0) = 1; TestMatrix(0,1) = 5; TestMatrix(0,2) = 1;
+    TestMatrix(1,0) = 5; TestMatrix(1,1) = 10; TestMatrix(1,2) = 5;
+    TestMatrix(2,0) = 1; TestMatrix(2,1) = 5; TestMatrix(2,2) = 1;
+    std::cout<<"Original Matrix: "<<TestMatrix<<std::endl;
+    std::cout<<"Normalized: "<<NormalizeMatrix(TestMatrix)<<std::endl;
 
     /* Test ImageMagick */
     std::cout<<"Testing ImageMagick Link."<<std::endl;
@@ -43,8 +49,13 @@ int main(int argc, char **argv)
     someImage.read("test/data/peppers.jpg");
     std::cout<<"    "<<"Passed."<<std::endl;
 
+
     /* Test CTVM Image Load */
     std::cout<<"Testing CTVM Image Load."<<std::endl;
     BoostDoubleMatrix ImageMatrix = LoadImage("test/data/peppers.jpg");
+    std::cout<<"Image Data:"<<std::endl;
+    std::cout<<ImageMatrix(0,0)<<" "<<ImageMatrix(0,1)<<" "<<ImageMatrix(0,3)<<std::endl;
+    std::cout<<ImageMatrix(1,0)<<" "<<ImageMatrix(1,1)<<" "<<ImageMatrix(1,3)<<std::endl;
+    std::cout<<ImageMatrix(2,0)<<" "<<ImageMatrix(2,1)<<" "<<ImageMatrix(2,3)<<std::endl;
     std::cout<<"    "<<"Passed."<<std::endl;
 }

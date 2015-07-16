@@ -13,7 +13,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram,
     /* <TODO: Everything!> */
 
 
-    BoostDoubleMatrix RecoveredImage(0,0);  // Create a dummy matrix to return
+    BoostDoubleMatrix RecoveredImage(32,32);  // Create a dummy matrix to return
 
 return RecoveredImage;
 }

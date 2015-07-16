@@ -85,6 +85,44 @@ BoostDoubleMatrix LoadImage(const char* ImageFileName){
 return DBMImage;
 }
 
+void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile){
+/*
+* Function: WriteImage
+* ----------------------------
+* Given a UBlas matrix as well as an output file name, attempt to write
+* that matrix as an image. This assumes that the matrix is already scaled
+* in the range [0,1].
+*/
+    using namespace Magick;
+    
+    /* <TODO: Everything!> */
+}
+
+BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix){
+/*
+* Function: NormalizeMatrix
+* ----------------------------
+* Given a UBlas matrix, normalize it within the range [0,1].
+*/  
+    double AMatrixMin = MinimumEntry(AMatrix);
+    double AMatrixMax = MaximumEntry(AMatrix);
+    double AMatrixRange = AMatrixMax - AMatrixMin;
+
+    BoostDoubleMatrix AMatrixNormalized(AMatrix);
+    if(AMatrixRange != 0){
+        // Boost/UBLAS does not support operations of a scalar against a matrix
+        // natively.
+        AMatrixNormalized -= BoostScalarDoubleMatrix(AMatrix.size1(),AMatrix.size2(),AMatrixMin);
+        AMatrixNormalized /= AMatrixRange;
+    }else{
+        AMatrixNormalized = BoostDoubleMatrix(AMatrix.size1(),AMatrix.size2(),1);
+    }
+
+return AMatrixNormalized;
+}
+
+
+
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
 /*
 * Function: MatrixToVector
@@ -165,4 +203,33 @@ BoostDoubleVector ReadTiltAngles(char* TiltAngleFile){
     }
 
 return TiltAngles;
+}
+
+
+double MaximumEntry(BoostDoubleMatrix AMatrix){
+/*  Function: MaximumEntry
+    ----------------------
+    Return the maximal value in a given BoostDoubleMatrix
+*/    
+    double MaxValue = 0;
+    for(unsigned int i=0;i<AMatrix.size1();++i){
+        for(unsigned int j=0;j<AMatrix.size2();++j){
+            MaxValue = std::max(MaxValue,AMatrix(i,j));
+        }
+    }
+return MaxValue;
+}
+
+double MinimumEntry(BoostDoubleMatrix AMatrix){
+/*  Function: MinimumEntry
+    ----------------------
+    Return the minimum value in a given BoostDoubleMatrix
+*/    
+    double MinValue = std::numeric_limits<double>::infinity();
+    for(unsigned int i=0;i<AMatrix.size1();++i){
+        for(unsigned int j=0;j<AMatrix.size2();++j){
+            MinValue = std::min(MinValue,AMatrix(i,j));
+        }
+    }
+return MinValue;
 }
