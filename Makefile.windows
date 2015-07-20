@@ -19,16 +19,16 @@ all: checkdir ctvmlib executable test1
 
 ctvmlib: $(DEPS)
 		# Compile both of the libraries to object files
-		$(CXX) -Wall -fPIC $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o -c $(SRC_DIR)/ctvm.cpp
-		$(CXX) -Wall -fPIC $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o -c $(SRC_DIR)/ctvm_util.cpp
+		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o -c $(SRC_DIR)/ctvm.cpp
+		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o -c $(SRC_DIR)/ctvm_util.cpp
 		# Link object files together into shared libraries
-		$(CXX) -shared $(LDFLAGS) -o $(LIB_DIR)/cygctvm.dll $(SRC_DIR)/ctvm.o \
+		$(CXX) -shared -fPIC $(LDFLAGS) -o $(LIB_DIR)/cygctvm.dll $(SRC_DIR)/ctvm.o \
 					 -Wl,--out-implib=libctvm.dll.a \
 					 -Wl,--export-all-symbols \
 					 -Wl,--enable-auto-import \
 					 -Wl,--whole-archive $(SRC_DIR)/ctvm.o \
 					 -Wl,--no-whole-archive '$(LDFLAGS)'
-		$(CXX) -shared $(LDFLAGS) -o $(LIB_DIR)/cygctvm_util.dll $(SRC_DIR)/ctvm_util.o \
+		$(CXX) -shared -fPIC $(LDFLAGS) -o $(LIB_DIR)/cygctvm_util.dll $(SRC_DIR)/ctvm_util.o \
 					 -Wl,--out-implib=libctvm_util.dll.a \
 					 -Wl,--export-all-symbols \
 					 -Wl,--enable-auto-import \
