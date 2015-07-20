@@ -25,11 +25,20 @@ windows:
 	$(CXX) -Wall -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o
 
 
-ctvmlib: $(DEPS)
-	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
-	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
+# ctvmlib: $(DEPS)
+# 	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
+# 	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
 
-$(TEST_DIR)/%.o: $(TEST_DIR)/%.c $(LIB_DIR)/ctvm.dylib $(LIB_DIR)/ctvm_util.dylib
+ctvmlib: $(DEPS)
+	# Compile both of the libraries to object files
+	$(CXX) -Wall -fPIC $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o -c $(SRC_DIR)/ctvm.cpp
+	$(CXX) -Wall -fPIC $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o -c $(SRC_DIR)/ctvm_util.cpp
+	# Link object files together into shared libraries
+	$(CXX) -shared $(LDFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.o
+	$(CXX) -shared $(LDFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.o
+
+
+$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp $(LIB_DIR)/libctvm.dylib $(LIB_DIR)/libctvm_util.dylib
 	$(CXX) $(CPPFLAGS) -c -o $@ $< 
 
 test1: $(TEST_DIR)/test1.o
