@@ -15,14 +15,15 @@ LDLIBS=-lboost_system -lboost_random -lboost_date_time
 LDFLAGS=-L$(MK_BOOST_LIB) $(MAGICK_LDFLAG) $(LDLIBS)
 DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
-all: checkdir ctvmlib executable test1 
+all: checkdir ctvmlib executable test1
 
-windows: $(DEPS)
-    $(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
-	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
-    $(CXX) -shared -o $(LIB_DIR)/libctvm.dll $(SRC_DIR)/ctvm.o
-    $(CXX) -shared -o $(LIB_DIR)/libctvm_util.dll $(SRC_DIR)/ctvm_util.o
-	$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.cpp
+
+windows:
+#	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
+#	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
+	$(CXX) -shared $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dll $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
+	$(CXX) -shared $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dll $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
+#	$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.cpp
 
 
 ctvmlib: $(DEPS)
