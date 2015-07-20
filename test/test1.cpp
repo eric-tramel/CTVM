@@ -58,7 +58,4 @@ int main(int argc, char **argv)
     std::cout<<ImageMatrix(1,0)<<" "<<ImageMatrix(1,1)<<" "<<ImageMatrix(1,3)<<std::endl;
     std::cout<<ImageMatrix(2,0)<<" "<<ImageMatrix(2,1)<<" "<<ImageMatrix(2,3)<<std::endl;
     std::cout<<"    "<<"Passed."<<std::endl;
-    
-    std::cout<<"************ WHATS UP CHARLES?? *************"<<std::endl;
-    
 }
