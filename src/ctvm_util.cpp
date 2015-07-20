@@ -95,7 +95,34 @@ void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile){
 */
     using namespace Magick;
     
-    /* <TODO: Everything!> */
+    int rows = AMatrix.size1();
+    int cols = AMatrix.size2();
+
+    /* Create Image */
+    Image OutputImage;                                // Specify the output file
+    OutputImage.size(Geometry(cols,rows));            // Specify image dimensions
+    Pixels OutputImageView(OutputImage);
+
+    /* Pixel Assignment Loop */
+    // This procedure is, I'm sure, one of the least efficient ways
+    // of accomplishing this task.
+    PixelPacket thisPixel;
+    for(int i = 0; i < rows; ++i){
+        for (int j = 0; j < cols; ++j){
+            thisPixel.red = ColorGray::scaleDoubleToQuantum(AMatrix(i,j));
+            thisPixel.green = ColorGray::scaleDoubleToQuantum(AMatrix(i,j));
+            thisPixel.blue = ColorGray::scaleDoubleToQuantum(AMatrix(i,j));
+
+            *(OutputImageView.get(j,i,1,1)) = thisPixel;
+        }
+    }
+
+    /* Final Update */
+    OutputImage.type(GrayscaleType);
+    OutputImageView.sync();
+
+    /* Write to Disk */
+    OutputImage.write(OutputFile);
 }
 
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix){
