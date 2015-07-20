@@ -19,11 +19,8 @@ all: checkdir ctvmlib executable test1
 
 
 windows:
-#	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
-#	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
 	$(CXX) -shared $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dll $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
 	$(CXX) -shared $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dll $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
-	$(CXX) $(CPPFLAGS) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.cpp
 	$(CXX) -Wall $(CPPFLAGS) -Llib $(LDFLAGS) -lctvm -lctvm_util -c -o $(TEST_DIR)/test1.o $(TEST_DIR)/test1.cpp
 	$(CXX) -Wall -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o
 
