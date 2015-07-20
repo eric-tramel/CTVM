@@ -17,6 +17,14 @@ DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
 all: checkdir ctvmlib executable test1 
 
+windows: $(DEPS)
+    $(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
+    $(CXX) -shared -o $(LIB_DIR)/libctvm.dll $(SRC_DIR)/ctvm.o
+    $(CXX) -shared -o $(LIB_DIR)/libctvm_util.dll $(SRC_DIR)/ctvm_util.o
+	$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.cpp
+
+
 ctvmlib: $(DEPS)
 	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm.dylib $(SRC_DIR)/ctvm.cpp $(LDFLAGS)
 	$(CXX) -dynamiclib -fPIC  $(CPPFLAGS) -o $(LIB_DIR)/libctvm_util.dylib $(SRC_DIR)/ctvm_util.cpp $(LDFLAGS)
