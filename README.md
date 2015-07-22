@@ -62,10 +62,18 @@ We have currently tested that the build works for Boost 1.58.0.
 Navigate to `./windows/CTVM` and open `CTVM.sln` to launch the CTVM project in Visual Studio.
 The solution is configured into a number of sub-projects...
 
-- *libctvm_util*
-- *libctvm*
-- *test*
-- *ctvm-recover*
+- **libctvm_util:** Perform the following modifications
+    - Go to the project properties (`Alt-Enter` when selected)
+    - Under `Configuration Properties > VC++ Directories`...
+        - Change `Include Directories` to point to your local ImageMagick and Boost `include` directories, as well as the `include` directory of CTVM. For our example, these directores are `C:\ImageMagick\include` and `C:\boost\include\boost-1_58`.
+        - Change `Library Directories` to point to your local ImageMagic and Boost `lib` directories, as well as the `lib` directory of CTVM. For our example, these directories are `C:\ImageMagick\lib` and `C:\boost\lib`.
+- **libctvm:** Perform the following modifications
+    - Go to the project properties (`Alt-Enter` when selected)
+    - Under `Configuration Properties > VC++ Directories`...
+        - Change `Include Directories` to point to your local ImageMagick and Boost `include` directories, as well as the `include` directory of CTVM. For our example, these directores are `C:\ImageMagick\include` and `C:\boost\include\boost-1_58`.
+        - Change `Library Directories` to point to your local ImageMagic and Boost `lib` directories, as well as the `lib` directory of CTVM. For our example, these directories are `C:\ImageMagick\lib` and `C:\boost\lib`.
+- **test:** Same modifications as for the above.
+- **ctvm-recover:** Same modifications as for the above.
 
 
 ### Cygwin Setup
