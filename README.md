@@ -29,6 +29,46 @@ Additionally, the Makefile makes use of the `Magick++-config` script distributed
 ## Windows
 It should also be possible to utilize IDE platforms such as Microsoft Visual C++ to compile the project, however, this is untested. The project should be configured such that the ImageMagick and Boost headers and libraries are visible to the project. Otherwise, there is no OS-specific code in this project.
 
+### Visual Studio Configuration
+Here, we detail the installation and configuration of dependencies on a native Windows environment. 
+
+#### 1. Install and Configure MS VS Community 2015
+First, one needs to install Microsoft Visual Studio Community 2015. The IDE can be downloaded
+[from here](https://www.visualstudio.com/downloads/download-visual-studio-vs). 
+> _Make sure to select the Visual C++ tools as well as the 3rd party command-line tools when performing the installation!_
+
+#### 2. Install ImageMagick
+Download the latest Windows version of ImageMagick [from here](http://www.imagemagick.org/script/binary-releases.php#windows). 
+Since we will be targeting 64-bit deployment, be sure to download the Win64 version at 16 bits-per-pixel. This should
+be the default proposed latest ImageMagick release.
+
+> _When installing ImageMagick, be sure to choose the option to install C++ header files and development tools!_
+
+For ease, choose an easy install path. For these instructions we choose `C:\ImageMagick` as the install path for 
+the ImageMagick tools.
+
+#### 3. Install and Build Boost
+Download the latest relase of Boost [from here](http://sourceforge.net/projects/boost/files/boost/1.58.0/). 
+We have currently tested that the build works for Boost 1.58.0. 
+
+1. After the download completes, extract the compressed Boost download to any directory.
+2. Next, open `Developer Command Prompt for VS2015` and navigate the directory Boost was extracted to.
+3. Execute the command `boostrap.bat` to build the Boost configuration utilities.
+4. Decide on an install directory for Boost. For ease we will choose `C:\boost` for these instructions.
+5. Execute the following command to build and install Boost in 64 bit mode `.\b2 install --prefix=C:\boost toolset=msvc address-model=64`
+6. The install process may take some time, so one must be patient ! 
+
+#### 4. Configure Project
+Navigate to `./windows/CTVM` and open `CTVM.sln` to launch the CTVM project in Visual Studio.
+The solution is configured into a number of sub-projects...
+
+- *libctvm_util*
+- *libctvm*
+- *test*
+- *ctvm-recover*
+
+
+### Cygwin Setup
 Here, the paths are build in the case of a Cygwin development.
 
 *ImageMagick*
