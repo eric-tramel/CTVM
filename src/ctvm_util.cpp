@@ -158,13 +158,13 @@ BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
 * manner.
 *
 */
-    unsigned int N = AMatrix.size1()*AMatrix.size2();
+    unsigned double N = AMatrix.size1()*AMatrix.size2();
 
     BoostDoubleVector AVector (N);
     
-    unsigned int VectorIndex = 0;
-    for(unsigned int i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned int j = 0; j < AMatrix.size2(); ++j){
+    unsigned double VectorIndex = 0;
+    for(unsigned double i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned double j = 0; j < AMatrix.size2(); ++j){
             AVector(VectorIndex++) = AMatrix(i,j);
         }
     }
@@ -172,7 +172,7 @@ BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
 return AVector;
 }
 
-BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols){
+BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned double rows, unsigned double cols){
 /*
 * Function: VectorToMatrix
 * ----------------------------
@@ -182,9 +182,9 @@ BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, un
 */
     BoostDoubleMatrix AMatrix (rows,cols);    
 
-    unsigned int VectorIndex = 0;
-    for(unsigned int i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned int j = 0; j < AMatrix.size2(); ++j){
+    unsigned double VectorIndex = 0;
+    for(unsigned double i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned double j = 0; j < AMatrix.size2(); ++j){
             AMatrix(i,j) = AVector(VectorIndex++);
         }
     }
