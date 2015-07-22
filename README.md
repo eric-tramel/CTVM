@@ -53,7 +53,7 @@ We have currently tested that the build works for Boost 1.58.0.
 
 1. After the download completes, extract the compressed Boost download to any directory.
 2. Next, open `Developer Command Prompt for VS2015` and navigate the directory Boost was extracted to.
-3. Execute the command `boostrap.bat` to build the Boost configuration utilities.
+3. Execute the command `bootstrap.bat` to build the Boost configuration utilities.
 4. Decide on an install directory for Boost. For ease we will choose `C:\boost` for these instructions.
 5. Execute the following command to build and install Boost in 64 bit mode `.\b2 install --prefix=C:\boost toolset=msvc address-model=64`
 6. The install process may take some time, so one must be patient ! 
