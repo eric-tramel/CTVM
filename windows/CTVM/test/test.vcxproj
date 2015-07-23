@@ -70,8 +70,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\bin</OutDir>
-    <IncludePath>C:\imagemagick\include;C:\boost\include\boost-1_58;C:\Users\eric\Documents\GitHub\CTVM\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\imagemagick\lib;C:\boost\lib;C:\Users\eric\Documents\GitHub\CTVM\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\imagemagick\include;C:\boost\include\boost-1_58;C:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\imagemagick\lib;C:\boost\libC:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
