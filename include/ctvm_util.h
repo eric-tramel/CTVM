@@ -24,7 +24,7 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleMatrix LoadImage(const char* ImageFileName);
 void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile);
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix);
-BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned int rows, unsigned int cols);
+BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned long rows, unsigned long cols);
 BoostDoubleVector ReadTiltAngles(char* TiltAngleFile);
 
 #endif

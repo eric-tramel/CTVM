@@ -6,11 +6,6 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include "ctvm_util.h"
 
-typedef boost::numeric::ublas::matrix<double> BoostDoubleMatrix;
-typedef boost::numeric::ublas::scalar_matrix<double> BoostScalarDoubleMatrix;
-typedef boost::numeric::ublas::vector<double> BoostDoubleVector;
-typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
-
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 
 // BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
