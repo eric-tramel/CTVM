@@ -11,7 +11,7 @@ typedef boost::numeric::ublas::scalar_matrix<double> BoostScalarDoubleMatrix;
 typedef boost::numeric::ublas::vector<double> BoostDoubleVector;
 typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
 
-BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
+BoostDoubleVector 2DGradient(BoostDoubleVector U, unsigned long pixel);
 
 // BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
 

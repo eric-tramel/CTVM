@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     std::cout<<"Testing libctvm Link."<<std::endl;
     BoostDoubleMatrix DummySinogram(0,0);
     BoostDoubleVector DummyAngles(0);
-    BoostDoubleMatrix DummyReconstruction = tval3_reconstruction(DummySinogram,DummyAngles);
+    // BoostDoubleMatrix DummyReconstruction = tval3_reconstruction(DummySinogram,DummyAngles);
     std::cout<<"    "<<"Passed."<<std::endl;
     
     /* Test CTVM_util.dylib Link */
@@ -64,9 +64,6 @@ int main(int argc, char **argv)
     anotherImage.write("test/data/testoutimage.png");
     std::cout<<"    "<<"Passed."<<std::endl;    
 
-
-
-
     /* Test CTVM Image Load */
     std::cout<<"Testing CTVM Image Load."<<std::endl;
     BoostDoubleMatrix ImageMatrix = LoadImage("test/data/peppers.jpg");
@@ -78,4 +75,12 @@ int main(int argc, char **argv)
 
     std::cout<<"Testing CTVM Image Write."<<std::endl;
     WriteImage(ImageMatrix,"test/data/test_peppers.jpg");
+
+	/* Test Gradient2D */
+	unsigned long irank = 5;
+	BoostDoubleVector ImageVector = MatrixToVector(ImageMatrix);
+	BoostDoubleVector G = Gradient2D(ImageVector, irank);
+	std::cout << "Testing CTVM 2D Gradient for a rank i." << std::endl;
+	std::cout << "    " << ImageVector << std::endl;
+	std::cout << "Right Gradient: "<<G(0)<<" Down Gradient:"<<G(1)<<std::endl;
 }
