@@ -18,13 +18,13 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     /* Random Number Generation */
     boost::posix_time::ptime CurrentTick = boost::posix_time::microsec_clock::local_time();
     boost::mt19937 RNG (static_cast<unsigned int>(CurrentTick.time_of_day().total_milliseconds()));     // Set the integer RNG engine. Time Based Seed.
-    boost::normal_distribution<> NormDist (0.0,1.0);   // Specify the distribution with zero mean and unit variance
+    boost::normal_distribution<> NormDist (0.0,1.0);  // Specify the distribution with zero mean and unit variance
     boost::variate_generator<boost::mt19937&,
                              boost::normal_distribution<> > RandNormValue(RNG,NormDist);    // Finally, build the number generator itself.
 
     /* Loop and Assign */
-    for(unsigned i=0; i < RandomMatrix.size1(); ++i){
-        for(unsigned j=0; j < RandomMatrix.size2(); ++j){
+    for(unsigned long i=0; i < RandomMatrix.size1(); ++i){
+        for(unsigned long j=0; j < RandomMatrix.size2(); ++j){
             RandomMatrix(i,j) = RandNormValue();
         }
     }
@@ -158,13 +158,13 @@ BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
 * manner.
 *
 */
-    unsigned double N = AMatrix.size1()*AMatrix.size2();
+    unsigned long N = AMatrix.size1()*AMatrix.size2();
 
     BoostDoubleVector AVector (N);
     
-    unsigned double VectorIndex = 0;
-    for(unsigned double i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned double j = 0; j < AMatrix.size2(); ++j){
+    unsigned long VectorIndex = 0;
+    for(unsigned long i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned long j = 0; j < AMatrix.size2(); ++j){
             AVector(VectorIndex++) = AMatrix(i,j);
         }
     }
@@ -172,7 +172,7 @@ BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
 return AVector;
 }
 
-BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned double rows, unsigned double cols){
+BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned long rows, unsigned long cols){
 /*
 * Function: VectorToMatrix
 * ----------------------------
@@ -182,9 +182,9 @@ BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned double rows,
 */
     BoostDoubleMatrix AMatrix (rows,cols);    
 
-    unsigned double VectorIndex = 0;
-    for(unsigned double i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned double j = 0; j < AMatrix.size2(); ++j){
+    unsigned long VectorIndex = 0;
+    for(unsigned long i = 0; i < AMatrix.size1(); ++i){
+        for(unsigned long j = 0; j < AMatrix.size2(); ++j){
             AMatrix(i,j) = AVector(VectorIndex++);
         }
     }
