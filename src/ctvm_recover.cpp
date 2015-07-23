@@ -36,7 +36,7 @@ int main(int argc, char **argv){
 
 
     /* Call Reconstruction */
-    BoostDoubleMatrix Reconstruction = tval3_reconstruction(Sinogram,TiltAngles);    
+    //BoostDoubleMatrix Reconstruction = tval3_reconstruction(Sinogram,TiltAngles);    
     
 
 return 0;

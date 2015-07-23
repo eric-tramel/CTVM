@@ -13,8 +13,14 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = 
 	BoostDoubleMatrix X (l, l);
 
 	X = VectorToMatrix(U, l, l);
+	
+	if (pixel >= n)
+	{
+		std::cout << "WARNING: Gradient's rank bigger than specimen size" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
-	for (unsigned long i = 0; i < l; ++i) /* Find pixel place in the matrix */ 
+	for (unsigned long i = 0; i < l; ++i) /****** Find pixel place in the matrix *******/ 
 	{
 		if (!pixel)
 		{
@@ -37,7 +43,8 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = 
 			pixel = pixel - l;
 		}
 	}
-	if (cols == l-1 || rows == l-1)
+
+	if (cols == l - 1 && rows == l - 1) /******* Find gradient at the rank i *******/
 	{
 		Di(0) = X(rows, cols) - X(rows, cols);
 		Di(1) = X(rows, cols) - X(rows, cols);
@@ -59,4 +66,23 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = 
 	}
 
 return Di;
+}
+
+BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U)
+{
+	/* List all gradients for all i */
+
+	unsigned long n = U.size();
+	BoostDoubleVector Di (2);
+	BoostDoubleMatrix Du (n,2);
+
+	for (unsigned long i = 0; i < n; ++i)
+	{
+		Di = Gradient2D(U, i);
+		for (int j = 0; j < 2; ++j)
+		{
+			Du(i, j) = Di(j);
+		}
+	}
+return Du;
 }

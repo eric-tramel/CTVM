@@ -188,7 +188,6 @@ BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned long rows, u
             AMatrix(i,j) = AVector(VectorIndex++);
         }
     }
-
 return AMatrix;
 }
 
