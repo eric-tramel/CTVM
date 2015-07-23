@@ -58,5 +58,11 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = 
 		Di(1) = X(rows + 1, cols) - X(rows, cols);
 	}
 
+	for (unsigned long i = 0; i < l; ++i) /* Find the down gradient */
+	{
+		for (unsigned long i = 0; i < l; ++i) /* Find the right gradient */
+		{
+		}
+	}
 return Di;
 }
