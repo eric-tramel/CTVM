@@ -130,6 +130,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\ctvm_recover.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ctvm-recover.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
