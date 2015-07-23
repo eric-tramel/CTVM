@@ -1,6 +1,6 @@
 #include "ctvm.h"
 
-BoostDoubleVector 2DGradient(BoostDoubleVector U, unsigned long rank) // rank = actual rank number -1! (first rank = U(0))
+BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = actual rank number -1! (first rank = U(0))
 {
 	unsigned long n = U.size();
 	unsigned long pixel = rank;
