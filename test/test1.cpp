@@ -90,33 +90,37 @@ int main(int argc, char **argv)
 	std::cout << "Gradients for all rank i (right gradient, down gradient): " << GradientMatrix << std::endl;
 	std::cout << "    " << "Passed." << std::endl;
 
-	/*Test uBLAS functions*/
+	/*Test Lagrangian function*/
 	std::cout << std::endl;
-	std::cout << "Testing uBLAS function norm_2(): " << std::endl; // norm 2
-	BoostDoubleVector O(3);
-	O(0) = 1; O(1) = 5; O(2) = -3;
-	double normO = norm_2(O);
-	std::cout << "Norm Vector: " << normO << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+	std::cout << "Testing Lagrangian(): " << std::endl;
 
-	std::cout << std::endl;
-	std::cout << "Testing uBLAS function trans(): " << std::endl; // transpose
-	BoostDoubleMatrix Transpose = trans(TestMatrix);
-	std::cout << "Transposed Matrix: " << Transpose << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+	BoostDoubleMatrix A (2, 4), W (4, 2), NU (4, 2);
+	BoostDoubleVector U (4), B (2), LAMBDA (2);
+	
+	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
+	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
 
-	std::cout << std::endl;
-	std::cout << "Testing uBLAS function prod(): " << std::endl; // matrix * vector
-	BoostDoubleVector Product = prod(O, TestMatrix); // The vector is transposed automatically if necessary depending of its place in the prod's inputs
-	std::cout << "Resulted vector: " << Product << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+	W(0, 0) = 1; W(0, 1) = 1;
+	W(1, 0) = 0; W(1, 1) = -1;
+	W(2, 0) = 1; W(2, 1) = 2;
+	W(3, 0) = 0; W(3, 1) = 1;
 
-	std::cout << std::endl;
-	std::cout << "Testing uBLAS Vectors product: " << std::endl;
-	BoostDoubleVector P(3);
-	P(0) = 2; P(1) = -1; P(2) = 3;
-	double p = inner_prod(O, P);
-	std::cout << "Product: " << p << std::endl;
+	NU(0, 0) = 2; NU(0, 1) = 1;
+	NU(1, 0) = 1; NU(1, 1) = 0;
+	NU(2, 0) = 0; NU(2, 1) = 2;
+	NU(3, 0) = 1; NU(3, 1) = 3;
+
+	U(0) = 1; U(1) = 2; U(2) = 0; U(3) = 1;
+
+	B(0) = 1; B(1) = 2;
+
+	LAMBDA(0) = 2; LAMBDA(1) = 1;
+	
+	double beta = 2^(1/2);
+	double mu = 3;
+	double L = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
+
+	std::cout << "Lagrangian: " << L << std::endl; // expected result L=9.85738832
 	std::cout << "    " << "Passed." << std::endl;
 
 return 0;

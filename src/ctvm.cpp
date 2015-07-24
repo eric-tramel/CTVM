@@ -106,7 +106,7 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B,
 			NUi(j) = NU(i, j);
 		}
 		BoostDoubleVector DIFFi = Di*U(i) - Wi;
-		double norm_wi = norm_2(Wi);
+		double norm_wi = norm_2(Wi); // norm_1 for anisotropic TV or norm_2 for isotropic TV
 		double square_norm_diffi = norm_2(DIFFi)*norm_2(DIFFi);
 
 		L = L + norm_wi - inner_prod(NUi, DIFFi) + (beta / 2)*square_norm_diffi;
