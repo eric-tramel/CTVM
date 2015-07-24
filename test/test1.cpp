@@ -110,5 +110,14 @@ int main(int argc, char **argv)
 	BoostDoubleVector Product = prod(O, TestMatrix); // The vector is transposed automatically if necessary depending of its place in the prod's inputs
 	std::cout << "Resulted vector: " << Product << std::endl;
 	std::cout << "    " << "Passed." << std::endl;
-	return 0;
+
+	std::cout << std::endl;
+	std::cout << "Testing uBLAS Vectors product: " << std::endl;
+	BoostDoubleVector P(3);
+	P(0) = 2; P(1) = -1; P(2) = 3;
+	double p = inner_prod(O, P);
+	std::cout << "Product: " << p << std::endl;
+	std::cout << "    " << "Passed." << std::endl;
+
+return 0;
 }
