@@ -10,6 +10,10 @@
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu);
+BoostDoubleVector Shrinke(BoostDoubleVector U, BoostDoubleMatrix NU, double beta);
+
+// double onestep_gradient(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long rank, unsigned long l);
+// BoostDoubleVector alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long rank);
 
 // BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
 

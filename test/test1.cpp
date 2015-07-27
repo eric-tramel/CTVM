@@ -81,28 +81,16 @@ int main(int argc, char **argv)
 	WriteImage(ImageMatrix, "C:\\data\\test_peppers.jpg");
 	std::cout << "    " << "Passed." << std::endl;
 
-	/* Test Gradient2DMatrix */
-	std::cout << std::endl;
-	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
-	BoostDoubleVector GradientVector = MatrixToVector(TestMatrix);
-	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(GradientVector);
-	std::cout << "Original Matrix: " << TestMatrix << std::endl;
-	std::cout << "Gradients for all rank i (right gradient, down gradient): " << GradientMatrix << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+	/* Initialisation */
+	BoostDoubleMatrix A(2, 4), W(4, 2), NU(4, 2);
+	BoostDoubleVector U(4), B(2), LAMBDA(2);
 
-	/*Test Lagrangian function*/
-	std::cout << std::endl;
-	std::cout << "Testing Lagrangian(): " << std::endl;
-
-	BoostDoubleMatrix A (2, 4), W (4, 2), NU (4, 2);
-	BoostDoubleVector U (4), B (2), LAMBDA (2);
-	
 	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
 	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
 
-	W(0, 0) = 1; W(0, 1) = 1;
-	W(1, 0) = 0; W(1, 1) = -1;
-	W(2, 0) = 1; W(2, 1) = 2;
+	W(0, 0) = 1; W(0, 1) = -1;
+	W(1, 0) = 0; W(1, 1) = -2;
+	W(2, 0) = 0; W(2, 1) = 0;
 	W(3, 0) = 0; W(3, 1) = 1;
 
 	NU(0, 0) = 2; NU(0, 1) = 1;
@@ -110,17 +98,42 @@ int main(int argc, char **argv)
 	NU(2, 0) = 0; NU(2, 1) = 2;
 	NU(3, 0) = 1; NU(3, 1) = 3;
 
-	U(0) = 1; U(1) = 2; U(2) = 0; U(3) = 1;
+	U(0) = 1;
+	U(1) = 2;
+	U(2) = 0;
+	U(3) = 1;
 
-	B(0) = 1; B(1) = 2;
+	B(0) = 1;
+	B(1) = 2;
 
-	LAMBDA(0) = 2; LAMBDA(1) = 1;
-	
-	double beta = 2^(1/2);
+	LAMBDA(0) = 2;
+	LAMBDA(1) = 1;
+
+	double beta = sqrt(2);
 	double mu = 3;
+
+	/* Test Gradient2DMatrix */
+	std::cout << std::endl;
+	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
+	BoostDoubleVector GradientVector = MatrixToVector(TestMatrix);
+	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(GradientVector);
+	std::cout << "Original Matrix: " << TestMatrix << std::endl;
+	std::cout << "Gradients Di (right gradient, down gradient): " << GradientMatrix << std::endl;
+	std::cout << "    " << "Passed." << std::endl;
+	
+	/*Test Lagrangian function*/
+	std::cout << std::endl;
 	double L = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
 
-	std::cout << "Lagrangian: " << L << std::endl; // expected result L=9.85738832
+	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
+	std::cout << "    " << "Passed." << std::endl;
+
+	/*Test Shrinke function*/
+	std::cout << std::endl;
+
+	BoostDoubleVector SHRINKE = Shrinke(U, NU, beta);
+
+	std::cout << "W(i,l+1): " << SHRINKE << std::endl; // expected result SHRINKE = 8.6213
 	std::cout << "    " << "Passed." << std::endl;
 
 return 0;

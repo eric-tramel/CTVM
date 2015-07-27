@@ -100,74 +100,99 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B,
 	for (unsigned long i = 0; i < n; ++i)
 	{
 		Di = Gradient2D(U, i);
-		for (unsigned long j = 0; j < 2; ++j)
+		for (int j = 0; j < 2; ++j)
 		{
 			Wi(j) = W(i, j);
 			NUi(j) = NU(i, j);
 		}
 		BoostDoubleVector DIFFi = Di*U(i) - Wi;
-		double norm_wi = norm_2(Wi); // norm_1 for anisotropic TV or norm_2 for isotropic TV
+		double norm_wi = norm_2(Wi);              // norm_1 for anisotropic TV or norm_2 for isotropic TV
 		double square_norm_diffi = norm_2(DIFFi)*norm_2(DIFFi);
 
-		L = L + norm_wi - inner_prod(NUi, DIFFi) + (beta / 2)*square_norm_diffi;
+		L = L + norm_wi - inner_prod(NUi, DIFFi) + (beta/2) * square_norm_diffi;
 	}
-	BoostDoubleVector PROD(m);
-	BoostDoubleVector DIFF(m);
-	PROD = prod(A, U);
-	DIFF = PROD - B;
+	BoostDoubleVector PROD = prod(A, U);
+	BoostDoubleVector DIFF = PROD - B;
 	double square_norm_diff = norm_2(DIFF)*norm_2(DIFF);
 
 	L = L - inner_prod(LAMBDA, DIFF) + (mu/2)*square_norm_diff;
 return L;
 }
 
+BoostDoubleVector Shrinke(BoostDoubleVector U, BoostDoubleMatrix NU, double beta)
+{
+	/*Tips for tomorrow: GO OUTSIDE!
+	and READ the thesis! (good luck, remember, petit à petit l'oiseau fait son nid!)
+	+ take Di*u(k) as an input that is initialised in the outer loop, the max concerns the 'i' */
+	double n = U.size();
+
+	BoostDoubleVector Di (2);
+	BoostDoubleVector NUi (2);
+	BoostDoubleVector Wi(2);
+	BoostDoubleVector MAX (2);
+	MAX(0) = 0; MAX(1) = 0;
+
+	for (unsigned long i = 0; i < n; ++i)
+	{
+		Di = Gradient2D(U, i);
+		for (int j = 0; j < 2; ++j)
+		{
+			NUi(j) = NU(i, j);
+
+			BoostDoubleVector DIFF = Di*U(i) - NUi/beta;
+			double norm_diff = norm_2(DIFF);
+
+			Wi = (norm_diff - 1/beta) * (DIFF/norm_diff);
+			if (MAX(j) < Wi(j)) MAX(j) = Wi(j); // Keep the max gradient vector or max gradient value??
+		}
+	}
+return MAX;
+}
+
 /*BoostDoubleVector alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long rank)
 {
-unsigned long i = rank;
-double n = U.size();
-double delta = 0.5;
-double rho = 0.5;
-double eta = 0.5;
-double tol = 0.01;
-double innerstop;
+	unsigned long i = rank;
+	double n = U.size();
+	double delta = 0.5;
+	double rho = 0.5;
+	double eta = 0.5;
+	double Q = 1;
+	double C = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu); // NOT OK, Lagrangian function for all values and not the initialisation
 
-BoostDoubleVector ALT_MIN (2);
-BoostDoubleVector Q (n);
-BoostDoubleVector C (n);
-BoostDoubleVector D (n);
-BoostDoubleVector ALPHA (n);
+	double tol = 0.01;
 
-ALT_MIN(0) = 1; ALT_MIN(1) = 1; // ALT_MIN(0) = w(i,0), ALT_MIN(1) = u(0)
-Q(0) = 1;
-C(0) = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu); // NOT OK, Lagrangian function for all values and not the initialisation
+	BoostDoubleVector ALT_MIN (2);
+	ALT_MIN(0) = 1; ALT_MIN(1) = 1; // ALT_MIN(0) = w(i,0), ALT_MIN(1) = u(0)
+	double ul_1 = ALT_MIN(1); // memory value
 
-double uj_1 = ALT_MIN(1);
+	BoostDoubleVector ALPHA(n);
 
-do
-{
-//******************** "w sub-problem" ********************
-for (unsigned long j = 0; j < n - 1; ++j)
-{
+	do
+	{
+//*************************** "w sub-problem" ***************************
+		for (unsigned long l = 0; l < n - 1; ++l)
+		{
+			W(l+1) = shrinke(U, NU, beta);
+			ALT_MIN(0) = W(l+1);
+			ALPHA(l) = // BBlikeformula;
+			do
+			{				
+				ALPHA(l) = rho * ALPHA(l);
+			} while (/*(2.33)*//*);          // NOT OK
 
-ALT_MIN(0) = W(j+1);
-do
-{
-ALPHA(j) = rho * ALPHA(j);
-} while (/*(2.33)*//*);          // NOT OK
+//*************************** "u sub-problem" ***************************
+		D(0) = onestep_gradient(A, U, B, W, NU, LAMBDA, beta, mu, rank, l);
+		D(1) = ;
+		double dl_1 = D(0);
+		double dl = D(1);
 
-//******************** "u sub-problem" ********************
-D(0) = onestep_gradient(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long rank, unsigned long j);
-D(1) = ;
-double dj_1 = D(0);
-double dj = D(1);
+		U(l+1) = U(l) - ALPHA(l) * dl;
 
-U(j + 1) = U(j) - ALPHA(j) * d(j);
-
-innerstop = norm_2(U(j + 1) - U(j));
-uj_1 = ALT_MIN(1); // uj_1 = U(j-1)
-ALT_MIN(1) = U(j + 1);
-}
-} while (innerstop > tol);
+		double innerstop = norm_2(U(l+1) - U(l));
+		ul_1 = ALT_MIN(1); // ul_1 = U(l-1)
+		ALT_MIN(1) = U(l+1);
+		}
+	} while (innerstop > tol);
 return ALT_MIN;
 }*/
 
