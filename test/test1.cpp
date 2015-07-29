@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
 
 	W(0, 0) = 1; W(0, 1) = -1;
-	W(1, 0) = 0; W(1, 1) = -2;
+	W(1, 0) = 0; W(1, 1) = -1;
 	W(2, 0) = 0; W(2, 1) = 0;
 	W(3, 0) = 0; W(3, 1) = 1;
 
@@ -115,9 +115,9 @@ int main(int argc, char **argv)
 	/* Test Gradient2DMatrix */
 	std::cout << std::endl;
 	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
-	BoostDoubleVector GradientVector = MatrixToVector(TestMatrix);
-	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(GradientVector);
-	std::cout << "Original Matrix: " << TestMatrix << std::endl;
+	BoostDoubleMatrix X = VectorToMatrix(U, 2, 2);
+	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(U);
+	std::cout << "Original Matrix: " << X << std::endl;
 	std::cout << "Gradients Di (right gradient, down gradient): " << GradientMatrix << std::endl;
 	std::cout << "    " << "Passed." << std::endl;
 	
@@ -131,8 +131,7 @@ int main(int argc, char **argv)
 	/*Test Shrinke function*/
 	std::cout << std::endl;
 	int ii = 1;
-	BoostDoubleVector Di = Gradient2D(U, ii);
-	BoostDoubleVector DiUk = Di * U(ii);
+	BoostDoubleVector DiUk = Gradient2D(U, ii);
 	BoostDoubleVector NUi (2);
 	for (int jj = 0; jj < 2; ++jj) { NUi(jj) = NU(ii, jj); }
 	BoostDoubleVector SHRIKE = Shrike(DiUk, NUi, beta);

@@ -1,15 +1,22 @@
 #include "ctvm.h"
 
-BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = actual rank number -1! (first rank = U(0))
+BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = actual rank number -1 (first rank = U(0))
 {
+	/*
+	* Function: Gradient2D (Di*u)
+	* ----------------------------
+	* Take a vector and give the right gradient
+	* and the down gradient of the rank i 
+	*
+	*/
 	unsigned long n = U.size();
 	unsigned long pixel = rank;
 	unsigned long l = sqrt(n); // !
 	unsigned long rows = 0;
 	unsigned long cols = 0;
-	float q = 0;
+	double q = 0;
 
-	BoostDoubleVector Di (2);
+	BoostDoubleVector Du (2);
 	BoostDoubleMatrix X (l, l);
 
 	X = VectorToMatrix(U, l, l);
@@ -48,64 +55,79 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long rank) // rank = 
 /******************** Find gradient at the rank i ********************/
 	if (cols == l - 1 && rows == l - 1)
 	{
-		Di(0) = X(rows, cols) - X(rows, cols);
-		Di(1) = X(rows, cols) - X(rows, cols);
+		Du(0) = X(rows, cols) - X(rows, cols);
+		Du(1) = X(rows, cols) - X(rows, cols);
 	}
 	else if (cols == l - 1)
 	{
-		Di(0) = X(rows, cols) - X(rows, cols);
-		Di(1) = X(rows + 1, cols) - X(rows, cols);
+		Du(0) = X(rows, cols) - X(rows, cols);
+		Du(1) = X(rows + 1, cols) - X(rows, cols);
 	}
 	else if (rows == l - 1)
 	{
-		Di(0) = X(rows, cols + 1) - X(rows, cols);
-		Di(1) = X(rows, cols) - X(rows, cols);
+		Du(0) = X(rows, cols + 1) - X(rows, cols);
+		Du(1) = X(rows, cols) - X(rows, cols);
 	}
 	else
 	{
-		Di(0) = X(rows, cols + 1) - X(rows, cols);
-		Di(1) = X(rows + 1, cols) - X(rows, cols);
+		Du(0) = X(rows, cols + 1) - X(rows, cols);
+		Du(1) = X(rows + 1, cols) - X(rows, cols);
 	}
 
-	return Di;
+	return Du;
 }
 
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U)
 {
-/******************* List all gradients for all i *******************/
+	/*
+	* Function: Gradient2DMatrix
+	* ----------------------------
+	* Give the matrix of all the right and down 
+	* gradients for all the values of the vector
+	*
+	*/
 	unsigned long n = U.size();
-	BoostDoubleVector Di(2);
-	BoostDoubleMatrix Du(n, 2);
+	BoostDoubleVector Du (2);
+	BoostDoubleMatrix D (n, 2);
 
 	for (unsigned long i = 0; i < n; ++i)
 	{
-		Di = Gradient2D(U, i);
+		Du = Gradient2D(U, i);
 		for (int j = 0; j < 2; ++j)
 		{
-			Du(i, j) = Di(j);
+			D(i,j) = Du(j);
 		}
 	}
-	return Du;
+	return D;
 }
 
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
+	/*
+	* Function: Lagrangian
+	* ----------------------------
+	* Give the result (double) of the Augmented Lagrangian function 
+	* developped by Chengbo Li in his thesis "An efficient 
+	* algorithm for total variation regularization with 
+	* applications to the single pixel camera and compressive 
+	* sensing" 
+	*
+	*/
 	double L = 0;
 	unsigned long n = U.size();
-	unsigned long m = B.size();
 	BoostDoubleVector Wi (2);
-	BoostDoubleVector Di (2);
+	BoostDoubleVector DiU (2);
 	BoostDoubleVector NUi (2);
 
 	for (unsigned long i = 0; i < n; ++i)
 	{
-		Di = Gradient2D(U, i);
+		DiU = Gradient2D(U, i);
 		for (int j = 0; j < 2; ++j)
 		{
 			Wi(j) = W(i, j);
 			NUi(j) = NU(i, j);
 		}
-		BoostDoubleVector DIFFi = Di*U(i) - Wi;
+		BoostDoubleVector DIFFi = DiU - Wi;
 		double norm_wi = norm_2(Wi); // norm_1 for anisotropic TV or norm_2 for isotropic TV
 		double square_norm_diffi = norm_2(DIFFi)*norm_2(DIFFi);
 
@@ -132,25 +154,55 @@ BoostDoubleVector Shrike(BoostDoubleVector DiUk, BoostDoubleVector NUi, double b
 return W;
 }
 
-/*double onestep_direction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+BoostDoubleVector Onestep_direction(BoostDoubleMatrix A, BoostDoubleVector Uk, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
-
-}*/
-
-double u_subfunction(BoostDoubleMatrix A, double u, BoostDoubleVector B, BoostDoubleVector Dl, BoostDoubleVector Wl, BoostDoubleVector NUl, BoostDoubleVector LAMBDA, double beta, double mu)
-{
-	double Q;
-	unsigned long n = U.size();
-	unsigned long m = B.size();
+	unsigned long n = Uk.size();
+	BoostDoubleVector D (n);
+	BoostDoubleMatrix Di = Gradient2DMatrix(Uk);
+	BoostDoubleVector Wi (2);
+	BoostDoubleVector NUi (2);
 
 	for (unsigned long i = 0; i < n; ++i)
 	{
-		BoostDoubleVector DIFFl = Dl*u - Wl;
-		double square_norm_diffl = norm_2(DIFFl)*norm_2(DIFFl);
-
-		Q = Q - inner_prod(NUl, DIFFl) + (beta / 2) * square_norm_diffl;
+		BoostDoubleVector DiU = Gradient2D(Uk, i); // Is there more pertinent method  than calculate this gradient at every loop?
+		for (int j = 0; j < 2; ++j)
+		{
+			Wi(j) = W(i, j);
+			NUi(j) = NU(i, j);
+		}
+		BoostDoubleVector DiU_W = -DiU - Wi;
+		D = beta*prod(Di, DiU_W) - prod(Di, NUi); // Di = (2x1)Vector -> innerproduct NOT OK
 	}
-	BoostDoubleVector PROD = prod(A, u); // u value or U vector?
+
+	BoostDoubleVector Au = prod(A, Uk);
+	BoostDoubleVector DIFF = Au - B;
+
+	D = D + mu*prod(A, DIFF) - prod(A, LAMBDA);
+
+return D;
+}
+
+double U_subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+{
+	double Q;
+	unsigned long n = U.size();
+	BoostDoubleVector NUi (2);
+	BoostDoubleVector Wi (2);
+
+	for (unsigned long i = 0; i < n; ++i)
+	{
+		BoostDoubleVector DiU = Gradient2D(U, i);
+		for (int j = 0; j < n; ++j)
+		{
+			NUi(j) = NU(i, j);
+			Wi(j) = W(i, j);
+		}
+		BoostDoubleVector DIFFk = DiU - Wi;
+		double square_norm_diffk = norm_2(DIFFk)*norm_2(DIFFk);
+
+		Q = Q - inner_prod(NUi, DIFFk) + (beta / 2) * square_norm_diffk;
+	}
+	BoostDoubleVector PROD = prod(A, U);
 	BoostDoubleVector DIFF = PROD - B;
 	double square_norm_diff = norm_2(DIFF)*norm_2(DIFF);
 
@@ -158,116 +210,123 @@ double u_subfunction(BoostDoubleMatrix A, double u, BoostDoubleVector B, BoostDo
 	return Q;
 }
 
-BoostDoubleVector alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+BoostDoubleMatrix alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
 	double n = U.size();
 	double delta = 0.5;
 	double rho = 0.5;
 	double eta = 0.5;
-	double Pl = 1;
-	double C = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu); // NOT OK, Lagrangian function for all values and not the initialisation
+	double Pk = 1;
+	double C = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
 
+	double armijo_tol, Qk, innerstop;
 	double tol = 0.01;
 
-	BoostDoubleVector ALT_MIN (3); // ALT_MIN(0) and ALT_MIN(1) = w(i,0), ALT_MIN(2) = u(0)
-	ALT_MIN(0) = 1; ALT_MIN(1) = 1, ALT_MIN(2) = 1;
-	W(0, 0) = ALT_MIN(0); W(0, 1) = ALT_MIN(1);
-	U(0) = ALT_MIN(2);
-	U(1) = ; // Initialisation?
+	BoostDoubleMatrix AL_MIN (n, 3); // AL_MIN(:,0) and AL_MIN(:,1) = W(k+1), AL_MIN(:,2) = U(k+1)
+	BoostDoubleVector Uk_1 (n);
+	BoostDoubleVector Uk = U;
 	do
 	{
 //*************************** "w sub-problem" ***************************
-		for (unsigned long l = 1; l < n-1; ++l)
+		for (unsigned long i = 0; i < n; ++i)
 		{
-			BoostDoubleVector Dl = Gradient2D(U, l);
-			BoostDoubleVector DlUl = Dl * U(l);
-			BoostDoubleVector NUl (2);
-			BoostDoubleVector Wl (2);
+			BoostDoubleVector DiUk = Gradient2D(Uk, i);
+			BoostDoubleVector NUi (2);
 			for (int j = 0; j < 2; ++j)
 			{
-				Wl(j) = W(l, j);
-				NUl(j) = NU(l, j); 
+				NUi(j) = NU(i, j);
+				BoostDoubleVector Wi = Shrike(DiUk, NUi, beta);
+				W(j, i) = Wi(j);
 			}
-			Wl = Shrike(DlUl, NUl, beta); // NOT OK (how to fill W vector with Wl ?)
-			ALT_MIN(0) = Wl(0);
-			ALT_MIN(1) = Wl(1);
-
-			double sl = U(l) - U(l-1);
-			double dl = onestep_direction(A, U(l), B, Wl, NUl, LAMBDA, beta, mu);
-			double dl_1 = onestep_direction(A, U(l-1), B, Wl, NUl, LAMBDA, beta, mu);
-			double yl = dl - dl_1;
-
-			//******** alpha = onestep_gradient ********
-			double alpha = (sl*yl) / (yl*yl);
-			do 
-			{ 
-				alpha = rho * alpha;
-				double u_alphad = U(l) - alpha * dl;
-				double Ql = u_subfunction(A, u_alphad, B, Dl, Wl, NUl, LAMBDA, beta, mu);
-				double armijo_tol = C - delta*alpha*dl*dl; // trans(dl)? cpx?
-			} while (Ql > armijo_tol);
-
-//*************************** "u sub-problem" ***************************
-
-			U(l+1) = U(l) - alpha * dl;
-			ALT_MIN(2) = U(l+1);
-			double innerstop = sqrt((U(l+1) - U(l))*(U(l+1) - U(l)));
-
-			//********** Implement coefficents **********
-			double Pl1 = eta*Pl + 1;
-			double Ql1 = u_subfunction(A, U(l+1), B, Dl, Wl, NUl, LAMBDA, beta, mu);
-			C = (eta*Pl*C + Ql1)/Pl1;
-			Pl = Pl1;
 		}
+//*************************** "u sub-problem" ***************************
+		BoostDoubleVector Sk = Uk - Uk_1;
+		BoostDoubleVector Dk_1 = Onestep_direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu);
+		BoostDoubleVector Dk = Onestep_direction(A, Uk, B, W, NU, LAMBDA, beta, mu);
+		BoostDoubleVector Yk = Dk - Dk_1;
+
+		//******** alpha = onestep_gradient ********
+		double alpha = inner_prod(Sk, Yk) / inner_prod(Yk, Yk);
+		do 
+		{ 
+			alpha = rho * alpha;
+
+			BoostDoubleVector Uk_alphaD = Uk - alpha * Dk;
+			Qk = U_subfunction(A, Uk_alphaD, B, W, NU, LAMBDA, beta, mu);
+			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
+		} while (Qk > armijo_tol);
+
+		BoostDoubleVector Uk1 = Uk - alpha * Dk;
+		innerstop = norm_2(Uk1 - Uk);
+
+//************************ Implement coefficents ************************
+		double Pk1 = eta*Pk + 1;
+		double Qk1 = U_subfunction(A, Uk1, B, W, NU, LAMBDA, beta, mu);
+		C = (eta*Pk*C + Qk1)/Pk1;
+
+		Pk = Pk1;
+		Uk_1 = Uk;
+		Uk = Uk1;
 	} while (innerstop > tol);
-return ALT_MIN;
+	
+	for (unsigned long pix = 0; pix < n; ++pix)
+	{
+		AL_MIN(pix, 0) = W(pix, 0);
+		AL_MIN(pix, 1) = W(pix, 1);
+		AL_MIN(pix, 2) = Uk(pix);
+	}
+return AL_MIN;
 }
 
-/*BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles)
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles) // Why TiltAngles?
 {
-unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
-unsigned long o = Sinogram.size2(); // Numbers of tilt angles
-unsigned long m = l * o; // Numbers of measurements
-unsigned long n = l * l;
-double lambda = 1;
-double beta = 1;
-double mu = 1;
-double Lagrangian; // ?
-double alpha = 1.05;
-double innerstop, outerstop;
-double innertol = 0.5, outertol = 0.5, tol = 0.5; // multiple tol
+	unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
+	unsigned long o = Sinogram.size2(); // Numbers of tilt angles
+	unsigned long m = l * o; // Numbers of measurements
+	unsigned long n = l * l;
+	
+	double mu = 3;
+	double beta = sqrt(2);
+	double coef = 1.05;
+	double outerstop;
+	double tol = 0.01;
 
-BoostDoubleMatrix W(n, 2); // w(i) = 0 for all i
-BoostDoubleMatrix NU(n, 2);
-BoostDoubleMatrix A(m, n);
-BoostDoubleMatrix Z(l, l);
+	BoostDoubleMatrix W (n, 2); // W(i,0) = 0 for all i
+	BoostDoubleMatrix Wk (n, 2);
+	BoostDoubleMatrix NU (n, 2);
+	BoostDoubleMatrix A (m, n);
+	BoostDoubleMatrix MIN (n, 3);
+	BoostDoubleMatrix X (l, l);
+	
+	BoostDoubleVector LAMBDA (m);
+	BoostDoubleVector B (m);
+	BoostDoubleVector U (n); // U(0) = 0 for all i
+	BoostDoubleVector Uk (n);
 
-BoostDoubleVector ALPHA(); // ?
-BoostDoubleVector Y(m);
-BoostDoubleVector X(n);
+	A = CreateRandomMatrix(m, n);
+	B = MatrixToVector(Sinogram); // u(0) ?
+	
+	do
+	{
+		Wk = W;
+		Uk = U;
+		MIN = alternating_minimisation(A, Uk, B, Wk, NU, LAMBDA, beta, mu);
+		for (unsigned long i = 0; i < n; ++i)
+		{
+			W(i, 0) = MIN(i, 0);
+			W(i, 1) = MIN(i, 1);
+			U(i) = MIN(i, 2);
+		}
+		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
+		NU = NU - beta*(DiU - W);
+		LAMBDA = LAMBDA - mu*(prod(A, U) - B);
 
-A = CreateRandomMatrix(m, n);
-Y = MatrixToVector(Sinogram); // u(0) ?
+		beta = coef*beta;
+		mu = coef*beta;
 
-for (unsigned int i = 0; i < 2 * n; ++i)
-{
-do
-{
-for (unsigned int k = 0; k < m; ++k)
-{
-w(k + 1) = w(k);
-u(k + 1) = u(k);
-for (unsigned int j = 0; j < m; ++j)
-{
-delta = 0.5;
-rho = 0.5;
-eta = 0.5;
-w(0) = ; // ?
-u(0) = ; // ?
+		outerstop = norm_2(U - Uk);
+	} while (outerstop > tol);
+
+	X = VectorToMatrix(U, l, l);
+return X;
 }
-}
-outerstop = norm_2(u(k + 1) - u(k));
-} while (outerstop > tol);
-}
-return Z;
-} */
