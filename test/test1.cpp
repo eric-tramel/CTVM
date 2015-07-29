@@ -130,10 +130,14 @@ int main(int argc, char **argv)
 
 	/*Test Shrinke function*/
 	std::cout << std::endl;
+	int ii = 1;
+	BoostDoubleVector Di = Gradient2D(U, ii);
+	BoostDoubleVector DiUk = Di * U(ii);
+	BoostDoubleVector NUi (2);
+	for (int jj = 0; jj < 2; ++jj) { NUi(jj) = NU(ii, jj); }
+	BoostDoubleVector SHRIKE = Shrike(DiUk, NUi, beta);
 
-	BoostDoubleVector SHRINKE = Shrinke(U, NU, beta);
-
-	std::cout << "W(i,l+1): " << SHRINKE << std::endl; // expected result SHRINKE = 8.6213
+	std::cout << "W(i,l+1): " << SHRIKE << std::endl; // expected result SHRIKE = ( -0.4714, -1.33)
 	std::cout << "    " << "Passed." << std::endl;
 
 return 0;
