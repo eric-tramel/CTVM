@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
 	BoostDoubleMatrix X = VectorToMatrix(U, 2, 2);
 	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(U);
-	BoostDoubleMatrix Di = Norm_Gradient2DMatrix(U1, 4);
+	BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U1, 4);
 	std::cout << "Original Matrix: " << X << std::endl;
 	std::cout << "Gradients DiU (right gradient, down gradient): " << GradientMatrix << std::endl;
 	std::cout << "Original Vector: " << U1 << std::endl;
