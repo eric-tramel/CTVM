@@ -15,7 +15,7 @@ LDLIBS=-lboost_system -lboost_random -lboost_date_time
 LDFLAGS=-L$(MK_BOOST_LIB) $(MAGICK_LDFLAG) $(LDLIBS)
 DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
-all: checkdir ctvmlib executable test1
+all: checkdir ctvmlib_static executable test1
 
 ctvmlib: $(DEPS)
 		# Compile both of the libraries to object files
@@ -25,7 +25,14 @@ ctvmlib: $(DEPS)
 		$(CXX) -shared -fPIC $(LDFLAGS) -o $(LIB_DIR)/cygctvm_util.dll $(SRC_DIR)/ctvm_util.o
 		$(CXX) -shared -fPIC $(LDFLAGS) -o $(LIB_DIR)/cygctvm.dll $(SRC_DIR)/ctvm.o
 
+ctvmlib_static: $(DEPS)
+		# Compile both of the libraries to their respective object files
+		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm_util.o -c $(SRC_DIR)/ctvm_util.cpp
+		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm.o -c $(SRC_DIR)/ctvm.cpp
 
+		# Build static libraries
+		ar rcs $(LIB_DIR)/libctvm_util.a $(SRC_DIR)/ctvm_util.o
+		ar rcs $(LIB_DIR)/libctvm.a $(SRC_DIR)/ctvm.o
 
 $(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp $(LIB_DIR)/cygctvm.dll $(LIB_DIR)/cygctvm_util.dll
 		$(CXX) $(CPPFLAGS) -c -o $@ $< 
@@ -33,9 +40,8 @@ $(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp $(LIB_DIR)/cygctvm.dll $(LIB_DIR)/cygctvm_uti
 test1: $(TEST_DIR)/test1.o
 		$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o 
 
-executable: ctvmlib
-		# $(CXX) $(CPPFLAGS) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/ctvm-recover $(SRC_DIR)/ctvm_recover.cpp
-		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm-recover.o -c $(SRC_DIR)/ctvm_recover.cpp
+executable: ctvmlib_static
+		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm_recover.o -c $(SRC_DIR)/ctvm_recover.cpp
 		$(CXX) -Llib -lctvm -lctvm_util $(LDFLAGS) -o $(BIN_DIR)/ctvm-recover $(SRC_DIR)/ctvm_recover.o
 
 clean:
