@@ -15,7 +15,7 @@ LDLIBS=-lboost_system -lboost_random -lboost_date_time
 LDFLAGS=-L$(MK_BOOST_LIB) $(MAGICK_LDFLAG) $(LDLIBS)
 DEPS=$(INCLUDE_DIR)/ctvm.h $(INCLUDE_DIR)/ctvm_util.h
 
-all: checkdir ctvmlib_static executable test1
+all: checkdir ctvmlib_static executable test1 test_cs
 
 ctvmlib: $(DEPS)
 		# Compile both of the libraries to object files
@@ -40,6 +40,9 @@ $(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp $(LIB_DIR)/cygctvm.dll $(LIB_DIR)/cygctvm_uti
 test1: $(TEST_DIR)/test1.o
 		$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test1 $(TEST_DIR)/test1.o 
 
+test_cs: $(TEST_DIR)/test_cs.o
+		$(CXX) -Llib $(LDFLAGS) -lctvm -lctvm_util -o $(BIN_DIR)/test-cs $(TEST_DIR)/test_cs.o 	
+
 executable: ctvmlib_static
 		$(CXX) -Wall $(CPPFLAGS) -o $(SRC_DIR)/ctvm_recover.o -c $(SRC_DIR)/ctvm_recover.cpp
 		$(CXX) -Llib -lctvm -lctvm_util $(LDFLAGS) -o $(BIN_DIR)/ctvm-recover $(SRC_DIR)/ctvm_recover.o
@@ -53,6 +56,7 @@ clean:
 test: clean all
 		$(BIN_DIR)/test1
 		$(BIN_DIR)/ctvm-recover test/data/testSino.png test/data/testAngles.dat a3
+		$(BIN_DIR)/test-cs 128 test/data/peppers.jpg test/data/test-cs-out.jpg
 
 
 checkdir: 
