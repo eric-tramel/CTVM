@@ -30,7 +30,6 @@ BoostDoubleVector AbsoluteValueVector(BoostDoubleVector AVector);
 BoostDoubleVector MaxVector(BoostDoubleVector A, BoostDoubleVector B);
 BoostDoubleVector MaxVector(BoostDoubleVector A, double B);
 
-
 BoostDoubleVector MakeUnitVector(BoostDoubleVector AVector);
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);

@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
 	std::cout << "    " << "Passed." << std::endl;
 
-	/*Test Shrinke function*/	
+	/*Test Shrinkage-like function*/	
 	BoostDoubleVector g(2);  g(0) = 1;      g(1) = 1;
 	BoostDoubleVector nu(2); nu(0) = -0.25; nu(1) = 0.125;	
 	// With the above settings we expect that the results should be:
