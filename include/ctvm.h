@@ -11,17 +11,19 @@ BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
 BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
 // TODO: Implement the following
+// 2D Gradients...
 BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long index,
                                 unsigned int SideLength);
-BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector X, unsigned long index,
+BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector g, unsigned long index,
                                        unsigned int SideLength);
-BoostDoubleVector VoxelGradient(BoostDoubleVector X, unsigned long index,
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
+// 3D Gradients...
+BoostDoubleVector VoxelGradient(BoostDoubleVector g, unsigned long index,
                                 unsigned int SideLength);
 BoostDoubleVector VoxelGradientAdjoint(BoostDoubleVector X, unsigned long index,
                                        unsigned int SideLength);
-BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
 BoostDoubleMatrix AllVoxelGradients(BoostDoubleVector X, unsigned int SideLength);
-
+// ENDTODO
 
 /* Shrinkage-like Operators */
 // EWT: I have verified the operation of both of these Shrike operators
