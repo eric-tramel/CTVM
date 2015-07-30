@@ -6,9 +6,22 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include "ctvm_util.h"
 
+/* Gradient Operations */
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
 BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
+// TODO: Implement the following
+BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long index,
+                                unsigned int SideLength);
+BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector X, unsigned long index,
+                                       unsigned int SideLength);
+BoostDoubleVector VoxelGradient(BoostDoubleVector X, unsigned long index,
+                                unsigned int SideLength);
+BoostDoubleVector VoxelGradientAdjoint(BoostDoubleVector X, unsigned long index,
+                                       unsigned int SideLength);
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
+BoostDoubleMatrix AllVoxelGradients(BoostDoubleVector X, unsigned int SideLength);
+
 
 /* Shrinkage-like Operators */
 // EWT: I have verified the operation of both of these Shrike operators
@@ -22,6 +35,7 @@ BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu,
 BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
                               double beta, TVType ShrikeMode);
 
+/* Optimization */
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 
                   BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
