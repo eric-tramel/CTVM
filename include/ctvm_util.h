@@ -13,8 +13,10 @@
 
 typedef boost::numeric::ublas::matrix<double> BoostDoubleMatrix;
 typedef boost::numeric::ublas::scalar_matrix<double> BoostScalarDoubleMatrix;
+typedef boost::numeric::ublas::zero_matrix<double> BoostZeroMatrix;
 typedef boost::numeric::ublas::vector<double> BoostDoubleVector;
 typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
+typedef boost::numeric::ublas::zero_vector<double> BoostZeroVector;
 
 enum ImageFileType {PNG,JPG,TIFF};
 
