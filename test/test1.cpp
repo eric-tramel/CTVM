@@ -88,14 +88,14 @@ int main(int argc, char **argv)
 
 	/* Initialisation */
 	BoostDoubleMatrix A(2, 4), W(4, 2), NU(4, 2);
-	BoostDoubleVector U(4), B(2), LAMBDA(2);
+	BoostDoubleVector U(4), U1(9), B(2), LAMBDA(2);
 
 	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
 	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
 
-	W(0, 0) = 1; W(0, 1) = -1;
-	W(1, 0) = 0; W(1, 1) = -1;
-	W(2, 0) = 0; W(2, 1) = 0;
+	W(0, 0) = -1; W(0, 1) = 1;
+	W(1, 0) = 0; W(1, 1) = 1;
+	W(2, 0) = -1; W(2, 1) = 0;
 	W(3, 0) = 0; W(3, 1) = 1;
 
 	NU(0, 0) = 2; NU(0, 1) = 1;
@@ -107,6 +107,16 @@ int main(int argc, char **argv)
 	U(1) = 2;
 	U(2) = 0;
 	U(3) = 1;
+
+	U1(0) = 1;
+	U1(1) = 2;
+	U1(2) = 0;
+	U1(3) = 1;
+	U1(4) = 3;
+	U1(5) = -2;
+	U1(6) = 0;
+	U1(7) = -1;
+	U1(8) = 0;
 
 	B(0) = 1;
 	B(1) = 2;
@@ -122,8 +132,11 @@ int main(int argc, char **argv)
 	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
 	BoostDoubleMatrix X = VectorToMatrix(U, 2, 2);
 	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(U);
+	BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U1, 4);
 	std::cout << "Original Matrix: " << X << std::endl;
-	std::cout << "Gradients Di (right gradient, down gradient): " << GradientMatrix << std::endl;
+	std::cout << "Gradients DiU (right gradient, down gradient): " << GradientMatrix << std::endl;
+	std::cout << "Original Vector: " << U1 << std::endl;
+	std::cout << " D(4) times U: " << prod(Di,U1) << std::endl;
 	std::cout << "    " << "Passed." << std::endl;
 	
 	/*Test Lagrangian function*/

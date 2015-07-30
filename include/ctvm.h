@@ -8,7 +8,7 @@
 
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
-
+BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
 
 /* Shrinkage-like Operators */
 // EWT: I have verified the operation of both of these Shrike operators
@@ -19,7 +19,6 @@ BoostDoubleVector ShrikeIsotropic(BoostDoubleVector DiUk, BoostDoubleVector NUi,
                                   double beta);
 BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector DiUk, BoostDoubleVector NUi, 
                                     double beta);
-
 
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 
