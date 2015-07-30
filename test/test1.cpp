@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 		/* Test CTVM Image Load */
 		std::cout << std::endl;
 		std::cout << "Testing CTVM Image Load." << std::endl;
-		BoostDoubleMatrix ImageMatrix = LoadImage(test_image);
+		BoostDoubleMatrix ImageMatrix = LoadImage(test_image,32,32);
 		std::cout << "Image Data:" << std::endl;
 		std::cout << ImageMatrix(0, 0) << " " << ImageMatrix(0, 1) << " " << ImageMatrix(0, 3) << std::endl;
 		std::cout << ImageMatrix(1, 0) << " " << ImageMatrix(1, 1) << " " << ImageMatrix(1, 3) << std::endl;

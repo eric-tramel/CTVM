@@ -21,10 +21,19 @@ typedef boost::numeric::ublas::zero_vector<double> BoostZeroVector;
 enum ImageFileType {PNG,JPG,TIFF};
 
 double MaximumEntry(BoostDoubleMatrix AMatrix);
+double MaximumEntry(BoostDoubleVector AVector);
+
 double MinimumEntry(BoostDoubleMatrix AMatrix);
+double MinimumEntry(BoostDoubleVector AVector);
+
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
+BoostDoubleVector CreateRandomVector(int length);
+
+BoostDoubleMatrix ImageToMatrix(Magick::Image AnImage);
 BoostDoubleMatrix LoadImage(const char* ImageFileName);
+BoostDoubleMatrix LoadImage(const char* ImageFileName, int newRows, int newCols);
+
 void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile);
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned long rows, unsigned long cols);
