@@ -1,4 +1,4 @@
-test/data/*out*
+./test/data/*out*
 # Compiled Object files
 *.lib*
 *.slo
