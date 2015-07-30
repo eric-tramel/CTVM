@@ -14,11 +14,13 @@ BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel
 // EWT: I have verified the operation of both of these Shrike operators
 //      (the Anisotropic and Isotropic versions), so we can be assured in
 //      their correct operation.
-enum {ISOTROPIC,ANISOTROPIC};
-BoostDoubleVector ShrikeIsotropic(BoostDoubleVector DiUk, BoostDoubleVector NUi, 
+enum TVType {ISOTROPIC,ANISOTROPIC};
+BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, 
                                   double beta);
-BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector DiUk, BoostDoubleVector NUi, 
+BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, 
                                     double beta);
+BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
+                              double beta, TVType ShrikeMode);
 
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 

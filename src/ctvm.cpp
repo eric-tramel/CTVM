@@ -224,6 +224,43 @@ BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, d
 return (fmax(WShiftedNorm - 1/beta,0.0) * (WShifted/WShiftedNorm));
 }
 
+BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
+							  double beta, TVType ShrikeMode){
+/* 
+ * Function: ApplyShrike
+ * -------------------------------
+ * Applies the Shrinkage-like operator to every gradient in W.
+ *
+ * Input --
+ *  W:    a (N x d) matrix of gradients (i.e. for 2-d images, d=2)
+ *  Nu:   a (N x d) set of multipliers
+ *  beta: a scalar scaling term
+ *  ShrikeMode: an Enum value of TVType whic specifies whether we use the
+ *              isotropic or anisotropic Shrike operator.
+ *
+ * Output -- a (N x d) "shriked" version of the gradient matrix
+*/	
+ 	/* Problem Dimensions */
+ 	unsigned long N = AllW.size1();
+
+ 	for(unsigned long i = 0; i < N; ++i){
+ 		BoostDoubleVector thisW = GetRow(AllW,i);
+ 		BoostDoubleVector thisNu = GetRow(AllNu,i);
+ 		BoostDoubleVector thisWShriked;
+
+ 		switch(ShrikeMode){
+ 			case ISOTROPIC:
+ 				thisWShriked = ShrikeIsotropic(thisW,thisNu,beta);
+ 				break;
+ 			case ANISOTROPIC:
+ 				thisWShriked = ShrikeAnisotropic(thisW,thisNu,beta);
+ 				break;
+ 		} 	
+ 		SetRow(AllW,thisWShriked,i);
+ 	}
+return AllW;
+}
+
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
 	/*

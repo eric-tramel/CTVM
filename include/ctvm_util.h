@@ -6,6 +6,7 @@
 #include <limits>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -23,6 +24,11 @@ double MaximumEntry(BoostDoubleVector AVector);
 
 double MinimumEntry(BoostDoubleMatrix AMatrix);
 double MinimumEntry(BoostDoubleVector AVector);
+
+BoostDoubleVector GetRow(BoostDoubleMatrix AMatrix,unsigned int row);
+BoostDoubleVector GetCol(BoostDoubleMatrix AMatrix,unsigned int col);
+void SetRow(BoostDoubleMatrix &AMatrix, BoostDoubleVector RowVect, unsigned int row);
+void SetCol(BoostDoubleMatrix &AMatrix, BoostDoubleVector ColVect, unsigned int col);
 
 BoostDoubleVector HadamardProduct(BoostDoubleVector A, BoostDoubleVector B);
 BoostDoubleVector SignVector(BoostDoubleVector AVector);

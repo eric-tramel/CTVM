@@ -3,6 +3,7 @@
 #include "ctvm_util.h"
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <Magick++.h>
 
@@ -159,6 +160,24 @@ int main(int argc, char **argv)
 
 	std::cout<<"Testing ShrikeIsotropic. Result1 : "<<ShrikeIsotropic(g,nu,0.5)<<std::endl;
 	std::cout<<"Testing ShrikeIsotropic. Result2 : "<<ShrikeIsotropic(g,nu,10)<<std::endl;
+
+
+	std::cout<<"Testing ApplyShrike"<<std::endl;
+	BoostDoubleMatrix G  (3,2); SetRow(G,g,0); SetRow(G,g,1); SetRow(G,g,2);
+	std::cout<<" G:  "<<G<<std::endl;
+	BoostDoubleMatrix Nu (3,2); SetRow(Nu,nu,0); SetRow(Nu,nu,1); SetRow(Nu,nu,2);
+	std::cout<<" Nu:  "<<Nu<<std::endl;
+	BoostDoubleMatrix Shriked = ApplyShrike(G,Nu,10,ISOTROPIC);
+	std::cout<<"   Sriked Matrix: "<<Shriked<<std::endl;
+
+
+	/* Slicing Test */
+	std::cout<<"Slice Test"<<std::endl;
+	std::cout<<"   Original Matrix:"<<RandomMatrix<<std::endl;
+	std::cout<<"   Middle Row: "<<GetRow(RandomMatrix,1)<<std::endl;
+	std::cout<<"   Middle Col: "<<GetCol(RandomMatrix,1)<<std::endl;
+	SetRow(RandomMatrix,BoostZeroVector(3),1);
+	std::cout<<"   Middle Row Zeros: "<<RandomMatrix<<std::endl;
 
 return 0;
 }
