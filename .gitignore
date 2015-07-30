@@ -1,4 +1,4 @@
-./test/data/*out*
+test-cs-out.png
 # Compiled Object files
 *.lib*
 *.slo
