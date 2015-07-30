@@ -1,5 +1,74 @@
 #include "ctvm_util.h"
 
+
+BoostDoubleVector GetRow(BoostDoubleMatrix AMatrix, unsigned int row){
+/*
+* Function: GetRow
+* ------------------------------
+* Given a matrix type, slice out the desired row and return it as a vector type.
+* 
+* AMatrix: some matrix of BoostDoubleMatrix type.
+* row: the desired row to slice out.
+*
+* return -- A BoostDoubleVector
+*/
+    return BoostDoubleVector(boost::numeric::ublas::matrix_row<BoostDoubleMatrix> (AMatrix,row));
+}
+
+BoostDoubleVector GetCol(BoostDoubleMatrix AMatrix, unsigned int col){
+/*
+* Function: GetCol
+* ------------------------------
+* Given a matrix type, slice out the desired column and return it as a vector type.
+* 
+* AMatrix: some matrix of BoostDoubleMatrix type.
+* row: the desired row to slice out.
+*
+* return -- A BoostDoubleVector
+*/
+    BoostDoubleMatrix AMatrixTransp = trans(AMatrix);
+    return BoostDoubleVector(boost::numeric::ublas::matrix_row<BoostDoubleMatrix> (AMatrixTransp,col));
+}
+
+void SetRow(BoostDoubleMatrix &AMatrix, BoostDoubleVector RowVect, unsigned int row){
+/*
+* Function: SetRow
+* ------------------------------
+* Given a matrix, replace the specified row with the given vector.
+* 
+* AMatrix: some matrix of BoostDoubleMatrix type. This matrix is modified in place.
+* RowVector: some vector of BoostDoubleVector type
+* row: the desired row to replace.
+*
+* return -- none.
+*/
+    unsigned int cols = AMatrix.size2();
+
+    for(unsigned int i=0; i < cols; ++i){
+        AMatrix(row,i) = RowVect(i);
+    }
+}
+
+void SetCol(BoostDoubleMatrix &AMatrix, BoostDoubleVector ColVect, unsigned int col){
+/*
+* Function: SetCol
+* ------------------------------
+* Given a matrix, replace the specified column with the given vector.
+* 
+* AMatrix: some matrix of BoostDoubleMatrix type. This matrix is modified in place.
+* ColVector: some vector of BoostDoubleVector type
+* col: the desired column to replace.
+*
+* return -- none.
+*/
+    unsigned int rows = AMatrix.size1();
+
+    for(unsigned int i=0; i < rows; ++i){
+        AMatrix(i,col) = ColVect(i);
+    }
+}
+
+
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
 /*
 * Function: CreateRandomMatrix
