@@ -33,6 +33,104 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     return RandomMatrix;
 }
 
+
+BoostDoubleVector SignVector(BoostDoubleVector AVector){
+/*
+* Function: SignVector
+* ------------------------------
+* Given some vector, return the signs of every entry
+*
+* return -- A BoostDoubleVector with each entry in {-1,+1}
+*/   
+    for(unsigned int i=0; i< AVector.size(); ++i){
+        if(AVector(i)<0.0){
+            AVector(i) = -1.0;
+        }
+        else{
+            AVector(i) = 1.0;
+        }
+    }
+return AVector;
+}
+
+BoostDoubleVector HadamardProduct(BoostDoubleVector A, BoostDoubleVector B){
+/*
+* Function: HadamardProduct
+* ------------------------------
+* Given two vectors of the same dimensionality, compute the Hadamard product
+* between the two, which is simply the element-wise multiplication of the 
+* two vectors.
+*
+* return -- A BoostDoubleVector
+*/       
+    unsigned int N = A.size();
+    BoostDoubleVector C(N);
+    for(unsigned int i = 0; i < N; ++i){
+        C(i) = A(i)*B(i);
+    }
+return C;
+}
+
+BoostDoubleVector AbsoluteValueVector(BoostDoubleVector AVector){
+/*
+* Function: AbsoluteValueVector
+* ------------------------------
+* Given some vector, return the absolute value of its entries
+*
+* return -- A BoostDoubleVector >= 0
+*/   
+    for(unsigned int i=0; i< AVector.size(); ++i){
+        AVector(i) = std::abs(AVector(i));
+    }
+return AVector;
+}
+
+BoostDoubleVector MaxVector(BoostDoubleVector A, BoostDoubleVector B){
+/*
+* Function: MaxVector
+* ------------------------------
+* Given two vectors of the same size, cosntruct a new vector which
+* contains the maximum value of the two at each element.
+*
+* return -- A BoostDoubleVector.
+*/       
+    unsigned int N = A.size();
+    BoostDoubleVector C(N);
+    for(unsigned int i = 0; i < N; ++i){
+        C(i) = fmax(A(i),B(i));
+    }
+return C;
+}
+
+BoostDoubleVector MaxVector(BoostDoubleVector A, double B){
+/*
+* Function: MaxVector
+* ------------------------------
+* Given a vector, compare each entry to the constant value B
+* and assign the maximum between the two the corresponding entry
+* of a new vector.
+*
+* return -- A BoostDoubleVector.
+*/       
+    unsigned int N = A.size();
+    BoostDoubleVector C(N);
+    for(unsigned int i = 0; i < N; ++i){
+        C(i) = fmax(A(i),B);
+    }
+return C;
+}
+
+BoostDoubleVector MakeUnitVector(BoostDoubleVector AVector){
+/*
+* Function: MakeUnitVector
+* ------------------------------
+* Given some vector, normalize that vector against its length.
+*
+* return -- A unit length BoostDoubleVector.
+*/   
+    return AVector / norm_2(AVector);
+}
+
 BoostDoubleVector CreateRandomVector(int length){
 /*
 * Function: CreateRandomVector

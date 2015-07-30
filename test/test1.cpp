@@ -133,16 +133,19 @@ int main(int argc, char **argv)
 	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
 	std::cout << "    " << "Passed." << std::endl;
 
-	/*Test Shrinke function*/
-	std::cout << std::endl;
-	int ii = 1;
-	BoostDoubleVector DiUk = Gradient2D(U, ii);
-	BoostDoubleVector NUi (2);
-	for (int jj = 0; jj < 2; ++jj) { NUi(jj) = NU(ii, jj); }
-	BoostDoubleVector SHRIKE = Shrike(DiUk, NUi, beta);
+	/*Test Shrinke function*/	
+	BoostDoubleVector g(2);  g(0) = 1;      g(1) = 1;
+	BoostDoubleVector nu(2); nu(0) = -0.25; nu(1) = 0.125;	
+	// With the above settings we expect that the results should be:
+	// Anisotropic @ beta = 0.5  : (0,0)
+	// Anisotropic @ beta = 0.65 : (0.0557...,0.0325...)
+	// Isotropic @ beta = 0.5  : (0,0)
+	// Isotropic @ beta = 10   : (0.925...,0.8875...)
+	std::cout<<"Testing ShrikeAnisotropic. Result1 : "<<ShrikeAnisotropic(g,nu,0.5)<<std::endl;
+	std::cout<<"Testing ShrikeAnisotropic. Result2 : "<<ShrikeAnisotropic(g,nu,0.65)<<std::endl;
 
-	std::cout << "W(i,l+1): " << SHRIKE << std::endl; // expected result SHRIKE = ( -0.4714, -1.33)
-	std::cout << "    " << "Passed." << std::endl;
+	std::cout<<"Testing ShrikeIsotropic. Result1 : "<<ShrikeIsotropic(g,nu,0.5)<<std::endl;
+	std::cout<<"Testing ShrikeIsotropic. Result2 : "<<ShrikeIsotropic(g,nu,10)<<std::endl;
 
 return 0;
 }

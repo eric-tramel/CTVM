@@ -103,16 +103,16 @@ BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U)
 
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
-	/*
-	* Function: Lagrangian
-	* ----------------------------
-	* Give the result (double) of the Augmented Lagrangian function 
-	* developped by Chengbo Li in his thesis "An efficient 
-	* algorithm for total variation regularization with 
-	* applications to the single pixel camera and compressive 
-	* sensing" 
-	*
-	*/
+/*
+* Function: Lagrangian
+* ----------------------------
+* Give the result (double) of the Augmented Lagrangian function 
+* developped by Chengbo Li in his thesis "An efficient 
+* algorithm for total variation regularization with 
+* applications to the single pixel camera and compressive 
+* sensing" 
+*
+*/
 	double L = 0;
 	unsigned long n = U.size();
 	BoostDoubleVector Wi (2);
@@ -141,18 +141,50 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B,
 return L;
 }
 
-BoostDoubleVector Shrike(BoostDoubleVector DiUk, BoostDoubleVector NUi, double beta)
-{
-	BoostDoubleVector W (2);
 
-	BoostDoubleVector DIFF = DiUk - NUi/beta;
-	double norm_diff = norm_2(DIFF);
-	double x = norm_diff - 1 / beta;
-	if (x < 0) x = 0;
-	W = x * (DIFF / norm_diff);
+BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+/* 
+ * Function: Shrike Isotropic
+ * -------------------------------
+ * Impelements the Isotropic version of the shrinkage function to be applied
+ * to the gradient vector at pixel `i`. Takes as input an "un-shrunk" gradient
+ * vector and returns the "shriked" version.
+ *
+ * Input --
+ *  W:    a (d x 1) gradient vector (i.e. for 2-d images, d=2)
+ *  Nu:   a (d x 1) set of multipliers
+ *  beta: a scalar scaling term
+ *
+ * Output -- a (d x 1) "shriked" version of the gradient vector
+*/
+ 	unsigned int d = W.size();
+ 	BoostDoubleVector WShifted = W - Nu/beta;
+	BoostDoubleVector WShriked = AbsoluteValueVector(WShifted) - BoostScalarDoubleVector(d,1/beta); 	
 
-return W;
+return HadamardProduct(MaxVector(WShriked,0.0),SignVector(WShifted));
 }
+
+BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+/* 
+ * Function: Shrike Anisotropic
+ * -------------------------------
+ * Impelements the Anisotropic version of the shrinkage function to be applied
+ * to the gradient vector at pixel `i`. Takes as input an "un-shrunk" gradient
+ * vector and returns the "shriked" version.
+ *
+ * Input --
+ *  W:    a (d x 1) gradient vector (i.e. for 2-d images, d=2)
+ *  Nu:   a (d x 1) set of multipliers
+ *  beta: a scalar scaling term
+ *
+ * Output -- a (d x 1) "shriked" version of the gradient vector
+*/
+	BoostDoubleVector WShifted = W - Nu/beta;
+	double WShiftedNorm = norm_2(WShifted);
+
+return (fmax(WShiftedNorm - 1/beta,0.0) * (WShifted/WShiftedNorm));
+}
+
 
 BoostDoubleVector Onestep_direction(BoostDoubleMatrix A, BoostDoubleVector Uk, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
 {
@@ -235,7 +267,7 @@ BoostDoubleMatrix alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVecto
 			for (int j = 0; j < 2; ++j)
 			{
 				NUi(j) = NU(i, j);
-				BoostDoubleVector Wi = Shrike(DiUk, NUi, beta);
+				BoostDoubleVector Wi = ShrikeAnisotropic(DiUk, NUi, beta);
 				W(j, i) = Wi(j);
 			}
 		}

@@ -18,14 +18,20 @@ typedef boost::numeric::ublas::vector<double> BoostDoubleVector;
 typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
 typedef boost::numeric::ublas::zero_vector<double> BoostZeroVector;
 
-enum ImageFileType {PNG,JPG,TIFF};
-
 double MaximumEntry(BoostDoubleMatrix AMatrix);
 double MaximumEntry(BoostDoubleVector AVector);
 
 double MinimumEntry(BoostDoubleMatrix AMatrix);
 double MinimumEntry(BoostDoubleVector AVector);
 
+BoostDoubleVector HadamardProduct(BoostDoubleVector A, BoostDoubleVector B);
+BoostDoubleVector SignVector(BoostDoubleVector AVector);
+BoostDoubleVector AbsoluteValueVector(BoostDoubleVector AVector);
+BoostDoubleVector MaxVector(BoostDoubleVector A, BoostDoubleVector B);
+BoostDoubleVector MaxVector(BoostDoubleVector A, double B);
+
+
+BoostDoubleVector MakeUnitVector(BoostDoubleVector AVector);
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleVector CreateRandomVector(int length);
