@@ -27,23 +27,35 @@ int main(int argc, char **argv)
     unsigned int N = L*L;
     unsigned int M = MeasurementRate*N;     // Allow truncation
 
+    cout<<"Running CS Experiment for \\alpha = "<<MeasurementRate<<", \\Delta = "<<NoiseVariance<<endl;
+
     /* Load Image */
+    cout<<" * Loading image ("<<OriginalImageFile<<")..."<<flush;
     BoostDoubleMatrix XImage = LoadImage(OriginalImageFile,L,L);
     BoostDoubleVector XVect = MatrixToVector(XImage);
+    cout<<"done."<<endl;
 
     /* Create Projection Matrix */
+    cout<<" * Creating Random Matrix ("<<M<<"x"<<N<<")..."<<flush;
     BoostDoubleMatrix A = CreateRandomMatrix(M,N);
+    cout<<"done."<<endl;
 
     /* Create Measurements */
+    cout<<" * Generating Measurements..."<<flush;
     BoostDoubleVector y = prod(A,XVect) + sqrt(NoiseVariance)*CreateRandomVector(M);
+    cout<<"done."<<endl;
 
     /* Perform Reconstruction */
     // Just testing a silly transpose operation for the moment
+    cout<<" * Calculating Xrec = A'y..."<<flush;
     BoostDoubleVector XRecVect = prod(trans(A),y);
     BoostDoubleMatrix XRecImage = VectorToMatrix(XRecVect,L,L);
+    cout<<"done."<<endl;
 
     /* Write Result */
+    cout<<" * Writing result to image ("<<OutputImageFile<<")..."<<flush;
     WriteImage(NormalizeMatrix(XRecImage),OutputImageFile);
+    cout<<"done."<<endl;
 
 return 0;
 }
