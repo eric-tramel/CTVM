@@ -149,7 +149,7 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B,
 	/*
 	* Function: Lagrangian
 	* ----------------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)'  + 'unsigned long' + 'unsigned long'
 	* Calculate the Augmented Lagrangian function developped by Chengbo Li in his thesis "An efficient algorithm for total variation regularization with applications to the single pixel camera and compressive sensing".
 	* Output type: 'double'.
 	*/
@@ -208,7 +208,7 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, Bo
 	/*
 	* Function: Onestep_direction
 	* ---------------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
 	* Give the direction of the one-step steepest descent gradient that minimize the "u-subproblem"
 	* Output type: 'BoostDoubleVector (N)'.
 	*/
@@ -227,13 +227,14 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, Bo
 			Wi(j) = W(i, j);
 			NUi(j) = NU(i, j);
 		}
-		BoostDoubleVector DiU_W = -DiU - Wi;
-		D = beta*prod(tDi, DiU_W) - prod(tDi, NUi);
+		BoostDoubleVector DiU_Wi = -DiU - Wi;
+		D = D + beta*prod(tDi, DiU_Wi) - prod(tDi, NUi);
 	}
 
 	BoostDoubleVector DIFF = prod(A, U) - B;
+	BoostDoubleMatrix tA = trans(A);
 
-	D = D + mu*prod(A, DIFF) - prod(A, LAMBDA);
+	D = D + mu*prod(tA, DIFF) - prod(tA, LAMBDA);
 
 return D;
 }
@@ -243,7 +244,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	/*
 	* Function: U_subfunction
 	* -----------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
 	* Give the value of the quadratic function Qk(U) one-step steepest descent gradient that minimize the "u-subproblem"
 	* Output type: 'double'.
 	*/
@@ -278,7 +279,7 @@ BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVecto
 	/*
 	* Function: Alternating_Minimisation
 	* ----------------------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDobleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDobleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
 	* Give the minima W(i,k+1) and U(k+1) of the augmented lagrangian function (W is a matrix of size (N,2) which is collected in AL_MIN(N,0 and 1), U is a vector of size (N) which is collected in AL_MIN(N,2)).
 	* Output type: 'BoostDoubleMatrix (N,3)'.
 	*/

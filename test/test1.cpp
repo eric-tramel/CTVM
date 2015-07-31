@@ -82,8 +82,8 @@ int main(int argc, char **argv)
 	std::cout << "    " << "Passed." << std::endl;
 
 	/* Initialisation */
-	BoostDoubleMatrix A(2, 4), W(4, 2), NU(4, 2);
-	BoostDoubleVector U(4), U1(9), B(2), LAMBDA(2);
+	BoostDoubleMatrix A(2, 4), Ad(3, 4), W(4, 2), Wd(4,2), NU(4, 2), NUd(4,2);
+	BoostDoubleVector U(4),Ud(4), U1(9), B(2), Bd(3), LAMBDA(2), LAMBDAd(3);
 
 	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
 	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
@@ -103,15 +103,7 @@ int main(int argc, char **argv)
 	U(2) = 0;
 	U(3) = 1;
 
-	U1(0) = 1;
-	U1(1) = 2;
-	U1(2) = 0;
-	U1(3) = 1;
-	U1(4) = 3;
-	U1(5) = -2;
-	U1(6) = 0;
-	U1(7) = -1;
-	U1(8) = 0;
+	U1(0) = 1; U1(1) = 2; U1(2) = 0; U1(3) = 1; U1(4) = 3; U1(5) = -2; U1(6) = 0; U1(7) = -1; U1(8) = 0;
 
 	B(0) = 1;
 	B(1) = 2;
@@ -143,17 +135,13 @@ int main(int argc, char **argv)
 
 
 	/* Test One-step Direction */
-	// U = [1 2 3 4];
-	// A = [1 1 1 1; 2 2 2 2; 3 3 3 3];
-	// b = [3 3 3];
-	// lambda = [0.5 0.5 0.5];
-	// mu = 0.5;
-	// beta = 0.25;
-	// Nu = [0.25 0.25; 0.25 0.25; 0.25 0.25; 0.25 0.25];
-	// W = [-1 -1; -1 -1; -1 -1; -1 -1];
-	// Expected result: d_k = [58.7500   58.2500   57.7500   57.2500]
+	std::cout << std::endl;
+	BoostDoubleVector d_k = Onestep_Direction(A, U, B, W, NU, LAMBDA, beta, mu);
 
-	/*Test Shrinke function*/
+	std::cout << "One-step direction: " << d_k << std::endl; // Expected result: d_k = [-5 -1.65685 6.65685 2]
+	std::cout << "    " << "Passed." << std::endl;
+
+	/*Test Shrike function*/
 	std::cout << std::endl;
 	int ii = 1;
 	BoostDoubleVector DiUk = Gradient2D(U, ii);
