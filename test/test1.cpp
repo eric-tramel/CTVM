@@ -105,8 +105,8 @@ int main(int argc, char **argv)
 	NU(3, 0) = 1; NU(3, 1) = 3;
 
 	U(0) = 1;
-	U(1) = 2;
-	U(2) = 0;
+	U(1) = 0;
+	U(2) = 2;
 	U(3) = 1;
 
 	U1(0) = 1;
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 	double L = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
 
 	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
-	std::cout << "    " << "Passed." << std::endl;
+	std::cout << "LagrangianNew: " << LagrangianNew(A, U, B, W, NU, LAMBDA, beta, mu,2,ISOTROPIC) << std::endl; // expected result L = 8.6213
 
 	/* Test One-step Direction */
 	// U = [1 2 3 4];

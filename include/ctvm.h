@@ -11,14 +11,10 @@
 /* Gradient Operations */
 #define HORZ 0
 #define VERT 1
-BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
-BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
-BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
-
 BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
                                 unsigned int SideLength);
 BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
-BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Sidelength);
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int SideLength);
 
 // TODO: Implement the following
 // 2D Gradients...
@@ -27,10 +23,16 @@ BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Side
 // 3D Gradients...
 BoostDoubleVector VoxelGradient(BoostDoubleVector g, unsigned long index,
                                 unsigned int SideLength);
-BoostDoubleVector VoxelGradientAdjoint(BoostDoubleVector X, unsigned long index,
-                                       unsigned int SideLength);
 BoostDoubleMatrix AllVoxelGradients(BoostDoubleVector X, unsigned int SideLength);
+BoostDoubleVector VoxelGradientAdjointSum(BoostDoubleVector X, unsigned long index,
+                                          unsigned int SideLength);
 // ENDTODO
+
+// Deprecated
+BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
+BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
+BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
+
 
 /* Shrinkage-like Operators */
 // EWT: I have verified the operation of both of these Shrike operators
@@ -45,6 +47,11 @@ BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
                               double beta, TVType ShrikeMode);
 
 /* Optimization */
+double LagrangianNew(BoostDoubleMatrix A, BoostDoubleVector U, 
+                  BoostDoubleVector B, BoostDoubleMatrix W, 
+                  BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
+                  double beta, double mu,
+                  unsigned int SideLength, TVType GradNorm);
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 
                   BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 

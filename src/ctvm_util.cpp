@@ -538,7 +538,7 @@ int RightNeighbor(unsigned int Index, unsigned int SideLength){
 *
 * Output -- the corresponding neighbor index.
 */
-    return ((Index>(SideLength*SideLength)-SideLength - 1) ? -1 : (Index+SideLength));
+return ((Index>(SideLength*SideLength)-SideLength - 1) ? -1 : (Index+SideLength));
 }
 
 int DownNeighbor(unsigned int Index, unsigned int SideLength){
@@ -558,6 +558,20 @@ int DownNeighbor(unsigned int Index, unsigned int SideLength){
 *
 * Output -- the corresponding neighbor index.
 */
-
 return ((Index+1)%SideLength) ? (Index+1) : -1;
+}
+
+double SquareNorm(BoostDoubleVector AVector){
+/*
+* Function: SquareNorm
+* ------------------------- 
+* Compute the squared L2 norm of a vector.
+*
+* Input --
+* AVector: an (N x 1) vector
+*
+* Output -- the square of the L2 norm.
+*/
+    double thisNorm = norm_2(AVector);
+return thisNorm*thisNorm;
 }
