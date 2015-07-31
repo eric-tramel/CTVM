@@ -366,48 +366,27 @@ BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
 return AllW;
 }
 
-BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long l)
 {
 	/*
 	* Function: Onestep_direction
 	* ---------------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'double' + 'double' + 'unsigned long'
 	* Give the direction of the one-step steepest descent gradient that minimize the "u-subproblem"
 	* Output type: 'BoostDoubleVector (N)'.
 	*/
-	unsigned long n = U.size();
-	BoostDoubleVector D (n); D = BoostZeroVector(n);
-	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
-	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
-
+	BoostDoubleVector Dk (l*l); Dk = BoostZeroVector(l*l);
 
 	// With the changes made, one can now do the following to 
 	// calculate the first term in the one-step direction
 	// (that is, the sum over all the pixels),
 	//
 	// Du = AllPixelGradients(U,SideLength)
-	// dk = -PixelGradientAdjointSum(beta*Du + beta*W + Nu) + mu*A'*(A*u - b) - A'*lambda
+	// Dk = -PixelGradientAdjointSum(beta*Du + beta*W + Nu) + mu*A'*(A*u - b) - A'*lambda
 
+	Dk = -PixelGradientAdjointSum(beta*AllPixelGradients(U, l) + beta*W + NU, l) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), LAMBDA);
 
-	for (unsigned long i = 0; i < n; ++i)
-	{
-		BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U, i);
-		BoostDoubleMatrix tDi = trans(Di);
-		BoostDoubleVector DiU = Gradient2D(U, i);
-		for (int j = 0; j < 2; ++j)
-		{
-			Wi(j) = W(i, j);
-			NUi(j) = NU(i, j);
-		}
-		BoostDoubleVector DiU_W = -DiU - Wi;
-		D = beta*prod(tDi, DiU_W) - prod(tDi, NUi);
-	}
-
-	BoostDoubleVector DIFF = prod(A, U) - B;
-
-	D = D + mu*prod(A, DIFF) - prod(A, LAMBDA);
-
-return D;
+return Dk;
 }
 
 double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
@@ -445,12 +424,12 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	return Q;
 }
 
-BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long l)
 {
 	/*
 	* Function: Alternating_Minimisation
 	* ----------------------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDobleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'double' + 'double' + 'unsigned long'
 	* Give the minima W(i,k+1) and U(k+1) of the augmented lagrangian function (W is a matrix of size (N,2) which is collected in AL_MIN(N,0 and 1), U is a vector of size (N) which is collected in AL_MIN(N,2)).
 	* Output type: 'BoostDoubleMatrix (N,3)'.
 	*/
@@ -484,8 +463,8 @@ BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVecto
 		}
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = Uk - Uk_1;
-		BoostDoubleVector Dk_1 = Onestep_Direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu);
-		BoostDoubleVector Dk = Onestep_Direction(A, Uk, B, W, NU, LAMBDA, beta, mu);
+		BoostDoubleVector Dk_1 = Onestep_Direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu, l);
+		BoostDoubleVector Dk = Onestep_Direction(A, Uk, B, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleVector Yk = Dk - Dk_1;
 
 		//******** alpha = onestep_gradient ********
@@ -534,7 +513,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVe
 	unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
 	unsigned long o = Sinogram.size2(); // Numbers of tilt angles
 	unsigned long m = l * o; // Numbers of measurements
-	unsigned long n = l * l;
+	unsigned long n = l * l; // Size of rasterized Image vector
 	
 	double mu = 3;
 	double beta = sqrt(2);
@@ -561,7 +540,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVe
 	{
 		Wk = W;
 		Uk = U;
-		MIN = Alternating_Minimisation(A, Uk, B, Wk, NU, LAMBDA, beta, mu);
+		MIN = Alternating_Minimisation(A, Uk, B, Wk, NU, LAMBDA, beta, mu, l);
 		for (unsigned long i = 0; i < n; ++i)
 		{
 			W(i, 0) = MIN(i, 0);
