@@ -268,7 +268,7 @@ return L;
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, 
 									BoostDoubleVector B, BoostDoubleMatrix W, 
 									BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-									double beta, double mu){
+									double beta, double mu, unsigned long l){
 	/*
 	* Function: Onestep_direction
 	* ---------------------------
