@@ -190,5 +190,22 @@ int main(int argc, char **argv)
 	SetRow(RandomMatrix,BoostZeroVector(3),1);
 	std::cout<<"   Middle Row Zeros: "<<RandomMatrix<<std::endl;
 
+	/* Neighbor Test */
+	std::cout<<"Neighbor Test A -> 2x2"<<std::endl;
+	std::cout<<"A[0] Neighbors:"<<RightNeighbor(0,2)<<","<<DownNeighbor(0,2)<<std::endl;
+	std::cout<<"A[1] Neighbors:"<<RightNeighbor(1,2)<<","<<DownNeighbor(1,2)<<std::endl;
+	std::cout<<"A[2] Neighbors:"<<RightNeighbor(2,2)<<","<<DownNeighbor(2,2)<<std::endl;
+	std::cout<<"A[3] Neighbors:"<<RightNeighbor(3,2)<<","<<DownNeighbor(3,2)<<std::endl;
+
+	/* Rasterization Test */
+	BoostDoubleMatrix RasterTest(2,2);
+	RasterTest(0,0) = 1;
+	RasterTest(1,0) = 2;
+	RasterTest(0,1) = 3;
+	RasterTest(1,1) = 4;
+	std::cout<<"Original Matrix: "<<RasterTest<<std::endl;
+	std::cout<<"Rasterized Matrix: "<<MatrixToVector(RasterTest)<<std::endl;
+	std::cout<<"Restored Matrix: "<<VectorToMatrix(MatrixToVector(RasterTest),2,2)<<std::endl;
+
 return 0;
 }

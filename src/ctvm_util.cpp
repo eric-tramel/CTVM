@@ -399,8 +399,8 @@ BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
     BoostDoubleVector AVector (N);
     
     unsigned long VectorIndex = 0;
-    for(unsigned long i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned long j = 0; j < AMatrix.size2(); ++j){
+    for(unsigned long j = 0; j < AMatrix.size2(); ++j){
+        for(unsigned long i = 0; i < AMatrix.size1(); ++i){
             AVector(VectorIndex++) = AMatrix(i,j);
         }
     }
@@ -419,8 +419,8 @@ BoostDoubleMatrix VectorToMatrix(BoostDoubleVector AVector,unsigned long rows, u
     BoostDoubleMatrix AMatrix (rows,cols);    
 
     unsigned long VectorIndex = 0;
-    for(unsigned long i = 0; i < AMatrix.size1(); ++i){
-        for(unsigned long j = 0; j < AMatrix.size2(); ++j){
+    for(unsigned long j = 0; j < AMatrix.size2(); ++j){
+        for(unsigned long i = 0; i < AMatrix.size1(); ++i){
             AMatrix(i,j) = AVector(VectorIndex++);
         }
     }
@@ -521,7 +521,7 @@ double MinimumEntry(BoostDoubleVector AVector){
 return MinValue;
 }
 
-unsigned int RightNeighbor(BoostDoubleVector ImageVector,unsigned int index, unsigned int SideLength){
+int RightNeighbor(unsigned int Index, unsigned int SideLength){
 /*
 * Function: RightNeighbor
 * ------------------------- 
@@ -532,21 +532,18 @@ unsigned int RightNeighbor(BoostDoubleVector ImageVector,unsigned int index, uns
 * ASSUMPTION: The image has been rasterized in column-major format.
 *
 * Input --
-* ImageVector:  an (Nx1) vector representing a rasterized image.
-* index: a value such that `index < N-1` representing the central pixel
+* Index: a value such that `index < N-1` representing the central pixel
 * SideLength: assuming a square image, the length of one side of the image. 
 *             I.e. N = SideLength^2.
 *
 * Output -- the corresponding neighbor index.
 */
-    unsigned int NeighborIndex = -1;    
-
-return NeighborIndex;
+    return ((Index>(SideLength*SideLength)-SideLength - 1) ? -1 : (Index+SideLength));
 }
 
-unsigned int DownNeighbor(BoostDoubleVector ImageVector,unsigned int index, unsigned int SideLength){
+int DownNeighbor(unsigned int Index, unsigned int SideLength){
 /*
-* Function: RightNeighbor
+* Function: DownNeighbor
 * ------------------------- 
 * Given a rasterized Image and a pixel index within this vector, return
 * the pixel index of its Right nearest neighbor. If the neighbor does not
@@ -555,13 +552,12 @@ unsigned int DownNeighbor(BoostDoubleVector ImageVector,unsigned int index, unsi
 * ASSUMPTION: The image has been rasterized in column-major format.
 *
 * Input --
-* ImageVector:  an (Nx1) vector representing a rasterized image.
-* index: a value such that `index < N-1` representing the central pixel
+* Index: a value such that `index < N-1` representing the central pixel
 * SideLength: assuming a square image, the length of one side of the image. 
 *             I.e. N = SideLength^2.
 *
 * Output -- the corresponding neighbor index.
 */
 
-return (NeighborIndex%(SideLength-1)) ? (index+1) : -1;
+return ((Index+1)%SideLength) ? (Index+1) : -1;
 }
