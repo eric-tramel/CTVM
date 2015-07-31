@@ -1,5 +1,110 @@
 #include "ctvm.h"
 
+
+BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index, 
+								unsigned int SideLength){
+/*
+* Function: PixelGradient
+* ---------------------------
+* Given a rasterized image vector, calculate the gradient vector at the
+* specified index. As we are assuming images, this function is used to
+* calculate the *two-dimensional* gradient vector.
+*
+* Input --
+* X: a (N x 1) vector representing a rasterized image
+* Index: the pixel at which to calculate the gradient
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (2 x 1) pixel gradient vector.
+*/
+	BoostDoubleVector Gradient = BoostZeroVector(2);
+
+	// Horizontal Gradient Component
+	int RightIndex = RightNeighbor(Index,SideLength);
+	Gradient(HORZ) = (RightIndex>0) ? (X[Index] - X[RightIndex]) : 0.0;
+
+	// Vertical Gradient Component
+	int DownIndex = DownNeighbor(Index,SideLength);
+	Gradient(VERT) = (DownIndex>0) ? (X[Index] - X[DownIndex]) : 0.0;
+
+return Gradient;
+}
+
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength){
+/*
+* Function: AllPixelGradients
+* ---------------------------
+* Given a rasterized image vector, calculate the gradient vectors at every pixel
+* and return the entire set of gradients as a matrix
+*
+* Input --
+* X: a (N x 1) vector representing a rasterized image
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (N x 2) pixel gradient vector.
+*/	
+	unsigned int N = X.size();
+	BoostDoubleMatrix AllGradients(N,2);
+
+	for(unsigned int i = 0; i < N; ++i){
+		SetRow(AllGradients,PixelGradient(X,i,SideLength),i);
+	}
+
+return AllGradients;
+}
+
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int SideLength){
+/*
+* Function: PixelGradientAdjointSum
+* ----------------------------------
+* Given a set of gradients at each pixel, calculate the adjoint sum, which is the 
+* adjoint of the gradient operation summed over each of the pixels.
+*
+*    					X = sum_{i=1:N} D_i^T * G_i
+*
+* where D_i represents the gradient matrix at pixel i, T is the transpose operator, and
+* G_i is the gradient vectore at pixel i. In other words, this function is a map from the
+* space of pixel gradients back to the image space.
+*
+* Input --
+* G: a (N x 2) matrix of pixel gradients
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (N x 1) rasterized image vector.
+*/	
+	unsigned int N = G.size1();
+	BoostDoubleVector ImageVector = BoostZeroVector(N);
+
+	BoostDoubleVector thisGradient;
+	int thisRightNeighbor;
+	int thisDownNeighbor;
+	for(unsigned int i = 0; i < N; ++i){
+		thisRightNeighbor = RightNeighbor(i,SideLength);
+		thisDownNeighbor = DownNeighbor(i,SideLength);
+		thisGradient = GetRow(G,i);
+
+		std::cout<<"@["<<i<<"] : r.n. = "<<thisRightNeighbor<<", d.n. = "<<thisDownNeighbor<<", Gradient = "<<thisGradient<<std::endl;
+
+		ImageVector(i) += thisGradient(HORZ) + thisGradient(VERT);
+
+		if(thisRightNeighbor > 0){
+			ImageVector(thisRightNeighbor) += -1* thisGradient(HORZ);
+		}
+
+		if(thisDownNeighbor >0){
+			ImageVector(thisDownNeighbor) += -1* thisGradient(VERT);
+		}
+	}
+
+return ImageVector;
+}
+
+
+
+
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel) // pixel = actual rank number -1 (first rank = U(0))
 {
 	/*

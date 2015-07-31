@@ -207,5 +207,18 @@ int main(int argc, char **argv)
 	std::cout<<"Rasterized Matrix: "<<MatrixToVector(RasterTest)<<std::endl;
 	std::cout<<"Restored Matrix: "<<VectorToMatrix(MatrixToVector(RasterTest),2,2)<<std::endl;
 
+	/* Gradient Test */
+	std::cout<<"Gradient Test on A = [1 3; 2 4]"<<std::endl;
+	std::cout<<"  "<<AllPixelGradients(MatrixToVector(RasterTest),2)<<std::endl;
+
+	/* Gradient Adjoint Test */
+	// We should have a set of pixel gradients from A = [1 3; 2 4]
+	// which look like
+	// G = [-2 -1; -2 0; 0 -1; 0 0]
+	// then the correct answer is a sum vector of
+	// [-3, -1, 1, 3]
+	BoostDoubleMatrix thisGradient = AllPixelGradients(MatrixToVector(RasterTest),2);
+	std::cout<<"Adjoint Sum Test"<<std::endl;
+	std::cout<<"  Sum Vector = "<<PixelGradientAdjointSum(thisGradient,2)<<std::endl;
 return 0;
 }

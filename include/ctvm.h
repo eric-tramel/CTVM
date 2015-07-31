@@ -6,17 +6,24 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include "ctvm_util.h"
 
+
+
 /* Gradient Operations */
+#define HORZ 0
+#define VERT 1
 BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
 BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
+
+BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
+                                unsigned int SideLength);
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Sidelength);
+
 // TODO: Implement the following
 // 2D Gradients...
-BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long index,
-                                unsigned int SideLength);
-BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector g, unsigned long index,
-                                       unsigned int SideLength);
-BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
+// BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector g, unsigned long index,
+//                                        unsigned int SideLength);
 // 3D Gradients...
 BoostDoubleVector VoxelGradient(BoostDoubleVector g, unsigned long index,
                                 unsigned int SideLength);
