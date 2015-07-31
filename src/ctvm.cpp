@@ -380,6 +380,15 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, Bo
 	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
 	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
 
+
+	// With the changes made, one can now do the following to 
+	// calculate the first term in the one-step direction
+	// (that is, the sum over all the pixels),
+	//
+	// Du = AllPixelGradients(U,SideLength)
+	// dk = -PixelGradientAdjointSum(beta*Du + beta*W + Nu) + mu*A'*(A*u - b) - A'*lambda
+
+
 	for (unsigned long i = 0; i < n; ++i)
 	{
 		BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U, i);
