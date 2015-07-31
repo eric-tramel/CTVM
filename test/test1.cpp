@@ -6,85 +6,230 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <Magick++.h>
+#include <ctime>
 
-int main(int argc, char **argv)
-{
-	/* Test CTVM.dylib Link */
-	std::cout << std::endl;
-	std::cout << "Testing libctvm Link." << std::endl;
-	BoostDoubleMatrix DummySinogram(0, 0);
-	BoostDoubleVector DummyAngles(0);
-	// BoostDoubleMatrix DummyReconstruction = tval3_reconstruction(DummySinogram,DummyAngles);
-	std::cout << "    " << "Passed." << std::endl;
+#define prefix "   * "
 
-	/* Test CTVM_util.dylib Link */
-	std::cout << std::endl;
-	std::cout << "Allocating tiny(3x3) random matrix..." << std::endl;
-	BoostDoubleMatrix RandomMatrix = CreateRandomMatrix(3, 3);
-	std::cout << "    " << RandomMatrix << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+double GetSeconds(clock_t elapsed){
+return ((float)elapsed /CLOCKS_PER_SEC);
+}
 
-	std::cout << "Rasterized Version..." << std::endl;
-	std::cout << "    " << MatrixToVector(RandomMatrix) << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+std::string ReportTime(clock_t elapsed){
+return "<" + std::string(std::to_string(GetSeconds(elapsed))) + " sec.>";
+}
 
-	std::cout << "Back to Matrix..." << std::endl;
-	std::cout << "    " << VectorToMatrix(MatrixToVector(RandomMatrix), 3, 3) << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
+void TestRandomMatrix(){
+	using namespace std;
+	cout<<"Random Matrix Test"<<endl;
+	cout<<"------------------"<<endl;
+	cout<<prefix<<"Generating tiny random matrix (3x3) matrix..."<<flush;
+	clock_t t = clock();
+	BoostDoubleMatrix RandomMatrix = CreateRandomMatrix(3,3);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
 
-	std::cout << "Allocating large(1000x1000) random matrix..." << std::endl;
-	BoostDoubleMatrix RandomMatrixLarge = CreateRandomMatrix(1000, 1000);
-	std::cout << "    " << "Passed." << std::endl;
+	cout<<prefix<<"Generating large random matrix (1000x1000)..."<<flush;
+	t = clock();
+	RandomMatrix = CreateRandomMatrix(1000,1000);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
 
-	std::cout << "Testing Normalization" << std::endl;
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestNormalization(){
+	using namespace std;
+
+	cout<<"Normalization Test"<<endl;
+	cout<<"------------------"<<endl;
+
 	BoostDoubleMatrix TestMatrix(3, 3);
 	TestMatrix(0, 0) = 1; TestMatrix(0, 1) = 5; TestMatrix(0, 2) = 3;
 	TestMatrix(1, 0) = 2; TestMatrix(1, 1) = 11; TestMatrix(1, 2) = 5;
 	TestMatrix(2, 0) = 1; TestMatrix(2, 1) = 10; TestMatrix(2, 2) = 6;
-	std::cout << "Original Matrix: " << TestMatrix << std::endl;
-	std::cout << "Normalized: " << NormalizeMatrix(TestMatrix) << std::endl;
+	cout<<prefix<<"Original Matrix: " << TestMatrix << endl;
+	
 
-	/* Test ImageMagick */
-	// Only run ImageMagick stuff if there are file names specified
+	clock_t t = clock();
+	BoostDoubleMatrix NormMatrix = NormalizeMatrix(TestMatrix);
+	t = clock() - t;
+	cout<<prefix<<"Normalized Matrix: "<<NormMatrix<<" "<<ReportTime(t)<< endl;
+
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestImageMagick(char* test_image){
+	using namespace std;
+	using namespace Magick;
+	clock_t t;
+
+	cout<<"ImageMagick Test"<<endl;
+	cout<<"----------------"<<endl;	
+	
+	cout<<prefix<<"Initializing ImageMagic..."<<flush;
+	t = clock();
+	InitializeMagick("");
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+
+	cout<<prefix<<"Reading image ("<<test_image<<")..."<<flush;
+	t = clock();
+	Image someImage;
+	someImage.read(test_image);
+	t = clock() - t;
+	//cout<<"done. "<<ReportTime(t)<<endl;
+	cout<<"done. ["<<someImage.rows()<<"x"<<someImage.columns()<<"]. "<<ReportTime(t)<<endl;
+
+
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestMatrixIO(char* test_image, char* output_image){
+	using namespace std;
+	clock_t t;
+
+	cout<<"Matrix I/O Test"<<endl;
+	cout<<"---------------"<<endl;
+
+	/* Tiny Resolution */
+	cout<<prefix<<"Loading image file into matrix at [32x32]..."<<flush;
+	t = clock();
+	BoostDoubleMatrix TinyImageMatrix = LoadImage(test_image,32,32);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Saving to file from image matrix at [32x32]..."<<flush;
+	t = clock();
+	WriteImage(TinyImageMatrix,output_image);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	/* Medium Resolution */
+	cout<<prefix<<"Loading image file into matrix at [512,512]..."<<flush;
+	t = clock();
+	BoostDoubleMatrix MediumImageMatrix = LoadImage(test_image,512,512);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Saving to file from image matrix at [512x512]..."<<flush;
+	t = clock();
+	WriteImage(MediumImageMatrix,output_image);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	/* High Resolution */
+	cout<<prefix<<"Loading image file into matrix at [2048,2048]..."<<flush;
+	t = clock();
+	BoostDoubleMatrix LargeImageMatrix = LoadImage(test_image,2048,2048);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Saving to file from image matrix at [2048x2048]..."<<flush;
+	t = clock();
+	WriteImage(LargeImageMatrix,output_image);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestNeighborCheck(){
+	using namespace std;
+	cout<<"Neighbor Index Test"<<endl;
+	cout<<"-------------------"<<endl;
+	cout<<prefix<<"Testing for a [2x2] Matrix"<<endl;
+
+	cout<<prefix<<"[0] Neighbors: H="<<RightNeighbor(0,2)<<", V="<<DownNeighbor(0,2)<<endl;
+	cout<<prefix<<"[1] Neighbors: H="<<RightNeighbor(1,2)<<", V="<<DownNeighbor(1,2)<<endl;
+	cout<<prefix<<"[2] Neighbors: H="<<RightNeighbor(2,2)<<", V="<<DownNeighbor(2,2)<<endl;
+	cout<<prefix<<"[3] Neighbors: H="<<RightNeighbor(3,2)<<", V="<<DownNeighbor(3,2)<<endl;
+
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestShrike(){
+	using namespace std;
+	// With the above settings we expect that the results should be:
+	// Isotropic @ beta = 0.5  : (0,0)
+	// Isotropic @ beta = 0.65 : (0.0557...,0.0325...)
+	// Anisotropic @ beta = 0.5  : (0,0)
+	// Anisotropic @ beta = 10   : (0.925...,0.8875...)
+	BoostDoubleVector g(2);  g(0) = 1;      g(1) = 1;
+	BoostDoubleVector nu(2); nu(0) = -0.25; nu(1) = 0.125;	
+	BoostDoubleVector Result;
+	clock_t t;
+
+	cout<<"Shrinkage-Like Function Test"<<endl;
+	cout<<"----------------------------"<<endl;
+	cout<<prefix<<"Set g = "<<g<<endl;
+	cout<<prefix<<"Set nu = "<<nu<<endl;
+
+	cout<<prefix<<"Testing ShrikeAnisotropic @ beta = 0.5..."<<flush;
+	t = clock();
+	Result = ShrikeAnisotropic(g,nu,0.5);
+	t = clock() - t;
+	cout<<"done. ["<<Result<<"]. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Testing ShrikeAnisotropic @ beta = 10..."<<flush;
+	t = clock();
+	Result = ShrikeAnisotropic(g,nu,10);
+	t = clock() - t;
+	cout<<"done. ["<<Result<<"]. "<<ReportTime(t)<<endl;
+	
+	cout<<prefix<<"Testing ShrikeIsotropic @ beta = 0.5..."<<flush;
+	t = clock();
+	Result = ShrikeIsotropic(g,nu,0.5);
+	t = clock() - t;
+	cout<<"done. ["<<Result<<"]. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Testing ShrikeIsotropic @ beta = 0.65..."<<flush;
+	t = clock();
+	Result = ShrikeIsotropic(g,nu,0.65);
+	t = clock() - t;
+	cout<<"done. ["<<Result<<"]. "<<ReportTime(t)<<endl;
+
+	BoostDoubleMatrix G  (3,2); 
+		SetRow(G,g,0); 
+		SetRow(G,g,1); 
+		SetRow(G,g,2);
+	BoostDoubleMatrix Nu (3,2); 
+		SetRow(Nu,nu,0); 
+		SetRow(Nu,nu,1); 
+		SetRow(Nu,nu,2);
+	cout<<prefix<<"Set G = "<<G<<endl;
+	cout<<prefix<<"Set Nu = "<<Nu<<endl;
+
+	cout<<prefix<<"Testing ApplyShrike(Anisotropic) @ beta = 10..."<<flush;
+	t = clock();
+	BoostDoubleMatrix Shriked = ApplyShrike(G,Nu,10,ANISOTROPIC);
+	t = clock() - t;
+	cout<<"done. ["<<Shriked<<"]. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Testing ApplyShrike(Isotropic) @ beta = 0.65..."<<flush;
+	t = clock();
+	Shriked = ApplyShrike(G,Nu,0.65,ISOTROPIC);
+	t = clock() - t;
+	cout<<"done. ["<<Shriked<<"]. "<<ReportTime(t)<<endl;
+
+cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+int main(int argc, char **argv){
+	using namespace std;
+	cout<<endl;
+
+	TestRandomMatrix();
+	TestNormalization();
+	TestNeighborCheck();
+
+	TestShrike();
+
 	if(argc > 2){
-		char* test_image = argv[1];
-		char* output_image = argv[2];
-		std::cout << std::endl;
-		using namespace Magick;
-		InitializeMagick("");
-
-		std::cout << "Testing ImageMagick Link." << std::endl;
-		Image someImage;
-		someImage.read(test_image);
-		std::cout << "    " << "Passed." << std::endl;
-
-		std::cout << "Creating Novel Image" << std::endl;
-		Image anotherImage;
-		anotherImage.size(Geometry(32, 32));         // Specify the dimensionality
-		Pixels anotherImageView(anotherImage);      // Get a view of the image
-		PixelPacket aPixel;
-		aPixel.red = ColorGray::scaleDoubleToQuantum(0.5);
-		aPixel.green = ColorGray::scaleDoubleToQuantum(0.5);
-		aPixel.blue = ColorGray::scaleDoubleToQuantum(0.5);
-		*(anotherImageView.get(16, 16, 1, 1)) = aPixel;
-		anotherImage.type(GrayscaleType);           // Specify the color type
-		anotherImageView.sync();
-		anotherImage.write(output_image);
-		std::cout << "    " << "Passed." << std::endl;
-
-		/* Test CTVM Image Load */
-		std::cout << std::endl;
-		std::cout << "Testing CTVM Image Load." << std::endl;
-		BoostDoubleMatrix ImageMatrix = LoadImage(test_image,32,32);
-		std::cout << "Image Data:" << std::endl;
-		std::cout << ImageMatrix(0, 0) << " " << ImageMatrix(0, 1) << " " << ImageMatrix(0, 3) << std::endl;
-		std::cout << ImageMatrix(1, 0) << " " << ImageMatrix(1, 1) << " " << ImageMatrix(1, 3) << std::endl;
-		std::cout << ImageMatrix(2, 0) << " " << ImageMatrix(2, 1) << " " << ImageMatrix(2, 3) << std::endl;
-		std::cout << "    " << "Passed." << std::endl;
-
-		std::cout << "Testing CTVM Image Write." << std::endl;
-		WriteImage(ImageMatrix, output_image);
-		std::cout << "    " << "Passed." << std::endl;
+	// Only run tests requiring File I/O if the file names
+	// have been passed.
+		TestImageMagick(argv[1]);
+		TestMatrixIO(argv[1],argv[2]);
 	}
 
 	/* Initialisation */
@@ -167,45 +312,6 @@ int main(int argc, char **argv)
 
 	std::cout << "One-step direction: " << d_k << std::endl; // Expected result: d_k = [58.7500   58.2500   57.7500   57.2500]
 	std::cout << "    " << "Passed." << std::endl;
-	
-	/*Test Shrinkage-like function*/	
-	BoostDoubleVector g(2);  g(0) = 1;      g(1) = 1;
-	BoostDoubleVector nu(2); nu(0) = -0.25; nu(1) = 0.125;	
-	// With the above settings we expect that the results should be:
-	// Anisotropic @ beta = 0.5  : (0,0)
-	// Anisotropic @ beta = 0.65 : (0.0557...,0.0325...)
-	// Isotropic @ beta = 0.5  : (0,0)
-	// Isotropic @ beta = 10   : (0.925...,0.8875...)
-	std::cout<<"Testing ShrikeAnisotropic. Result1 : "<<ShrikeAnisotropic(g,nu,0.5)<<std::endl;
-	std::cout<<"Testing ShrikeAnisotropic. Result2 : "<<ShrikeAnisotropic(g,nu,0.65)<<std::endl;
-
-	std::cout<<"Testing ShrikeIsotropic. Result1 : "<<ShrikeIsotropic(g,nu,0.5)<<std::endl;
-	std::cout<<"Testing ShrikeIsotropic. Result2 : "<<ShrikeIsotropic(g,nu,10)<<std::endl;
-
-
-	std::cout<<"Testing ApplyShrike"<<std::endl;
-	BoostDoubleMatrix G  (3,2); SetRow(G,g,0); SetRow(G,g,1); SetRow(G,g,2);
-	std::cout<<" G:  "<<G<<std::endl;
-	BoostDoubleMatrix Nu (3,2); SetRow(Nu,nu,0); SetRow(Nu,nu,1); SetRow(Nu,nu,2);
-	std::cout<<" Nu:  "<<Nu<<std::endl;
-	BoostDoubleMatrix Shriked = ApplyShrike(G,Nu,10,ISOTROPIC);
-	std::cout<<"   Sriked Matrix: "<<Shriked<<std::endl;
-
-
-	/* Slicing Test */
-	std::cout<<"Slice Test"<<std::endl;
-	std::cout<<"   Original Matrix:"<<RandomMatrix<<std::endl;
-	std::cout<<"   Middle Row: "<<GetRow(RandomMatrix,1)<<std::endl;
-	std::cout<<"   Middle Col: "<<GetCol(RandomMatrix,1)<<std::endl;
-	SetRow(RandomMatrix,BoostZeroVector(3),1);
-	std::cout<<"   Middle Row Zeros: "<<RandomMatrix<<std::endl;
-
-	/* Neighbor Test */
-	std::cout<<"Neighbor Test A -> 2x2"<<std::endl;
-	std::cout<<"A[0] Neighbors:"<<RightNeighbor(0,2)<<","<<DownNeighbor(0,2)<<std::endl;
-	std::cout<<"A[1] Neighbors:"<<RightNeighbor(1,2)<<","<<DownNeighbor(1,2)<<std::endl;
-	std::cout<<"A[2] Neighbors:"<<RightNeighbor(2,2)<<","<<DownNeighbor(2,2)<<std::endl;
-	std::cout<<"A[3] Neighbors:"<<RightNeighbor(3,2)<<","<<DownNeighbor(3,2)<<std::endl;
 
 	/* Rasterization Test */
 	BoostDoubleMatrix RasterTest(2,2);
