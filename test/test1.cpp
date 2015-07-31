@@ -34,7 +34,7 @@ void TestRandomMatrix(){
 	t = clock() - t;
 	cout<<"done. "<<ReportTime(t)<<endl;
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 void TestNormalization(){
@@ -55,7 +55,7 @@ void TestNormalization(){
 	t = clock() - t;
 	cout<<prefix<<"Normalized Matrix: "<<NormMatrix<<" "<<ReportTime(t)<< endl;
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 void TestImageMagick(char* test_image){
@@ -82,7 +82,7 @@ void TestImageMagick(char* test_image){
 	cout<<"done. ["<<someImage.rows()<<"x"<<someImage.columns()<<"]. "<<ReportTime(t)<<endl;
 
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 void TestMatrixIO(char* test_image, char* output_image){
@@ -131,7 +131,7 @@ void TestMatrixIO(char* test_image, char* output_image){
 	t = clock() - t;
 	cout<<"done. "<<ReportTime(t)<<endl;
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 void TestNeighborCheck(){
@@ -145,7 +145,7 @@ void TestNeighborCheck(){
 	cout<<prefix<<"[2] Neighbors: H="<<RightNeighbor(2,2)<<", V="<<DownNeighbor(2,2)<<endl;
 	cout<<prefix<<"[3] Neighbors: H="<<RightNeighbor(3,2)<<", V="<<DownNeighbor(3,2)<<endl;
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 void TestShrike(){
@@ -212,18 +212,117 @@ void TestShrike(){
 	t = clock() - t;
 	cout<<"done. ["<<Shriked<<"]. "<<ReportTime(t)<<endl;
 
-cout<<prefix<<"Passed."<<endl<<endl;
+	cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestRasterization(){
+	using namespace std;
+	/* Rasterization Test */
+	BoostDoubleMatrix RasterTest(2,2);
+	RasterTest(0,0) = 1;
+	RasterTest(1,0) = 2;
+	RasterTest(0,1) = 3;
+	RasterTest(1,1) = 4;
+	clock_t t;
+
+	cout<<"Matrix Rasterization Test"<<endl;
+	cout<<"-------------------------"<<endl;
+
+	cout<<prefix<<"Set Matrix as ["<<RasterTest<<"]"<<endl;
+	cout<<prefix<<"Rasterized Matrix: "<<MatrixToVector(RasterTest)<<endl;
+	cout<<prefix<<"Restored Matrix: "<<VectorToMatrix(MatrixToVector(RasterTest),2,2)<<endl;
+	
+	BoostDoubleMatrix LargeMatrix(2048,2048);
+	cout<<prefix<<"Rasterizing large matrix [2048x2048]..."<<flush;
+	t = clock();
+	BoostDoubleVector LargeVector = MatrixToVector(LargeMatrix);
+	t = clock()-t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Restoring large matrix [2048x2048]..."<<flush;
+	t = clock();
+	RasterTest = VectorToMatrix(LargeVector,2048,2048);
+	t = clock()-t;
+	cout<<"done. "<<ReportTime(t)<<endl;	
+
+	cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestLagrangian(){
+	using namespace std;
+
+	BoostDoubleMatrix A(3, 4), W(4, 2), Nu(4, 2);
+	BoostDoubleVector U(4), B(3), Lambda(3);
+	double beta = 0.25;
+	double mu = 0.5;
+	clock_t t;
+
+	/* Init Projections */
+	A(0, 0) = 1; A(0, 1) = 1; A(0, 2) = 1; A(0, 3) = 1;
+	A(1, 0) = 2; A(1, 1) = 2; A(1, 2) = 2; A(1, 3) = 2;
+	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;
+
+	/* Init Gradient Dual Variables  */
+	W(0, 0) =  -1; W(0, 1) = -1;
+	W(1, 0) =  -1; W(1, 1) = -1;
+	W(2, 0) =  -1; W(2, 1) = -1;
+	W(3, 0) =  -1; W(3, 1) = -1;
+
+	/* Init Dual Lag. Multipliers */	
+	Nu(0, 0) = 0.25; Nu(0, 1) = 0.25;
+	Nu(1, 0) = 0.25; Nu(1, 1) = 0.25;
+	Nu(2, 0) = 0.25; Nu(2, 1) = 0.25;
+	Nu(3, 0) = 0.25; Nu(3, 1) = 0.25;
+
+	/* Init Image Vector */
+	U(0) = 1;	
+	U(1) = 2;	
+	U(2) = 3;	
+	U(3) = 4;
+
+	/* Init Observations */
+	B(0) = 3;	
+	B(1) = 3;
+	B(2) = 3;
+
+	/* Init Observation Lag. Multipliers */
+	Lambda(0) = 0.5;	
+	Lambda(1) = 0.5;
+	Lambda(2) = 0.5;
+	
+	/*Test Lagrangian function*/	
+	cout<<"Lagrangian Test"<<endl;
+	cout<<"---------------"<<endl;
+
+	cout<<prefix<<"Set A = "<<A<<endl;
+	cout<<prefix<<"Set U = "<<U<<endl;
+	cout<<prefix<<"Set B = "<<B<<endl;
+	cout<<prefix<<"Set W = "<<W<<endl;
+	cout<<prefix<<"Set Nu = "<<Nu<<endl;
+	cout<<prefix<<"Set Lambda = "<<Lambda<<endl;
+	cout<<prefix<<"Set beta = "<<beta<<endl;
+	cout<<prefix<<"Set mu = "<<mu<<endl;
+
+	cout<<prefix<<"Calculating Lagrangian..."<<flush;
+	t = clock();
+	double L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,2,ISOTROPIC);
+	t = clock() - t;
+	cout<<"done. ["<<L<<"]. [246.6569...] expected."<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
 int main(int argc, char **argv){
 	using namespace std;
 	cout<<endl;
 
+	TestRasterization();
 	TestRandomMatrix();
 	TestNormalization();
 	TestNeighborCheck();
 
 	TestShrike();
+	TestLagrangian();
 
 	if(argc > 2){
 	// Only run tests requiring File I/O if the file names
@@ -233,53 +332,7 @@ int main(int argc, char **argv){
 	}
 
 	/* Initialisation */
-	BoostDoubleMatrix A(2, 4), W(4, 2), NU(4, 2);
-	BoostDoubleVector U(4), U1(9), B(2), LAMBDA(2);
-	double l = 2;
-
-	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
-	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
-
-	W(0, 0) = -1; W(0, 1) = 1;
-	W(1, 0) = 0; W(1, 1) = 1;
-	W(2, 0) = -1; W(2, 1) = 0;
-	W(3, 0) = 0; W(3, 1) = 1;
-
-	NU(0, 0) = 2; NU(0, 1) = 1;
-	NU(1, 0) = 1; NU(1, 1) = 0;
-	NU(2, 0) = 0; NU(2, 1) = 2;
-	NU(3, 0) = 1; NU(3, 1) = 3;
-
-	U(0) = 1;	U(1) = 2;	U(2) = 0;	U(3) = 1;
-
-	U1(0) = 1;	U1(1) = 2;	U1(2) = 0;	U1(3) = 1;	U1(4) = 3;	U1(5) = -2;	U1(6) = 0;	U1(7) = -1;	U1(8) = 0;
-
-	B(0) = 1;	B(1) = 2;
-
-	LAMBDA(0) = 2;	LAMBDA(1) = 1;
-
-	double beta = sqrt(2);
-	double mu = 3;
-
-	/* Test Gradient2DMatrix */
-	std::cout << std::endl;
-	std::cout << "Testing CTVM 2D Gradient for all i." << std::endl;
-	BoostDoubleMatrix X = VectorToMatrix(U, 2, 2);
-	BoostDoubleMatrix GradientMatrix = Gradient2DMatrix(U);
-	BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U1, 4);
-	std::cout << "Original Matrix: " << X << std::endl;
-	std::cout << "Gradients DiU (right gradient, down gradient): " << GradientMatrix << std::endl;
-	std::cout << "Original Vector: " << U1 << std::endl;
-	std::cout << " D(4) times U: " << prod(Di,U1) << std::endl;
-	std::cout << "    " << "Passed." << std::endl;
 	
-	/*Test Lagrangian function*/
-	std::cout << std::endl;
-	double L = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
-
-	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
-	std::cout << "LagrangianNew: " << LagrangianNew(A, U, B, W, NU, LAMBDA, beta, mu,2,ISOTROPIC) << std::endl; // expected result L = 8.6213
-
 	/* Test One-step Direction */
 	BoostDoubleMatrix Ad(3, 4), Wd(4, 2), NUd(4, 2);
 	BoostDoubleVector Ud(4), Bd(3), LAMBDAd(3);
@@ -308,24 +361,21 @@ int main(int argc, char **argv){
 	double mud = 0.5;
 
 	std::cout << std::endl;
-	BoostDoubleVector d_k = Onestep_Direction(Ad, Ud, Bd, Wd, NUd, LAMBDAd, betad, mud, l);
+	BoostDoubleVector d_k = Onestep_Direction(Ad, Ud, Bd, Wd, NUd, LAMBDAd, betad, mud,2);
 
 	std::cout << "One-step direction: " << d_k << std::endl; // Expected result: d_k = [58.7500   58.2500   57.7500   57.2500]
 	std::cout << "    " << "Passed." << std::endl;
 
-	/* Rasterization Test */
-	BoostDoubleMatrix RasterTest(2,2);
-	RasterTest(0,0) = 1;
-	RasterTest(1,0) = 2;
-	RasterTest(0,1) = 3;
-	RasterTest(1,1) = 4;
-	std::cout<<"Original Matrix: "<<RasterTest<<std::endl;
-	std::cout<<"Rasterized Matrix: "<<MatrixToVector(RasterTest)<<std::endl;
-	std::cout<<"Restored Matrix: "<<VectorToMatrix(MatrixToVector(RasterTest),2,2)<<std::endl;
+
 
 	/* Gradient Test */
+	BoostDoubleMatrix GradTest(2,2);
+	GradTest(0,0) = 1;
+	GradTest(1,0) = 2;
+	GradTest(0,1) = 3;
+	GradTest(1,1) = 4;
 	std::cout<<"Gradient Test on A = [1 3; 2 4]"<<std::endl;
-	std::cout<<"  "<<AllPixelGradients(MatrixToVector(RasterTest),2)<<std::endl;
+	std::cout<<"  "<<AllPixelGradients(MatrixToVector(GradTest),2)<<std::endl;
 
 	/* Gradient Adjoint Test */
 	// We should have a set of pixel gradients from A = [1 3; 2 4]
@@ -333,7 +383,7 @@ int main(int argc, char **argv){
 	// G = [-2 -1; -2 0; 0 -1; 0 0]
 	// then the correct answer is a sum vector of
 	// [-3, -1, 1, 3]
-	BoostDoubleMatrix thisGradient = AllPixelGradients(MatrixToVector(RasterTest),2);
+	BoostDoubleMatrix thisGradient = AllPixelGradients(MatrixToVector(GradTest),2);
 	std::cout<<"Adjoint Sum Test"<<std::endl;
 	std::cout<<"  Sum Vector = "<<PixelGradientAdjointSum(thisGradient,2)<<std::endl;
 return 0;
