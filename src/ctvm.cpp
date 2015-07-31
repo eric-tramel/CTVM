@@ -182,11 +182,11 @@ return L;
 }
 
 
-BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
 /* 
- * Function: Shrike Isotropic
+ * Function: Shrike Anisotropic
  * -------------------------------
- * Impelements the Isotropic version of the shrinkage function to be applied
+ * Impelements the Anisotropic version of the shrinkage function to be applied
  * to the gradient vector at pixel `i`. Takes as input an "un-shrunk" gradient
  * vector and returns the "shriked" version.
  *
@@ -203,9 +203,9 @@ BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, dou
 return HadamardProduct(MaxVector(WShriked,0.0),SignVector(WShifted));
 }
 
-BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
 /* 
- * Function: Shrike Anisotropic
+ * Function: Shrike Isotropic
  * -------------------------------
  * Impelements the Anisotropic version of the shrinkage function to be applied
  * to the gradient vector at pixel `i`. Takes as input an "un-shrunk" gradient

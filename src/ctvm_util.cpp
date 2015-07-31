@@ -520,3 +520,48 @@ double MinimumEntry(BoostDoubleVector AVector){
     }
 return MinValue;
 }
+
+unsigned int RightNeighbor(BoostDoubleVector ImageVector,unsigned int index, unsigned int SideLength){
+/*
+* Function: RightNeighbor
+* ------------------------- 
+* Given a rasterized Image and a pixel index within this vector, return
+* the pixel index of its Right nearest neighbor. If the neighbor does not
+* exist because of a boundary, return (-1).
+*
+* ASSUMPTION: The image has been rasterized in column-major format.
+*
+* Input --
+* ImageVector:  an (Nx1) vector representing a rasterized image.
+* index: a value such that `index < N-1` representing the central pixel
+* SideLength: assuming a square image, the length of one side of the image. 
+*             I.e. N = SideLength^2.
+*
+* Output -- the corresponding neighbor index.
+*/
+    unsigned int NeighborIndex = -1;    
+
+return NeighborIndex;
+}
+
+unsigned int DownNeighbor(BoostDoubleVector ImageVector,unsigned int index, unsigned int SideLength){
+/*
+* Function: RightNeighbor
+* ------------------------- 
+* Given a rasterized Image and a pixel index within this vector, return
+* the pixel index of its Right nearest neighbor. If the neighbor does not
+* exist because of a boundary, return (-1).
+*
+* ASSUMPTION: The image has been rasterized in column-major format.
+*
+* Input --
+* ImageVector:  an (Nx1) vector representing a rasterized image.
+* index: a value such that `index < N-1` representing the central pixel
+* SideLength: assuming a square image, the length of one side of the image. 
+*             I.e. N = SideLength^2.
+*
+* Output -- the corresponding neighbor index.
+*/
+
+return (NeighborIndex%(SideLength-1)) ? (index+1) : -1;
+}

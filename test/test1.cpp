@@ -147,6 +147,17 @@ int main(int argc, char **argv)
 	std::cout << "Lagrangian: " << L << std::endl; // expected result L = 8.6213
 	std::cout << "    " << "Passed." << std::endl;
 
+	/* Test One-step Direction */
+	// U = [1 2 3 4];
+	// A = [1 1 1 1; 2 2 2 2; 3 3 3 3];
+	// b = [3 3 3];
+	// lambda = [0.5 0.5 0.5];
+	// mu = 0.5;
+	// beta = 0.25;
+	// Nu = [0.25 0.25; 0.25 0.25; 0.25 0.25; 0.25 0.25];
+	// W = [-1 -1; -1 -1; -1 -1; -1 -1];
+	// Expected result: d_k = [58.7500   58.2500   57.7500   57.2500]
+
 	/*Test Shrinkage-like function*/	
 	BoostDoubleVector g(2);  g(0) = 1;      g(1) = 1;
 	BoostDoubleVector nu(2); nu(0) = -0.25; nu(1) = 0.125;	
