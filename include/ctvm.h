@@ -50,10 +50,10 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U,
                   BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
                   double beta, double mu);
 
-BoostDoubleVector Onestep_direction(BoostDoubleMatrix A, BoostDoubleVector Uk, 
+BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk, 
                                     BoostDoubleVector B, BoostDoubleMatrix Wk, 
                                     BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                                    double beta, double mu);
+                                    double beta, double mu, unsigned long l);
 
 double U_subfunction(BoostDoubleMatrix A, BoostDoubleVector U, 
                      BoostDoubleVector B, BoostDoubleMatrix Wk, 
@@ -63,7 +63,7 @@ double U_subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
 BoostDoubleMatrix alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, 
                                            BoostDoubleVector B, BoostDoubleMatrix W, 
                                            BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                                           double beta, double mu);
+                                           double beta, double mu, unsigned long l);
 
 BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
 
