@@ -307,7 +307,29 @@ void TestLagrangian(){
 	t = clock();
 	double L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,2,ISOTROPIC);
 	t = clock() - t;
-	cout<<"done. ["<<L<<"]. [246.6569...] expected."<<ReportTime(t)<<endl;
+	cout<<"done. ["<<L<<"]. [247.1569...] Expected. "<<ReportTime(t)<<endl;
+
+
+
+	A = BoostDoubleMatrix(64*64,128*128);
+	W = BoostDoubleMatrix(128*128,2);
+	Nu = BoostDoubleMatrix(128*128,2);
+	B = BoostDoubleVector(64*64);
+	Lambda = BoostDoubleVector(64*64);
+	U = BoostDoubleVector(128*128);
+
+	cout<<prefix<<"Calculating Lagrangian(ISO) on large dataset..."<<flush;
+	t = clock();
+	L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,128,ISOTROPIC);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	cout<<prefix<<"Calculating Lagrangian(ANISO) on large dataset..."<<flush;
+	t = clock();
+	L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,128,ANISOTROPIC);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
 
 	cout<<prefix<<"Passed."<<endl<<endl;
 }

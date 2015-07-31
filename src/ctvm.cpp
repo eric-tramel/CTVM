@@ -240,10 +240,13 @@ double LagrangianNew(BoostDoubleMatrix A, BoostDoubleVector U,
 	BoostDoubleMatrix Du = AllPixelGradients(U,SideLength);
 
 	// Loop over pixels
+	BoostDoubleVector Dui;
+	BoostDoubleVector Wi;
+	BoostDoubleVector Nui;
 	for (unsigned long i = 0; i < U.size(); ++i){
-		BoostDoubleVector Dui = GetRow(Du,i);
-		BoostDoubleVector Wi  = GetRow(W,i);
-		BoostDoubleVector Nui = GetRow(Nu,i);
+		Dui = GetRow(Du,i);
+		Wi  = GetRow(W,i);
+		Nui = GetRow(Nu,i);
 
 		BoostDoubleVector GradDiff = Dui-Wi;
 		L+= - inner_prod(Nui, GradDiff) + (beta/2) * SquareNorm(GradDiff);
