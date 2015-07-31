@@ -43,6 +43,11 @@ BoostDoubleVector MaxVector(BoostDoubleVector A, double B);
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix);
 double SquareNorm(BoostDoubleVector AVector);
 
+// TODO: 
+double SumVector(BoostDoubleVector AVector);
+BoostDoubleVector SquareElements(BoostDoubleVector AVector);
+BoostDoubleMatrix SquareElements(BoostDoubleMatrix AMatrix);
+
 /* Linear Algebra */
 BoostDoubleVector MakeUnitVector(BoostDoubleVector AVector);
 
