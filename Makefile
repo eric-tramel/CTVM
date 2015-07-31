@@ -56,7 +56,7 @@ clean:
 test: clean all
 		$(BIN_DIR)/test1
 		$(BIN_DIR)/ctvm-recover test/data/testSino.png test/data/testAngles.dat a3
-		$(BIN_DIR)/test-cs 32 test/data/box.png ~/tmp
+		$(BIN_DIR)/test-cs 32 test/data/box.png ~/tmp/test-cs-out.png
 
 
 checkdir: 
