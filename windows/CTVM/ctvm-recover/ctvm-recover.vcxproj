@@ -69,13 +69,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\imagemagick\include;C:\boost\include\boost-1_58;C:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\imagemagick\lib;C:\boost\lib;C:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\include;$(BOOST_INCDIR);$(IMAGEMAGICK_INCDIR);$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\lib;$(BOOST_LIBDIR);$(IMAGEMAGICK_LIBDIR);$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\bin</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\imagemagick\include;C:\boost\include\boost-1_58;C:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\imagemagick\lib;C:\boost\lib;C:\Users\Charles-Emmanuel\Documents\GitHub\CTVM\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\include;$(BOOST_INCDIR);$(IMAGEMAGICK_INCDIR);$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\lib;$(BOOST_LIBDIR);$(IMAGEMAGICK_LIBDIR);$(LibraryPath)</LibraryPath>
+    <OutDir>..\..\..\bin</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\bin</OutDir>
+    <IncludePath>..\..\..\include;$(BOOST_INCDIR);$(IMAGEMAGICK_INCDIR);$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\lib;$(BOOST_LIBDIR);$(IMAGEMAGICK_LIBDIR);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\..\..\include;$(BOOST_INCDIR);$(IMAGEMAGICK_INCDIR);$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\lib;$(BOOST_LIBDIR);$(IMAGEMAGICK_LIBDIR);$(LibraryPath)</LibraryPath>
     <OutDir>..\..\..\bin</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

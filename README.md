@@ -58,38 +58,18 @@ We have currently tested that the build works for Boost 1.58.0.
 5. Execute the following command to build and install Boost in 64 bit mode `.\b2 install --prefix=C:\boost toolset=msvc address-model=64`
 6. The install process may take some time, so one must be patient ! 
 
-#### 4. Configure Project
-Navigate to `./windows/CTVM` and open `CTVM.sln` to launch the CTVM project in Visual Studio.
-The solution is configured into a number of sub-projects...
-
-- **libctvm_util:** Perform the following modifications
-    - Go to the project properties (`Alt-Enter` when selected)
-    - Under `Configuration Properties > VC++ Directories`...
-        - Change `Include Directories` to point to your local ImageMagick and Boost `include` directories, as well as the `include` directory of CTVM. For our example, these directores are `C:\ImageMagick\include` and `C:\boost\include\boost-1_58`.
-        - Change `Library Directories` to point to your local ImageMagic and Boost `lib` directories, as well as the `lib` directory of CTVM. For our example, these directories are `C:\ImageMagick\lib` and `C:\boost\lib`.
-- **libctvm:** Perform the following modifications
-    - Go to the project properties (`Alt-Enter` when selected)
-    - Under `Configuration Properties > VC++ Directories`...
-        - Change `Include Directories` to point to your local ImageMagick and Boost `include` directories, as well as the `include` directory of CTVM. For our example, these directores are `C:\ImageMagick\include` and `C:\boost\include\boost-1_58`.
-        - Change `Library Directories` to point to your local ImageMagic and Boost `lib` directories, as well as the `lib` directory of CTVM. For our example, these directories are `C:\ImageMagick\lib` and `C:\boost\lib`.
-- **test:** Same modifications as for the above.
-- **ctvm-recover:** Same modifications as for the above.
-
-
-### Cygwin Setup
-Here, the paths are build in the case of a Cygwin development.
-
-*ImageMagick*
-One could simply install particular Cygwin repositories for using directly ImageMagick from the command line:
-Graphics > ImageMagick: Image manipulation software suite (utilities)
-		 + ImageMagick-doc: ~ ~ ~ ~ (documentation)
-		 + libImageMagick1: ~ ~ ~ ~ (runtime)
-
-
-*Boost*
-One easy way to link the Boost headers and libraries in the bash is to create these files in the Cygwin directory (which usually is in the Hard Drive C:). This directory corresponds to the HOME path in the Cygwin command line. Then the bash variable is the same as in the Unix environment
-
+#### 4. Set Environment Variables
+In order to allow for minimal changes to the Visual Studio solution and project files, we refer to the 
+library and include search paths for both Boost and Imagemagick using environment variables. This
+means that prior to running the solution for the first time, one needs to set the following
+environment variables:
 ```bash
-	BOOST_LIBDIR=/usr/local/lib
-	BOOST_INCDIR=/usr/local/include
+BOOST_INCDIR = C:\path\to\boost\include
+BOOST_LIBDIR = C:\path\to\boost\lib
+IMAGEMAGICK_INCDIR = C:\path\to\imagemagick\include
+IMAGEMAGICK_LIBDIR = C:\path\to\imagemagick\lib
 ```
+This can be accomplished by going to
+`Control Panel > System and Security > System` and then selecting
+"Advanced System Settings" and pressing the "Environment Variable"
+button at the bottom.
