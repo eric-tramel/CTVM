@@ -1,7 +1,5 @@
 #include "ctvm_util.h"
 
-//test comment
-
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
 /*
 * Function: CreateRandomMatrix
