@@ -248,7 +248,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	* Give the value of the quadratic function Qk(U) one-step steepest descent gradient that minimize the "u-subproblem"
 	* Output type: 'double'.
 	*/
-	double Q;
+	double Q = 0;
 	unsigned long n = U.size();
 	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
 	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
