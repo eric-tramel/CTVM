@@ -148,6 +148,34 @@ void TestNeighborCheck(){
 	cout<<prefix<<"Passed."<<endl<<endl;
 }
 
+void TestGradient() {
+	using namespace std;
+	cout << "Gradient Test" << endl;
+	cout << "-------------" << endl;
+	cout << prefix << "Testing for a [2x2] Matrix" << endl;
+
+	/* Gradient Test */
+	BoostDoubleMatrix GradTest(2, 2);
+	GradTest(0, 0) = 1;
+	GradTest(1, 0) = 2;
+	GradTest(0, 1) = 3;
+	GradTest(1, 1) = 4;
+	std::cout << "Gradient Test on A = [1 3; 2 4]" << std::endl;
+	std::cout << "  " << AllPixelGradients(MatrixToVector(GradTest), 2) << std::endl;
+
+	/* Gradient Adjoint Test */
+	// We should have a set of pixel gradients from A = [1 3; 2 4]
+	// which look like
+	// G = [-2 -1; -2 0; 0 -1; 0 0]
+	// then the correct answer is a sum vector of
+	// [-3, -1, 1, 3]
+	BoostDoubleMatrix thisGradient = AllPixelGradients(MatrixToVector(GradTest), 2);
+	std::cout << "Adjoint Sum Test." << std::endl;
+	std::cout << "  Sum Vector = " << PixelGradientAdjointSum(thisGradient, 2) << std::endl;
+
+	cout << prefix << "Passed." << endl << endl;
+}
+
 void TestShrike(){
 	using namespace std;
 	// With the above settings we expect that the results should be:
@@ -397,6 +425,72 @@ void TestOnestep_Direction() {
 	cout << prefix << "Passed." << endl << endl;
 }
 
+void TestReconstruction(int argc, char **argv) {
+	using namespace std;
+	if (argc != 4) {
+		cout << "Usage: test-cs <imsize> <orig_image> <output_image>" << endl;
+	}
+
+	/* Read Input */
+	char* ImageSizeStr = argv[1];
+	char* OriginalImageFile = argv[2];
+	char* OutputImageFile = argv[3];
+	unsigned int L = atoi(ImageSizeStr);
+
+	/* Specify Problem Settings */
+	double MeasurementRate = 0.9;
+	double NoiseVariance = 0.0;
+	unsigned int N = L*L;
+	unsigned int M = MeasurementRate*N;     // Allow truncation
+
+	cout << "Running CS Experiment for \\alpha = " << MeasurementRate << ", \\Delta = " << NoiseVariance << endl;
+
+	/* Load Image */
+	cout << " * Loading image (" << OriginalImageFile << ")..." << flush;
+	BoostDoubleMatrix XImage = LoadImage(OriginalImageFile, L, L);
+	BoostDoubleVector XVect = MatrixToVector(XImage);
+	cout << "done." << endl;
+
+	/* Create Projection Matrix */
+	cout << " * Creating Random Matrix (" << M << "x" << N << ")..." << flush;
+	BoostDoubleMatrix A = CreateRandomMatrix(M, N);
+	cout << "done." << endl;
+
+	/* Create Measurements */
+	cout << " * Generating Measurements..." << flush;
+	BoostDoubleVector y = prod(A, XVect) + sqrt(NoiseVariance)*CreateRandomVector(M);
+	cout << "done." << endl;
+
+	/* Perform Reconstruction */
+	// Testing the alternating minimization
+	BoostDoubleMatrix GradientMatrix = BoostZeroMatrix(N,2);
+	BoostDoubleMatrix NU(N, 2);
+	BoostDoubleVector LAMBDA(M);
+	double beta = 10 ; 
+	double mu = 5;
+	for (unsigned int i = 0; i < N; ++i)
+	{
+		NU(i, 0) = 0.25;
+		NU(i, 1) = 0.5;
+	}
+	for (unsigned int j = 0; j < M; ++j)
+	{
+		LAMBDA(j) = 0.33;
+	}
+	Alternating_Minimsation(A, XVect, y, GradientMatrix, NU, LAMBDA, beta, mu, L); // ?
+	BoostDoubleMatrix XRecImage = VectorToMatrix(XVect, L, L);
+
+	/* Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
+	cout << " * Calculating the recorded image by the TVAL3 method..." << flush;
+	BoostDoubleMatrix XRecImage = tval3_reconstruction();
+	cout << "done." << endl;*/
+
+	/* Write Result */
+	cout << " * Writing result to image (" << OutputImageFile << ")..." << flush;
+	WriteImage(NormalizeMatrix(XRecImage), OutputImageFile);
+	cout << "done." << endl;
+}
+
 int main(int argc, char **argv){
 	using namespace std;
 	cout<<endl;
@@ -405,35 +499,18 @@ int main(int argc, char **argv){
 	TestRandomMatrix();
 	TestNormalization();
 	TestNeighborCheck();
+	TestGradient();
 	TestShrike();
 	TestLagrangian();
 	TestOnestep_Direction();
 
-
-	if(argc > 2){
+	if(argc == 4){
 	// Only run tests requiring File I/O if the file names
 	// have been passed.
 		TestImageMagick(argv[1]);
 		TestMatrixIO(argv[1],argv[2]);
+		TestReconstruction(argc, )
 	}
 
-	/* Gradient Test */
-	BoostDoubleMatrix GradTest(2,2);
-	GradTest(0,0) = 1;
-	GradTest(1,0) = 2;
-	GradTest(0,1) = 3;
-	GradTest(1,1) = 4;
-	std::cout<<"Gradient Test on A = [1 3; 2 4]"<<std::endl;
-	std::cout<<"  "<<AllPixelGradients(MatrixToVector(GradTest),2)<<std::endl;
-
-	/* Gradient Adjoint Test */
-	// We should have a set of pixel gradients from A = [1 3; 2 4]
-	// which look like
-	// G = [-2 -1; -2 0; 0 -1; 0 0]
-	// then the correct answer is a sum vector of
-	// [-3, -1, 1, 3]
-	BoostDoubleMatrix thisGradient = AllPixelGradients(MatrixToVector(GradTest),2);
-	std::cout<<"Adjoint Sum Test"<<std::endl;
-	std::cout<<"  Sum Vector = "<<PixelGradientAdjointSum(thisGradient,2)<<std::endl;
 return 0;
 }

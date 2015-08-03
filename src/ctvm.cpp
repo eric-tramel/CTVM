@@ -86,7 +86,7 @@ BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Side
 		if(thisRightNeighbor > 0){
 			ImageVector(thisRightNeighbor) += -1* thisGradient(HORZ);
 		}
-		if(thisDownNeighbor >0){
+		if(thisDownNeighbor > 0){
 			ImageVector(thisDownNeighbor) += -1* thisGradient(VERT);
 		}
 	}
