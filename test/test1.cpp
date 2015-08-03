@@ -330,8 +330,71 @@ void TestLagrangian(){
 	t = clock() - t;
 	cout<<"done. "<<ReportTime(t)<<endl;
 
-
 	cout<<prefix<<"Passed."<<endl<<endl;
+}
+
+void TestOnestep_Direction() {
+	using namespace std;
+
+	BoostDoubleMatrix Ad(3, 4), Wd(4, 2), NUd(4, 2);
+	BoostDoubleVector Ud(4), Bd(3), LAMBDAd(3);
+	double betad = 0.25;
+	double mud = 0.5;
+	clock_t t;
+	
+	/* Init Projections */
+	Ad(0, 0) = 1; Ad(0, 1) = 1; Ad(0, 2) = 1; Ad(0, 3) = 1;
+	Ad(1, 0) = 2; Ad(1, 1) = 2; Ad(1, 2) = 2; Ad(1, 3) = 2;
+	Ad(2, 0) = 3; Ad(2, 1) = 3; Ad(2, 2) = 3; Ad(2, 3) = 3;
+	
+	/* Init Gradient Dual Variables  */
+	Wd(0, 0) = -1; Wd(0, 1) = -1;
+	Wd(1, 0) = -1; Wd(1, 1) = -1;
+	Wd(2, 0) = -1; Wd(2, 1) = -1;
+	Wd(3, 0) = -1; Wd(3, 1) = -1;
+
+	/* Init Dual Lag. Multipliers */
+	NUd(0, 0) = 0.25; NUd(0, 1) = 0.25;
+	NUd(1, 0) = 0.25; NUd(1, 1) = 0.25;
+	NUd(2, 0) = 0.25; NUd(2, 1) = 0.25;
+	NUd(3, 0) = 0.25; NUd(3, 1) = 0.25;
+
+	/* Init Image Vector */
+	Ud(0) = 1;
+	Ud(1) = 2;
+	Ud(2) = 3;
+	Ud(3) = 4;
+
+	/* Init Observations */
+	Bd(0) = 3;
+	Bd(1) = 3;
+	Bd(2) = 3;
+
+	/* Init Observation Lag. Multipliers */
+	LAMBDAd(0) = 0.5;
+	LAMBDAd(1) = 0.5;
+	LAMBDAd(2) = 0.5;
+
+	/*Test One-step direction*/
+	cout << "One-step direction Test" << endl;
+	cout << "-----------------------" << endl;
+
+	cout << prefix << "Set A = " << Ad << endl;
+	cout << prefix << "Set U = " << Ud << endl;
+	cout << prefix << "Set B = " << Bd << endl;
+	cout << prefix << "Set W = " << Wd << endl;
+	cout << prefix << "Set Nu = " << NUd << endl;
+	cout << prefix << "Set Lambda = " << LAMBDAd << endl;
+	cout << prefix << "Set beta = " << betad << endl;
+	cout << prefix << "Set mu = " << mud << endl;
+
+	cout << prefix << "Calculating direction value... [58.75  58.25  57.75  57.25] Expected. " << flush;
+	t = clock();
+	BoostDoubleVector D = Onestep_Direction(Ad, Ud, Bd, Wd, NUd, LAMBDAd, betad, mud, 2);
+	t = clock() - t;
+	cout << "done. [" << D << "]." << ReportTime(t) << endl;
+
+	cout << prefix << "Passed." << endl << endl;
 }
 
 int main(int argc, char **argv){
@@ -342,9 +405,10 @@ int main(int argc, char **argv){
 	TestRandomMatrix();
 	TestNormalization();
 	TestNeighborCheck();
-
 	TestShrike();
 	TestLagrangian();
+	TestOnestep_Direction();
+
 
 	if(argc > 2){
 	// Only run tests requiring File I/O if the file names
@@ -352,43 +416,6 @@ int main(int argc, char **argv){
 		TestImageMagick(argv[1]);
 		TestMatrixIO(argv[1],argv[2]);
 	}
-
-	/* Initialisation */
-	
-	/* Test One-step Direction */
-	BoostDoubleMatrix Ad(3, 4), Wd(4, 2), NUd(4, 2);
-	BoostDoubleVector Ud(4), Bd(3), LAMBDAd(3);
-
-	Ad(0, 0) = 1; Ad(0, 1) = 1; Ad(0, 2) = 1; Ad(0, 3) = 1;
-	Ad(1, 0) = 2; Ad(1, 1) = 2; Ad(1, 2) = 2; Ad(1, 3) = 2;
-	Ad(2, 0) = 3; Ad(2, 1) = 3; Ad(2, 2) = 3; Ad(2, 3) = 3;
-
-	Wd(0, 0) = -1; Wd(0, 1) = -1;
-	Wd(1, 0) = -1; Wd(1, 1) = -1;
-	Wd(2, 0) = -1; Wd(2, 1) = -1;
-	Wd(3, 0) = -1; Wd(3, 1) = -1;
-
-	NUd(0, 0) = 0.25; NUd(0, 1) = 0.25;
-	NUd(1, 0) = 0.25; NUd(1, 1) = 0.25;
-	NUd(2, 0) = 0.25; NUd(2, 1) = 0.25;
-	NUd(3, 0) = 0.25; NUd(3, 1) = 0.25;
-
-	Ud(0) = 1;	Ud(1) = 2;	Ud(2) = 3;	Ud(3) = 4;
-
-	Bd(0) = 3;	Bd(1) = 3; Bd(2) = 3;
-
-	LAMBDAd(0) = 0.5;	LAMBDAd(1) = 0.5; LAMBDAd(2) = 0.5;
-
-	double betad = 0.25;
-	double mud = 0.5;
-
-	std::cout << std::endl;
-	BoostDoubleVector d_k = Onestep_Direction(Ad, Ud, Bd, Wd, NUd, LAMBDAd, betad, mud,2);
-
-	std::cout << "One-step direction: " << d_k << std::endl; // Expected result: d_k = [58.7500   58.2500   57.7500   57.2500]
-	std::cout << "    " << "Passed." << std::endl;
-
-
 
 	/* Gradient Test */
 	BoostDoubleMatrix GradTest(2,2);
