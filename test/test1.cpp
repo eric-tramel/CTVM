@@ -427,8 +427,9 @@ void TestOnestep_Direction() {
 
 void TestReconstruction(int argc, char **argv) {
 	using namespace std;
+	clock_t t;
 	if (argc != 4) {
-		cout << "Usage: test-cs <imsize> <orig_image> <output_image>" << endl;
+		cout << "Usage: test <imsize> <orig_image> <output_image>" << endl;
 	}
 
 	/* Read Input */
@@ -451,41 +452,16 @@ void TestReconstruction(int argc, char **argv) {
 	BoostDoubleVector XVect = MatrixToVector(XImage);
 	cout << "done." << endl;
 
-	/* Create Projection Matrix */
-	cout << " * Creating Random Matrix (" << M << "x" << N << ")..." << flush;
-	BoostDoubleMatrix A = CreateRandomMatrix(M, N);
-	cout << "done." << endl;
-
-	/* Create Measurements */
-	cout << " * Generating Measurements..." << flush;
-	BoostDoubleVector y = prod(A, XVect) + sqrt(NoiseVariance)*CreateRandomVector(M);
-	cout << "done." << endl;
-
-	/* Perform Reconstruction */
-	// Testing the alternating minimization
-	BoostDoubleMatrix GradientMatrix = BoostZeroMatrix(N,2);
-	BoostDoubleMatrix NU(N, 2);
-	BoostDoubleVector LAMBDA(M);
-	double beta = 10 ; 
-	double mu = 5;
-	for (unsigned int i = 0; i < N; ++i)
-	{
-		NU(i, 0) = 0.25;
-		NU(i, 1) = 0.5;
-	}
-	for (unsigned int j = 0; j < M; ++j)
-	{
-		LAMBDA(j) = 0.33;
-	}
-	Alternating_Minimsation(A, XVect, y, GradientMatrix, NU, LAMBDA, beta, mu, L); // ?
-	BoostDoubleMatrix XRecImage = VectorToMatrix(XVect, L, L);
-
-	/* Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
-	cout << " * Calculating the recorded image by the TVAL3 method..." << flush;
-	BoostDoubleMatrix XRecImage = tval3_reconstruction();
-	cout << "done." << endl;*/
+	/* Perform Reconstruction*/
+	// Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
+	cout << " * Computing the recorded image by the TVAL3 method..." << endl;
+	t = clock();
+	BoostDoubleMatrix XRecImage = tval3_reconstruction(XImage);
+	t = clock() - t;
+	cout << "done." << ReportTime(t) << endl;
 
 	/* Write Result */
+
 	cout << " * Writing result to image (" << OutputImageFile << ")..." << flush;
 	WriteImage(NormalizeMatrix(XRecImage), OutputImageFile);
 	cout << "done." << endl;
@@ -501,16 +477,17 @@ int main(int argc, char **argv){
 	TestNeighborCheck();
 	TestGradient();
 	TestShrike();
-	TestLagrangian();
+	// TestLagrangian();
 	TestOnestep_Direction();
 
-	if(argc == 4){
-	// Only run tests requiring File I/O if the file names
-	// have been passed.
+	if(argc == 3){
+	// Only run tests requiring File I/O if the file names have been passed.
 		TestImageMagick(argv[1]);
 		TestMatrixIO(argv[1],argv[2]);
-		TestReconstruction(argc, )
 	}
-
+	if (argc == 4) {
+	// Only run tests requiring Size and File I/O if the size length and the file names have been passed.
+		TestReconstruction(argc, argv);
+	}
 return 0;
 }

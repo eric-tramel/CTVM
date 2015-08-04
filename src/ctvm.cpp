@@ -286,15 +286,14 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 	* B: an (M x 1) set of observations
 	* W: an (N x 2) set of dual variables corresponding to per-pixel (-voxel) gradients
 	* Nu: an (N x 2) set of Lagrangian multipliers
-	* Lambda: an (M x 2) set of Lagrangian multiplies
+	* Lambda: an (M x 1) set of Lagrangian multiplies
 	* beta: scaling term on the matching between W and the true gradients
 	* mu: scaling term on the matching between A*u and b
 	* SideLength: the side length for the target image, i.e. N = SideLength^2
 	*
 	* Output -- a decimal value for the cost.
 	*/
-	
-	BoostDoubleVector Dk(U.size()); Dk = BoostZeroVector(U.size());
+	BoostDoubleVector Dk = BoostZeroVector(U.size());
 	Dk = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + NU, SideLength) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), LAMBDA);
 
 return Dk;
@@ -348,13 +347,13 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 	double delta = 0.5;
 	double rho = 0.5;
 	double eta = 0.5;
-	double Pk = 1;
+	double Pk = 1; 
 	double C = Lagrangian(A, U, B, W, NU, LAMBDA, beta, mu);
 
 	double armijo_tol, Qk, innerstop;
 	double tol = 0.01;
 
-	BoostDoubleVector Uk_1; Uk_1 = BoostZeroVector(n);
+	BoostDoubleVector Uk_1 = BoostZeroVector(n);
 
 	do
 	{
@@ -362,7 +361,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 		for (unsigned long i = 0; i < n; ++i)
 		{
 			BoostDoubleVector DiUk = Gradient2D(U, i);
-			BoostDoubleVector NUi(2); NUi = BoostZeroVector(2);
+			BoostDoubleVector NUi(2);
 			for (int j = 0; j < 2; ++j)
 			{
 				NUi(j) = NU(i, j);
@@ -372,11 +371,13 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 		}
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
+		std::cout << " * Calculating the Onestep gradient's direction..." << std::endl;
 		BoostDoubleVector Dk_1 = Onestep_Direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleVector Yk = Dk - Dk_1;
 
 		//******** alpha = onestep_gradient ********
+		std::cout << " * Calculating the One-step gradient's size..." << std::endl;
 		double alpha = inner_prod(Sk, Yk) / inner_prod(Yk, Yk);
 		do 
 		{ 
@@ -388,6 +389,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 		} while (Qk > armijo_tol);
 
 		Uk_1 = U;
+		std::cout << " * Minimising U ..." << std::endl;
 		U -= alpha * Dk;
 		innerstop = norm_2(U - Uk_1);
 
@@ -399,7 +401,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 	} while (innerstop > tol);
 }
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles) // Why TiltAngles?
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDoubleVector TiltAngles*/) // Why TiltAngles?
 {
 	/*
 	* Function: tval3_reconstruction
@@ -418,24 +420,22 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVe
 	double beta = sqrt(2);
 	double coef = 1.05;
 	double outerstop;
-	double tol = 0.01;
+	double tol = 0.5;
 
-	BoostDoubleMatrix W (n, 2); W = BoostZeroMatrix(n, 2);// W(i,0) = 0 for all i
-	BoostDoubleMatrix NU (n, 2); NU = BoostZeroMatrix(n, 2);
-	BoostDoubleMatrix A (m, n); A = BoostZeroMatrix(m, n);
-	BoostDoubleMatrix X (l, l); X = BoostZeroMatrix(l, l);
+	BoostDoubleMatrix W = BoostZeroMatrix(n, 2);// W(i,0) = 0 for all i
+	BoostDoubleMatrix NU = BoostZeroMatrix(n, 2);
+	BoostDoubleMatrix X = BoostZeroMatrix(l, l);
+	BoostDoubleMatrix A = CreateRandomMatrix(m, n);
 	
-	BoostDoubleVector U (n); U = BoostZeroVector(n); // U(0) = 0 for all i
-	BoostDoubleVector Uk_1 (n); Uk_1 = BoostZeroVector(n); 
-	BoostDoubleVector B (m); B = BoostZeroVector(m);
-	BoostDoubleVector LAMBDA (m); LAMBDA = BoostZeroVector(m);
-
-	A = CreateRandomMatrix(m, n);
-	B = MatrixToVector(Sinogram);
+	BoostDoubleVector U = BoostZeroVector(n); // U(0) = 0 for all i
+	BoostDoubleVector Uk_1 = BoostZeroVector(n); 
+	BoostDoubleVector LAMBDA = BoostZeroVector(m);
+	BoostDoubleVector B = MatrixToVector(Sinogram);
 	
 	do
 	{
 		Uk_1 = U;
+		std::cout << " * Calculating the Alternating Minimisation..." << std::endl; 
 		Alternating_Minimisation(A, U, B, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
 		NU = NU - beta*(DiU - W);

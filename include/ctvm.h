@@ -67,11 +67,11 @@ double U_subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
                      BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
                      double beta, double mu);
 
-BoostDoubleMatrix alternating_minimisation(BoostDoubleMatrix A, BoostDoubleVector U, 
-                                           BoostDoubleVector B, BoostDoubleMatrix W, 
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, 
+                                           BoostDoubleVector B, BoostDoubleMatrix& W, 
                                            BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
                                            double beta, double mu, unsigned long l);
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDoubleVector TiltAngles*/);
 
 #endif
