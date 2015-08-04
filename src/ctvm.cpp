@@ -392,6 +392,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 		double numerator = inner_prod(Sk, Yk);		
 		double alpha = numerator/denominator;
 		// std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
+		ArmijoLoopCounter = 0;
 		do 
 		{ 
 			alpha = rho * alpha;
