@@ -475,6 +475,38 @@ void TestU_Subfunction() {
 
 }
 
+void TestGradient(char* InputFile, char* OutputFile){
+	using namespace std;
+	clock_t t;
+	unsigned int L = 128;
+
+	cout<<"Gradient Test"<<endl;
+	cout<<"-------------"<<endl;
+
+	/* Medium Resolution */
+	cout<<prefix<<"Loading image file into matrix at ["<<L<<","<<L<<"]..."<<flush;
+	t = clock();
+	BoostDoubleMatrix MediumImageMatrix = LoadImage(InputFile,L,L);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	/* To Vector */
+	BoostDoubleVector ImageVect = MatrixToVector(MediumImageMatrix);
+
+	/* Compute Gradients */
+	cout<<prefix<<"Computing gradients..."<<flush;
+	t = clock();
+	BoostDoubleMatrix Gradients = AllPixelGradients(ImageVect,L);
+	t = clock() - t;
+	cout<<"done. "<<ReportTime(t)<<endl;
+
+	/* Get out just the horizontal */
+	BoostDoubleVector HorzGradients = GetCol(Gradients,0);
+
+	/* Write as image */
+	WriteImage(NormalizeMatrix(VectorToMatrix(HorzGradients,L,L)),OutputFile);
+}
+
 void TestReconstruction(int argc, char **argv) {
 	using namespace std;
 	clock_t t;
@@ -549,7 +581,9 @@ int main(int argc, char **argv){
 	 // Only run tests requiring File I/O if the file names have been passed.
 	 	TestImageMagick(argv[1]);
 	 	TestMatrixIO(argv[1],argv[2]);
+	 	TestGradient(argv[1],argv[2]);
 	 }
+
 	if (argc == 4) {
 	// Only run tests requiring Size and File I/O if the size length and the file names have been passed.
 		TestReconstruction(argc, argv);

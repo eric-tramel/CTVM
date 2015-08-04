@@ -437,8 +437,8 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	unsigned long N = A.size2();
 	unsigned long L = SideLength; // allowing truncation
 	
-	double mu = 8.0;
-	double beta = 8.0;
+	double mu = 1024.0;
+	double beta = 1024.0;
 	double coef = 1.0;
 	double outerstop;
 	double tol = 0.001;
