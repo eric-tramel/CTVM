@@ -439,7 +439,7 @@ void TestReconstruction(int argc, char **argv) {
 	unsigned int L = atoi(ImageSizeStr);
 
 	/* Specify Problem Settings */
-	double MeasurementRate = 0.9;
+	double MeasurementRate = 0.5;
 	double NoiseVariance = 0.0;
 	unsigned int N = L*L;
 	unsigned int M = MeasurementRate*N;     // Allow truncation
@@ -483,20 +483,20 @@ int main(int argc, char **argv){
 	using namespace std;
 	cout<<endl;
 
-	TestRasterization();
-	TestRandomMatrix();
-	TestNormalization();
-	TestNeighborCheck();
-	TestGradient();
-	TestShrike();
+	// TestRasterization();
+	// TestRandomMatrix();
+	// TestNormalization();
+	// TestNeighborCheck();
+	// TestGradient();
+	// TestShrike();
 	// TestLagrangian();
-	TestOnestep_Direction();
+	// TestOnestep_Direction();
 
-	if(argc == 3){
-	// Only run tests requiring File I/O if the file names have been passed.
-		TestImageMagick(argv[1]);
-		TestMatrixIO(argv[1],argv[2]);
-	}
+	// if(argc == 3){
+	// // Only run tests requiring File I/O if the file names have been passed.
+	// 	TestImageMagick(argv[1]);
+	// 	TestMatrixIO(argv[1],argv[2]);
+	// }
 	if (argc == 4) {
 	// Only run tests requiring Size and File I/O if the size length and the file names have been passed.
 		TestReconstruction(argc, argv);

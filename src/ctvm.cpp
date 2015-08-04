@@ -132,8 +132,17 @@ BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, dou
 */
 	BoostDoubleVector WShifted = W - Nu/beta;
 	double WShiftedNorm = norm_2(WShifted);
+	BoostDoubleVector result;
 
-return (fmax(WShiftedNorm - 1/beta,0.0) * (WShifted/WShiftedNorm));
+	if(WShiftedNorm < 0.000000000001){
+		result = BoostZeroVector(2);
+	}
+	else{
+		result = (fmax(WShiftedNorm - 1/beta,0.0) * (WShifted/WShiftedNorm));
+	}
+
+
+return result;
 }
 
 BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
@@ -294,6 +303,23 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 	* Output -- a decimal value for the cost.
 	*/
 	BoostDoubleVector Dk = BoostZeroVector(U.size());
+
+	BoostDoubleVector NegAdjSum = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + NU, SideLength);
+	BoostDoubleVector TermTwo = mu*prod(trans(A), prod(A, U) - B);
+	BoostDoubleVector TermThree = - prod(trans(A), LAMBDA);
+	BoostDoubleMatrix grads  = AllPixelGradients(U,SideLength);
+
+	using namespace std;
+	cout<<" > Inside Onestep_Direction():"<<endl;
+	cout<<"    * PixelGradients: "<<grads<<endl;
+	cout<<"    * beta: "<<beta<<endl;
+	cout<<"    * W: "<<W<<endl;
+	cout<<"    * Nu: "<<NU<<endl;
+	cout<<"    * NegAdjSum :"<<NegAdjSum<<endl;
+	cout<<"    * Term2 :"<<TermTwo<<endl;
+	cout<<"    * Term3 :"<<TermThree<<endl;
+
+
 	Dk = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + NU, SideLength) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), LAMBDA);
 
 return Dk;
@@ -308,6 +334,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	* Give the value of the quadratic function Qk(U) one-step steepest descent gradient that minimize the "u-subproblem"
 	* Output type: 'double'.
 	*/
+	std::cout<<" > Inside U_subfunction():"<<std::endl;
 	double Q;
 	unsigned long n = U.size();
 	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
@@ -334,7 +361,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	return Q;
 }
 
-void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDoubleVector B, BoostDoubleMatrix& W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long l)
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDoubleVector B, BoostDoubleMatrix &W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long l)
 {
 	/*
 	* Function: Alternating_Minimisation
@@ -343,6 +370,9 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 	* Give the minima W(i,k+1) and U(k+1) of the augmented lagrangian function (W is a matrix of size (N,2) which is collected in AL_MIN(N,0 and 1), U is a vector of size (N) which is collected in AL_MIN(N,2)).
 	* Output type: 'BoostDoubleMatrix (N,3)'.
 	*/
+	std::cout<<" > Inside Alternating_Minimisation"<<std::endl;
+	std::cout<<"    * W: "<<W<<std::endl;
+
 	double n = U.size();
 	double delta = 0.5;
 	double rho = 0.5;
@@ -358,17 +388,18 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 	do
 	{
 //*************************** "w sub-problem" ***************************
-		for (unsigned long i = 0; i < n; ++i)
-		{
-			BoostDoubleVector DiUk = Gradient2D(U, i);
-			BoostDoubleVector NUi(2);
-			for (int j = 0; j < 2; ++j)
-			{
-				NUi(j) = NU(i, j);
-				BoostDoubleVector Wi = ShrikeIsotropic(DiUk, NUi, beta);
-				W(i, j) = Wi(j);
-			}
-		}
+		// for (unsigned long i = 0; i < n; ++i)
+		// {
+		// 	BoostDoubleVector DiUk = Gradient2D(U, i);
+		// 	BoostDoubleVector NUi(2);
+		// 	for (int j = 0; j < 2; ++j)
+		// 	{
+		// 		NUi(j) = NU(i, j);
+		// 		BoostDoubleVector Wi = ShrikeIsotropic(DiUk, NUi, beta);
+		// 		W(i, j) = Wi(j);
+		// 	}
+		// }
+		W = ApplyShrike(W,NU,beta,ANISOTROPIC);
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		std::cout << " * Calculating the Onestep gradient's direction..." << std::endl;
@@ -378,7 +409,15 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 
 		//******** alpha = onestep_gradient ********
 		std::cout << " * Calculating the One-step gradient's size..." << std::endl;
-		double alpha = inner_prod(Sk, Yk) / inner_prod(Yk, Yk);
+		std::cout<< "  * Dk ="<<Dk<<std::endl;
+		std::cout<< "  * Dk_l ="<<Dk_1<<std::endl;
+		std::cout << " * Yk ="<<Yk<<std::endl;
+		std::cout << " * Sk ="<<Sk<<std::endl;
+		double denominator = inner_prod(Yk, Yk);
+		double numerator = inner_prod(Sk, Yk);		
+		double alpha = numerator/denominator;
+		std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
+
 		do 
 		{ 
 			alpha = rho * alpha;
@@ -438,7 +477,8 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y)
 	do
 	{
 		Uk_1 = U;
-		std::cout << " * Calculating the Alternating Minimisation..." << std::endl; 
+		std::cout<< "   * Calculating the Alternating Minimisation..." << std::endl; 
+		std::cout<<"    * W: "<<W<<std::endl;
 		Alternating_Minimisation(A, U, y, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
 		NU = NU - beta*(DiU - W);
