@@ -333,7 +333,7 @@ void TestLagrangian(){
 
 	cout<<prefix<<"Calculating Lagrangian..."<<flush;
 	t = clock();
-	double L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,2,ISOTROPIC);
+	double L = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, 2, ISOTROPIC);
 	t = clock() - t;
 	cout<<"done. ["<<L<<"]. [247.1569...] Expected. "<<ReportTime(t)<<endl;
 
@@ -348,13 +348,13 @@ void TestLagrangian(){
 
 	cout<<prefix<<"Calculating Lagrangian(ISO) on large dataset..."<<flush;
 	t = clock();
-	L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,128,ISOTROPIC);
+	L = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, 128, ISOTROPIC);
 	t = clock() - t;
 	cout<<"done. "<<ReportTime(t)<<endl;
 
 	cout<<prefix<<"Calculating Lagrangian(ANISO) on large dataset..."<<flush;
 	t = clock();
-	L = LagrangianNew(A, U, B, W, Nu, Lambda, beta, mu,128,ANISOTROPIC);
+	L = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, 128, ANISOTROPIC);
 	t = clock() - t;
 	cout<<"done. "<<ReportTime(t)<<endl;
 
@@ -516,7 +516,7 @@ void TestReconstruction(int argc, char **argv) {
 	// Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
 	cout << " * Computing the recorded image by the TVAL3 method..." << endl;
 	t = clock();
-	BoostDoubleMatrix XRecImage = tval3_reconstruction(A,y);
+	BoostDoubleMatrix XRecImage = tval3_reconstruction(A,y,L);
 	t = clock() - t;
 	cout << "done." << ReportTime(t) << endl;
 
@@ -540,7 +540,7 @@ int main(int argc, char **argv){
 		TestNeighborCheck();
 		TestGradient();
 		TestShrike();
-		// TestLagrangian();
+		TestLagrangian();
 		TestOnestep_Direction();
 		TestU_Subfunction();
 	}

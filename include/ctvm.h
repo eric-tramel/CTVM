@@ -28,16 +28,8 @@ BoostDoubleVector VoxelGradientAdjointSum(BoostDoubleVector X, unsigned long ind
                                           unsigned int SideLength);
 // ENDTODO
 
-// Deprecated
-BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
-BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
-BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
-
 
 /* Shrinkage-like Operators */
-// EWT: I have verified the operation of both of these Shrike operators
-//      (the Anisotropic and Isotropic versions), so we can be assured in
-//      their correct operation.
 enum TVType {ISOTROPIC,ANISOTROPIC};
 BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, 
                                   double beta);
@@ -47,32 +39,27 @@ BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
                               double beta, TVType ShrikeMode);
 
 /* Optimization */
-double LagrangianNew(BoostDoubleMatrix A, BoostDoubleVector U, 
-                  BoostDoubleVector B, BoostDoubleMatrix W, 
-                  BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                  double beta, double mu,
-                  unsigned int SideLength, TVType GradNorm);
-
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 
-                  BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                  double beta, double mu);
+                  BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
+                  double beta, double mu,
+                  unsigned long SideLength, TVType GradNorm);
 
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk, 
                                     BoostDoubleVector B, BoostDoubleMatrix Wk, 
-                                    BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
+                                    BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
                                     double beta, double mu, unsigned long SideLength);
 
 double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, 
                      BoostDoubleVector B, BoostDoubleMatrix Wk, 
-                     BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
+                     BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
                      double beta, double mu, unsigned long SideLength);
 
-void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, 
-                                           BoostDoubleVector B, BoostDoubleMatrix& W, 
-                                           BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, 
+                                           BoostDoubleVector B, BoostDoubleMatrix &W, 
+                                           BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
                                            double beta, double mu, unsigned long SideLength);
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y);
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y, unsigned long SideLength);
 
 #endif
