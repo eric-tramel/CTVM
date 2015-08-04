@@ -401,7 +401,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, BoostDo
 	} while (innerstop > tol);
 }
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDoubleVector TiltAngles*/) // Why TiltAngles?
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y)
 {
 	/*
 	* Function: tval3_reconstruction
@@ -411,10 +411,13 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDouble
 	* Give a reconstructed image of electron tomography based on the TVAL3 method
 	* Output type: 'BoostDoubleMatrix (L,L)'
 	*/
-	unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
-	unsigned long o = Sinogram.size2(); // Numbers of tilt angles
-	unsigned long m = l * o; // Numbers of measurements
-	unsigned long n = l * l; // Size of rasterized Image vector
+	// unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
+	// unsigned long o = Sinogram.size2(); // Numbers of tilt angles
+	// unsigned long m = l * o; // Numbers of measurements
+	// unsigned long n = l * l; // Size of rasterized Image vector
+	unsigned long m = A.size1();
+	unsigned long n = A.size2();
+	unsigned long l = sqrt(n); // allowing truncation
 	
 	double mu = 3;
 	double beta = sqrt(2);
@@ -424,22 +427,22 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDouble
 
 	BoostDoubleMatrix W = BoostZeroMatrix(n, 2);// W(i,0) = 0 for all i
 	BoostDoubleMatrix NU = BoostZeroMatrix(n, 2);
-	BoostDoubleMatrix X = BoostZeroMatrix(l, l);
-	BoostDoubleMatrix A = CreateRandomMatrix(m, n);
+	// BoostDoubleMatrix X = BoostZeroMatrix(l, l);
+	// BoostDoubleMatrix A = CreateRandomMatrix(m, n);
 	
 	BoostDoubleVector U = BoostZeroVector(n); // U(0) = 0 for all i
 	BoostDoubleVector Uk_1 = BoostZeroVector(n); 
 	BoostDoubleVector LAMBDA = BoostZeroVector(m);
-	BoostDoubleVector B = MatrixToVector(Sinogram);
+	// BoostDoubleVector B = MatrixToVector(Sinogram);
 	
 	do
 	{
 		Uk_1 = U;
 		std::cout << " * Calculating the Alternating Minimisation..." << std::endl; 
-		Alternating_Minimisation(A, U, B, W, NU, LAMBDA, beta, mu, l);
+		Alternating_Minimisation(A, U, y, W, NU, LAMBDA, beta, mu, l);
 		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
 		NU = NU - beta*(DiU - W);
-		LAMBDA = LAMBDA - mu*(prod(A, U) - B);
+		LAMBDA = LAMBDA - mu*(prod(A, U) - y);
 
 		beta = coef*beta;
 		mu = coef*beta;
@@ -447,8 +450,8 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDouble
 		outerstop = norm_2(U - Uk_1);
 	} while (outerstop > tol);
 
-	X = VectorToMatrix(U, l, l);
-return X;
+	// X = VectorToMatrix(U, l, l);
+return VectorToMatrix(U, l, l);
 }
 
 

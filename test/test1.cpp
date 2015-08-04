@@ -444,7 +444,7 @@ void TestReconstruction(int argc, char **argv) {
 	unsigned int N = L*L;
 	unsigned int M = MeasurementRate*N;     // Allow truncation
 
-	cout << "Running CS Experiment for \\alpha = " << MeasurementRate << ", \\Delta = " << NoiseVariance << endl;
+	cout << "Running CS Experiment for L = "<<L<<" \\alpha = " << MeasurementRate << ", \\Delta = " << NoiseVariance << endl;
 
 	/* Load Image */
 	cout << " * Loading image (" << OriginalImageFile << ")..." << flush;
@@ -452,16 +452,28 @@ void TestReconstruction(int argc, char **argv) {
 	BoostDoubleVector XVect = MatrixToVector(XImage);
 	cout << "done." << endl;
 
+    /* Create Projection Matrix */
+    cout<<" * Creating Random Matrix ("<<M<<"x"<<N<<")..."<<flush;
+    BoostDoubleMatrix A = CreateRandomMatrix(M,N);
+    cout<<"done."<<endl;
+
+    /* Create Measurements */
+    cout<<" * Generating Measurements..."<<flush;
+    BoostDoubleVector y = prod(A,XVect) + sqrt(NoiseVariance)*CreateRandomVector(M);
+    cout<<"done."<<endl;
+
 	/* Perform Reconstruction*/
 	// Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
 	cout << " * Computing the recorded image by the TVAL3 method..." << endl;
 	t = clock();
-	BoostDoubleMatrix XRecImage = tval3_reconstruction(XImage);
+	BoostDoubleMatrix XRecImage = tval3_reconstruction(A,y);
 	t = clock() - t;
 	cout << "done." << ReportTime(t) << endl;
 
-	/* Write Result */
+	/* Reshape Output */
+	// XRecImage = VectorToMatrix(XRecImage,L,L);
 
+	/* Write Result */
 	cout << " * Writing result to image (" << OutputImageFile << ")..." << flush;
 	WriteImage(NormalizeMatrix(XRecImage), OutputImageFile);
 	cout << "done." << endl;

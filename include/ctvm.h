@@ -72,6 +72,6 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U,
                                            BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
                                            double beta, double mu, unsigned long l);
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram/*, BoostDoubleVector TiltAngles*/);
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y);
 
 #endif
