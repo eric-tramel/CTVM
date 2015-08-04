@@ -489,7 +489,7 @@ void TestReconstruction(int argc, char **argv) {
 	unsigned int L = atoi(ImageSizeStr);
 
 	/* Specify Problem Settings */
-	double MeasurementRate = 0.5;
+	double MeasurementRate = 1.0;
 	double NoiseVariance = 0.0;
 	unsigned int N = L*L;
 	unsigned int M = MeasurementRate*N;     // Allow truncation

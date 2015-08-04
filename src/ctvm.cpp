@@ -402,6 +402,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 
 	do
 	{
+		std::cout<<"  * AM Loop Iter ["<<LoopCounter<<"]"<<std::flush<<std::endl;
 //*************************** "w sub-problem" ***************************
 		// for (unsigned long i = 0; i < n; ++i)
 		// {
@@ -414,7 +415,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 		// 		W(i, j) = Wi(j);
 		// 	}
 		// }
-		W = ApplyShrike(W,NU,beta,ANISOTROPIC);
+		W = ApplyShrike(W,NU,beta,ISOTROPIC);
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		// std::cout << " * Calculating the Onestep gradient's direction..." << std::endl;
@@ -440,7 +441,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 			BoostDoubleVector Uk_alphaD = U - alpha * Dk;
 			Qk = U_Subfunction(A, Uk_alphaD, B, W, NU, LAMBDA, beta, mu, SideLength);
 			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
-			std::cout<<"       * Armijo Iter ["<<ArmijoLoopCounter<<"] Step Size (alpha): "<<alpha<<std::endl;
+			std::cout<<"       > Armijo Iter ["<<ArmijoLoopCounter<<"] Step Size (alpha): "<<alpha<<std::flush<<std::endl;
 			ArmijoLoopCounter++;
 		} while ((Qk > armijo_tol) && (ArmijoLoopCounter < MaxArmijoIterations));
 
@@ -482,7 +483,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y)
 	double outerstop;
 	double tol = 0.5;
 	unsigned int LoopCounter = 0;
-	unsigned int MaxIterations = 100;
+	unsigned int MaxIterations = 10;
 
 	BoostDoubleMatrix W = BoostZeroMatrix(n, 2);// W(i,0) = 0 for all i
 	BoostDoubleMatrix NU = BoostZeroMatrix(n, 2);
@@ -510,7 +511,8 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y)
 		beta = coef*beta;
 		mu = coef*beta;
 
-		cout<<"Outer Iter ["<<LoopCounter<<"] U: "<<U<<endl;
+		// cout<<"Outer Iter ["<<LoopCounter<<"] U: "<<U<<endl;
+		cout<<"Outer Iter ["<<LoopCounter<<"]"<<endl;
 		outerstop = norm_2(U - Uk_1);
 		LoopCounter++;
 	} while (outerstop > tol && LoopCounter < MaxIterations);
