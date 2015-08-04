@@ -52,6 +52,7 @@ double LagrangianNew(BoostDoubleMatrix A, BoostDoubleVector U,
                   BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
                   double beta, double mu,
                   unsigned int SideLength, TVType GradNorm);
+
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
                   BoostDoubleVector B, BoostDoubleMatrix W, 
                   BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
@@ -60,17 +61,17 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U,
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk, 
                                     BoostDoubleVector B, BoostDoubleMatrix Wk, 
                                     BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                                    double beta, double mu, unsigned long l);
+                                    double beta, double mu, unsigned long SideLength);
 
-double U_subfunction(BoostDoubleMatrix A, BoostDoubleVector U, 
+double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, 
                      BoostDoubleVector B, BoostDoubleMatrix Wk, 
                      BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                     double beta, double mu);
+                     double beta, double mu, unsigned long SideLength);
 
 void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector& U, 
                                            BoostDoubleVector B, BoostDoubleMatrix& W, 
                                            BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, 
-                                           double beta, double mu, unsigned long l);
+                                           double beta, double mu, unsigned long SideLength);
 
 BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y);
 

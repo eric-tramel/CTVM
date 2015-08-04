@@ -364,65 +364,115 @@ void TestLagrangian(){
 void TestOnestep_Direction() {
 	using namespace std;
 
-	BoostDoubleMatrix Ad(3, 4), Wd(4, 2), NUd(4, 2);
-	BoostDoubleVector Ud(4), Bd(3), LAMBDAd(3);
-	double betad = 0.25;
-	double mud = 0.5;
+	BoostDoubleMatrix A(3, 4), W(4, 2), Nu(4, 2);
+	BoostDoubleVector U(4), B(3), Lambda(3);
+	double beta = 0.25;
+	double mu = 0.5;
 	clock_t t;
-	
+
 	/* Init Projections */
-	Ad(0, 0) = 1; Ad(0, 1) = 1; Ad(0, 2) = 1; Ad(0, 3) = 1;
-	Ad(1, 0) = 2; Ad(1, 1) = 2; Ad(1, 2) = 2; Ad(1, 3) = 2;
-	Ad(2, 0) = 3; Ad(2, 1) = 3; Ad(2, 2) = 3; Ad(2, 3) = 3;
-	
+	A(0, 0) = 1; A(0, 1) = 1; A(0, 2) = 1; A(0, 3) = 1;
+	A(1, 0) = 2; A(1, 1) = 2; A(1, 2) = 2; A(1, 3) = 2;
+	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;
+
 	/* Init Gradient Dual Variables  */
-	Wd(0, 0) = -1; Wd(0, 1) = -1;
-	Wd(1, 0) = -1; Wd(1, 1) = -1;
-	Wd(2, 0) = -1; Wd(2, 1) = -1;
-	Wd(3, 0) = -1; Wd(3, 1) = -1;
+	W(0, 0) = -1; W(0, 1) = -1;
+	W(1, 0) = -1; W(1, 1) = -1;
+	W(2, 0) = -1; W(2, 1) = -1;
+	W(3, 0) = -1; W(3, 1) = -1;
 
 	/* Init Dual Lag. Multipliers */
-	NUd(0, 0) = 0.25; NUd(0, 1) = 0.25;
-	NUd(1, 0) = 0.25; NUd(1, 1) = 0.25;
-	NUd(2, 0) = 0.25; NUd(2, 1) = 0.25;
-	NUd(3, 0) = 0.25; NUd(3, 1) = 0.25;
+	Nu(0, 0) = 0.25; Nu(0, 1) = 0.25;
+	Nu(1, 0) = 0.25; Nu(1, 1) = 0.25;
+	Nu(2, 0) = 0.25; Nu(2, 1) = 0.25;
+	Nu(3, 0) = 0.25; Nu(3, 1) = 0.25;
 
 	/* Init Image Vector */
-	Ud(0) = 1;
-	Ud(1) = 2;
-	Ud(2) = 3;
-	Ud(3) = 4;
+	U(0) = 1;
+	U(1) = 2;
+	U(2) = 3;
+	U(3) = 4;
 
 	/* Init Observations */
-	Bd(0) = 3;
-	Bd(1) = 3;
-	Bd(2) = 3;
+	B(0) = 3;
+	B(1) = 3;
+	B(2) = 3;
 
 	/* Init Observation Lag. Multipliers */
-	LAMBDAd(0) = 0.5;
-	LAMBDAd(1) = 0.5;
-	LAMBDAd(2) = 0.5;
+	Lambda(0) = 0.5;
+	Lambda(1) = 0.5;
+	Lambda(2) = 0.5;
 
-	/*Test One-step direction*/
-	cout << "One-step direction Test" << endl;
-	cout << "-----------------------" << endl;
+	/*Test Onestep direction*/
+	cout << "Lagrangian Test" << endl;
+	cout << "---------------" << endl;
 
-	cout << prefix << "Set A = " << Ad << endl;
-	cout << prefix << "Set U = " << Ud << endl;
-	cout << prefix << "Set B = " << Bd << endl;
-	cout << prefix << "Set W = " << Wd << endl;
-	cout << prefix << "Set Nu = " << NUd << endl;
-	cout << prefix << "Set Lambda = " << LAMBDAd << endl;
-	cout << prefix << "Set beta = " << betad << endl;
-	cout << prefix << "Set mu = " << mud << endl;
+	cout << prefix << "Expected result: [58.75  58.25  57.75  57.25]" << endl;
 
-	cout << prefix << "Calculating direction value... [58.75  58.25  57.75  57.25] Expected. " << flush;
+	cout << prefix << "Calculating direction value..." << flush;
 	t = clock();
-	BoostDoubleVector D = Onestep_Direction(Ad, Ud, Bd, Wd, NUd, LAMBDAd, betad, mud, 2);
+	BoostDoubleVector D = Onestep_Direction(A, U, B, W, Nu, Lambda, beta, mu, 2);
 	t = clock() - t;
 	cout << "done. [" << D << "]." << ReportTime(t) << endl;
 
 	cout << prefix << "Passed." << endl << endl;
+}
+
+void TestU_Subfunction() {
+	using namespace std;
+
+	BoostDoubleMatrix A(3, 4), W(4, 2), Nu(4, 2);
+	BoostDoubleVector U(4), B(3), Lambda(3);
+	double beta = 0.25;
+	double mu = 0.5;
+	clock_t t;
+
+	/* Init Projections */
+	A(0, 0) = 1; A(0, 1) = 1; A(0, 2) = 1; A(0, 3) = 1;
+	A(1, 0) = 2; A(1, 1) = 2; A(1, 2) = 2; A(1, 3) = 2;
+	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;
+
+	/* Init Gradient Dual Variables  */
+	W(0, 0) = -1; W(0, 1) = -1;
+	W(1, 0) = -1; W(1, 1) = -1;
+	W(2, 0) = -1; W(2, 1) = -1;
+	W(3, 0) = -1; W(3, 1) = -1;
+
+	/* Init Dual Lag. Multipliers */
+	Nu(0, 0) = 0.25; Nu(0, 1) = 0.25;
+	Nu(1, 0) = 0.25; Nu(1, 1) = 0.25;
+	Nu(2, 0) = 0.25; Nu(2, 1) = 0.25;
+	Nu(3, 0) = 0.25; Nu(3, 1) = 0.25;
+
+	/* Init Image Vector */
+	U(0) = 1;
+	U(1) = 2;
+	U(2) = 3;
+	U(3) = 4;
+
+	/* Init Observations */
+	B(0) = 3;
+	B(1) = 3;
+	B(2) = 3;
+
+	/* Init Observation Lag. Multipliers */
+	Lambda(0) = 0.5;
+	Lambda(1) = 0.5;
+	Lambda(2) = 0.5;
+
+	/*Test quadratic function*/
+	cout << "Quadratic function Test" << endl;
+	cout << "-----------------------" << endl;
+	cout << prefix << "Expected result: [241.5]" << endl;
+
+	cout << prefix << "Calculating quadratic value..." << flush;
+	t = clock();
+	double Q = U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, 2);
+	t = clock() - t;
+	cout << "done. [" << Q << "]." << ReportTime(t) << endl;
+
+	cout << prefix << "Passed." << endl << endl;
+
 }
 
 void TestReconstruction(int argc, char **argv) {
@@ -483,20 +533,23 @@ int main(int argc, char **argv){
 	using namespace std;
 	cout<<endl;
 
-	// TestRasterization();
-	// TestRandomMatrix();
-	// TestNormalization();
-	// TestNeighborCheck();
-	// TestGradient();
-	// TestShrike();
-	// TestLagrangian();
-	// TestOnestep_Direction();
+	if (argc == 1) {
+		TestRasterization();
+		TestRandomMatrix();
+		TestNormalization();
+		TestNeighborCheck();
+		TestGradient();
+		TestShrike();
+		// TestLagrangian();
+		TestOnestep_Direction();
+		TestU_Subfunction();
+	}
 
-	// if(argc == 3){
-	// // Only run tests requiring File I/O if the file names have been passed.
-	// 	TestImageMagick(argv[1]);
-	// 	TestMatrixIO(argv[1],argv[2]);
-	// }
+	 if (argc == 3){
+	 // Only run tests requiring File I/O if the file names have been passed.
+	 	TestImageMagick(argv[1]);
+	 	TestMatrixIO(argv[1],argv[2]);
+	 }
 	if (argc == 4) {
 	// Only run tests requiring Size and File I/O if the size length and the file names have been passed.
 		TestReconstruction(argc, argv);

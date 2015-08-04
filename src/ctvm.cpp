@@ -325,43 +325,52 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 return Dk;
 }
 
-double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix Nu, BoostDoubleVector Lambda, double beta, double mu, unsigned long SideLength)
 {
 	/*
-	* Function: U_subfunction
+	* Function: U_Subfunction
 	* -----------------------
-	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'unsigned long' + 'unsigned long'
-	* Give the value of the quadratic function Qk(U) one-step steepest descent gradient that minimize the "u-subproblem"
-	* Output type: 'double'.
+	* Calculate the quadratic cost function for the give problem state.
+	*
+	* Input --
+	* A: an (M x N) projection matrix
+	* U: an (N x 1) vector representing a rasterized image prediction
+	* B: an (M x 1) set of observations
+	* W: an (N x 2) set of dual variables corresponding to per-pixel (-voxel) gradients
+	* Nu: an (N x 2) set of Lagrangian multipliers
+	* Lambda: an (M x 2) set of Lagrangian multiplies
+	* beta: scaling term on the matching between W and the true gradients
+	* mu: scaling term on the matching between A*u and b
+	* SideLength: the side length for the target image, i.e. N = SideLength^2
+	*
+	* Output -- a decimal value for the cost.
 	*/
-	std::cout<<" > Inside U_subfunction():"<<std::endl;
-	double Q;
-	unsigned long n = U.size();
-	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
-	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
+	double Q = 0.0;
 
-	for (unsigned long i = 0; i < n; ++i)
-	{
-		BoostDoubleVector DiU = Gradient2D(U, i);
-		for (int j = 0; j < n; ++j)
-		{
-			NUi(j) = NU(i, j);
-			Wi(j) = W(i, j);
-		}
-		BoostDoubleVector DIFFk = DiU - Wi;
-		double square_norm_diffk = norm_2(DIFFk)*norm_2(DIFFk);
+	// Get all Gradients
+	BoostDoubleMatrix Du = AllPixelGradients(U, SideLength);
 
-		Q = Q - inner_prod(NUi, DIFFk) + (beta / 2) * square_norm_diffk;
+	// Loop over pixels
+	BoostDoubleVector Dui;
+	BoostDoubleVector Wi;
+	BoostDoubleVector Nui;
+	for (unsigned long i = 0; i < U.size(); ++i) {
+		Dui = GetRow(Du, i);
+		Wi = GetRow(W, i);
+		Nui = GetRow(Nu, i);
+
+		BoostDoubleVector GradDiff = Dui - Wi;
+		Q += -inner_prod(Nui, GradDiff) + (beta / 2) * SquareNorm(GradDiff);
 	}
-	BoostDoubleVector PROD = prod(A, U);
-	BoostDoubleVector DIFF = PROD - B;
-	double square_norm_diff = norm_2(DIFF)*norm_2(DIFF);
 
-	Q = Q - inner_prod(LAMBDA, DIFF) + (mu / 2)*square_norm_diff;
+	// Residual Contribution
+	BoostDoubleVector Residual = prod(A, U) - B;
+	Q += -inner_prod(Lambda, Residual) + (mu / 2)*SquareNorm(Residual);
+
 	return Q;
 }
 
-void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDoubleVector B, BoostDoubleMatrix &W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long l)
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDoubleVector B, BoostDoubleMatrix &W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu, unsigned long SideLength)
 {
 	/*
 	* Function: Alternating_Minimisation
@@ -403,8 +412,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		std::cout << " * Calculating the Onestep gradient's direction..." << std::endl;
-		BoostDoubleVector Dk_1 = Onestep_Direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu, l);
-		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, NU, LAMBDA, beta, mu, l);
+		BoostDoubleVector Dk_1 = Onestep_Direction(A, Uk_1, B, W, NU, LAMBDA, beta, mu, SideLength);
+		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, NU, LAMBDA, beta, mu, SideLength);
 		BoostDoubleVector Yk = Dk - Dk_1;
 
 		//******** alpha = onestep_gradient ********
@@ -423,7 +432,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 			alpha = rho * alpha;
 
 			BoostDoubleVector Uk_alphaD = U - alpha * Dk;
-			Qk = U_Subfunction(A, Uk_alphaD, B, W, NU, LAMBDA, beta, mu);
+			Qk = U_Subfunction(A, Uk_alphaD, B, W, NU, LAMBDA, beta, mu, SideLength);
 			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
 		} while (Qk > armijo_tol);
 
@@ -434,7 +443,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 
 //************************ Implement coefficents ************************
 		double Pk1 = eta*Pk + 1;
-		double Qk1 = U_Subfunction(A, U, B, W, NU, LAMBDA, beta, mu);
+		double Qk1 = U_Subfunction(A, U, B, W, NU, LAMBDA, beta, mu, SideLength);
 		C = (eta*Pk*C + Qk1)/Pk1;
 		Pk = Pk1;
 	} while (innerstop > tol);
