@@ -56,8 +56,8 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleVector CreateRandomVector(int length);
 
 /* Image Operations */
-int RightNeighbor(unsigned int index, unsigned int SideLength);
-int DownNeighbor(unsigned int index, unsigned int SideLength);
+int RightNeighbor(unsigned int index, unsigned long SideLength);
+int DownNeighbor(unsigned int index, unsigned long SideLength);
 
 /* File I/O */
 // Image

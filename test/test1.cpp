@@ -404,8 +404,8 @@ void TestOnestep_Direction() {
 	Lambda(2) = 0.5;
 
 	/*Test Onestep direction*/
-	cout << "Lagrangian Test" << endl;
-	cout << "---------------" << endl;
+	cout << "One-step direction Test" << endl;
+	cout << "-----------------------" << endl;
 
 	cout << prefix << "Expected result: [58.75  58.25  57.75  57.25]" << endl;
 
@@ -540,7 +540,7 @@ int main(int argc, char **argv){
 		TestNeighborCheck();
 		TestGradient();
 		TestShrike();
-		TestLagrangian();
+		// TestLagrangian();
 		TestOnestep_Direction();
 		TestU_Subfunction();
 	}

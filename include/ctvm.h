@@ -13,8 +13,8 @@
 #define VERT 1
 BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
                                 unsigned int SideLength);
-BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength);
-BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int SideLength);
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLength);
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength);
 
 // TODO: Implement the following
 // 2D Gradients...
@@ -48,7 +48,8 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U,
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk, 
                                     BoostDoubleVector B, BoostDoubleMatrix Wk, 
                                     BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
-                                    double beta, double mu, unsigned long SideLength);
+                                    double beta, double mu,
+								    unsigned long SideLength);
 
 double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, 
                      BoostDoubleVector B, BoostDoubleMatrix Wk, 
@@ -56,10 +57,12 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
                      double beta, double mu, unsigned long SideLength);
 
 void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, 
-                                           BoostDoubleVector B, BoostDoubleMatrix &W, 
-                                           BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
-                                           double beta, double mu, unsigned long SideLength);
+                              BoostDoubleVector B, BoostDoubleMatrix &W, 
+                              BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
+                              double beta, double mu, 
+							  unsigned long SideLength);
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y, unsigned long SideLength);
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
+									   unsigned long SideLength);
 
 #endif

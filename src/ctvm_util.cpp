@@ -521,7 +521,7 @@ double MinimumEntry(BoostDoubleVector AVector){
 return MinValue;
 }
 
-int RightNeighbor(unsigned int Index, unsigned int SideLength){
+int RightNeighbor(unsigned int Index, unsigned long SideLength){
 /*
 * Function: RightNeighbor
 * ------------------------- 
@@ -541,7 +541,7 @@ int RightNeighbor(unsigned int Index, unsigned int SideLength){
 return ((Index>(SideLength*SideLength)-SideLength - 1) ? -1 : (Index+SideLength));
 }
 
-int DownNeighbor(unsigned int Index, unsigned int SideLength){
+int DownNeighbor(unsigned int Index, unsigned long SideLength){
 /*
 * Function: DownNeighbor
 * ------------------------- 

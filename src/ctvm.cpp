@@ -2,7 +2,7 @@
 
 
 BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index, 
-								unsigned int SideLength){
+								unsigned long SideLength){
 /*
 * Function: PixelGradient
 * -----------------------
@@ -31,7 +31,7 @@ BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
 return Gradient;
 }
 
-BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength){
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLength){
 /*
 * Function: AllPixelGradients
 * ---------------------------
@@ -45,17 +45,17 @@ BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned int SideLength
 *
 * Output -- A (N x 2) pixel gradient vector.
 */	
-	unsigned int N = X.size();
+	unsigned long N = X.size();
 	BoostDoubleMatrix AllGradients(N,2);
 
-	for(unsigned int i = 0; i < N; ++i){
+	for(unsigned long i = 0; i < N; ++i){
 		SetRow(AllGradients,PixelGradient(X,i,SideLength),i);
 	}
 
 return AllGradients;
 }
 
-BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int SideLength){
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength){
 /*
 * Function: PixelGradientAdjointSum
 * ---------------------------------
@@ -75,9 +75,9 @@ BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Side
 *
 * Output -- A (N x 1) rasterized image vector.
 */	
-	unsigned int N = G.size1();
+	unsigned long N = G.size1();
 	BoostDoubleVector ImageVector = BoostZeroVector(N);
-	for(unsigned int i = 0; i < N; ++i){
+	for(unsigned long i = 0; i < N; ++i){
 		int thisRightNeighbor = RightNeighbor(i,SideLength);
 		int thisDownNeighbor = DownNeighbor(i,SideLength);
 		BoostDoubleVector thisGradient = GetRow(G,i);
@@ -94,7 +94,8 @@ BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned int Side
 return ImageVector;
 }
 
-BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu,
+									double beta){
 /* 
  * Function: Shrike Anisotropic
  * ----------------------------
@@ -109,13 +110,14 @@ BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu, d
  *
  * Output -- a (d x 1) "shriked" version of the gradient vector
 */
- 	unsigned int d = W.size();
+ 	unsigned long d = W.size();
  	BoostDoubleVector WShifted = W - Nu/beta;
 	BoostDoubleVector WShriked = AbsoluteValueVector(WShifted) - BoostScalarDoubleVector(d,1/beta); 	
 return HadamardProduct(MaxVector(WShriked,0.0),SignVector(WShifted));
 }
 
-BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, double beta){
+BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu,
+								  double beta){
 /* 
  * Function: Shrike Isotropic
  * -------------------------------
@@ -140,7 +142,6 @@ BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu, dou
 	else{
 		result = (fmax(WShiftedNorm - 1/beta,0.0) * (WShifted/WShiftedNorm));
 	}
-
 
 return result;
 }
@@ -243,7 +244,8 @@ return L;
 BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U, 
 									BoostDoubleVector B, BoostDoubleMatrix W, 
 									BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
-									double beta, double mu, unsigned long SideLength){
+									double beta, double mu,
+									unsigned long SideLength){
 	/*
 	* Function: Onestep_Direction
 	* ---------------------------
@@ -288,7 +290,11 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 return Dk;
 }
 
-double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix Nu, BoostDoubleVector Lambda, double beta, double mu, unsigned long SideLength)
+double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
+					 BoostDoubleVector B, BoostDoubleMatrix W, 
+					 BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+					 double beta, double mu, 
+					 unsigned long SideLength)
 {
 	/*
 	* Function: U_Subfunction
@@ -333,7 +339,11 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	return Q;
 }
 
-void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDoubleVector B, BoostDoubleMatrix &W, BoostDoubleMatrix Nu, BoostDoubleVector Lambda, double beta, double mu, unsigned long SideLength)
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
+							  BoostDoubleVector B, BoostDoubleMatrix &W,
+							  BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+							  double beta, double mu,
+							  unsigned long SideLength)
 {
 	/*
 	* Function: Alternating_Minimisation
@@ -354,29 +364,32 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 	* Output -- None.
 	*/
 
-	double N = U.size();
+	using namespace std;
+
+	unsigned long N = U.size();
 	double delta = 0.00001;
 	double rho = 0.6;
 	double eta = 0.9995;
 	double Pk = 1; 
-	double C = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, SideLength, ISOTROPIC);
+	double C = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, SideLength, ANISOTROPIC);
 
 	double armijo_tol, Qk, innerstop;
 	double tol = 0.001;
 
 	unsigned int LoopCounter = 0;
-	unsigned int MaxIterations = 10;
+	unsigned int MaxIterations = 5;
 
 	unsigned int ArmijoLoopCounter = 0;
-	unsigned int MaxArmijoIterations = 10;
+	unsigned int MaxArmijoIterations = 5;
 
 	BoostDoubleVector Uk_1 = BoostZeroVector(N);
 
 	do
 	{
-		std::cout<<"  * AM Loop Iter ["<<LoopCounter<<"]"<<std::flush<<std::endl;
+		std::cout<<"  * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
+		// cout << "    U(k) = [" << U << "]" << endl;
 //*************************** "w sub-problem" ***************************
-		W = ApplyShrike(W,Nu,beta,ISOTROPIC);
+		W = ApplyShrike(W,Nu,beta,ANISOTROPIC);
 
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
@@ -385,25 +398,32 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 
 		//******** alpha = onestep_gradient ********
 
-		// std::cout<< "  * Dk ="<<Dk<<std::endl;
-		// std::cout << " * Yk ="<<Yk<<std::endl;
-		// std::cout << " * Sk ="<<Sk<<std::endl;
-		double denominator = inner_prod(Yk, Yk);
-		double numerator = inner_prod(Sk, Yk);		
+		std::cout << "   * U(k) - U(k-1) ="<<Sk<<std::endl;
+		// std::cout << "   * D(k) ="<<Dk<<std::endl;
+		std::cout << "   * D(k) - D(k-1) ="<<Yk<<std::endl;
+		double numerator = inner_prod(Sk, Yk);
+		double denominator = inner_prod(Yk, Yk);	
 		double alpha = numerator/denominator;
-		// std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
+		cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
 		do 
 		{ 
 			alpha = rho * alpha;
-
-			Qk = U_Subfunction(A, U - alpha*Dk, B, W, Nu, Lambda, beta, mu, SideLength);
+			BoostDoubleVector U_alphad = U - alpha*Dk;
+			Qk = U_Subfunction(A, U_alphad, B, W, Nu, Lambda, beta, mu, SideLength);
 			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
-			std::cout<<"       > Armijo Iter ["<<ArmijoLoopCounter<<"] Step Size (alpha): "<<alpha<<std::flush<<std::endl;
+			cout << "       > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
+			cout << "         U - alpha *d: " << U_alphad << endl;
+			//cout << " alpha: [" << alpha << "]" << flush << endl;
+			//cout << " Q(k): [" << Qk << "]" << flush << endl;
+			//cout << " armijo tol: [" << armijo_tol << "]" << flush << endl;
 			ArmijoLoopCounter++;
 		} while ((Qk > armijo_tol) && (ArmijoLoopCounter < MaxArmijoIterations));
 
 		Uk_1 = U;
 		U -= alpha * Dk;
+		for (unsigned long i = 0; i < U.size(); ++i) {
+			if (U(i) < 0) { U(i) = 0; }
+		}
 		innerstop = norm_2(U - Uk_1);
 
 //************************ Implement coefficents ************************
@@ -414,7 +434,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U, BoostDo
 	} while ((innerstop > tol) && (LoopCounter < MaxIterations));
 }
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y, unsigned long SideLength)
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
+									   unsigned long SideLength)
 {
 	/*
 	* Function: tval3_reconstruction
@@ -443,7 +464,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	double outerstop;
 	double tol = 0.001;
 	unsigned int LoopCounter = 0;
-	unsigned int MaxIterations = 10;
+	unsigned int MaxIterations = 5;
 	
 	// BoostDoubleVector U = BoostZeroVector(N); // U(0) = 0 for all i
 	BoostDoubleVector U = prod(trans(A),y);
@@ -453,13 +474,15 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 
 	BoostDoubleMatrix Du = AllPixelGradients(U, L);
 	BoostDoubleMatrix Nu = BoostZeroMatrix(N, 2);
-	BoostDoubleMatrix W = ApplyShrike(Du, Nu, beta, ISOTROPIC);	
+	BoostDoubleMatrix W = ApplyShrike(Du, Nu, beta, ANISOTROPIC);	
 	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
 
 	using namespace std;
 	
 	do
 	{
+		cout << "Outer Iter [" << LoopCounter +1 << "]" << endl;
+		// cout << " U* = [" << U << "]" << endl;
 		Uk_1 = U;
 		Alternating_Minimisation(A, U, y, W, Nu, Lambda, beta, mu, L);
 		BoostDoubleMatrix Du = AllPixelGradients(U, L);
@@ -469,8 +492,6 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 		beta = coef*beta;
 		mu = coef*beta;
 
-		// cout<<"Outer Iter ["<<LoopCounter<<"] U: "<<U<<endl;
-		cout<<"Outer Iter ["<<LoopCounter<<"]"<<endl;
 		outerstop = norm_2(U - Uk_1);
 		LoopCounter++;
 	} while (outerstop > tol && LoopCounter < MaxIterations);
