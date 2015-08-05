@@ -404,7 +404,12 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		double numerator = inner_prod(Sk, Yk);
 		double denominator = inner_prod(Yk, Yk);	
 		double alpha = numerator/denominator;
+<<<<<<< HEAD
 		cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
+=======
+		// std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
+		ArmijoLoopCounter = 0;
+>>>>>>> origin/eric-review
 		do 
 		{ 
 			alpha = rho * alpha;
@@ -458,8 +463,8 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	unsigned long N = A.size2();
 	unsigned long L = SideLength; // allowing truncation
 	
-	double mu = 8.0;
-	double beta = 8.0;
+	double mu = 1024.0;
+	double beta = 1024.0;
 	double coef = 1.0;
 	double outerstop;
 	double tol = 0.001;
