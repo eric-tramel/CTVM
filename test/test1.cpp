@@ -531,6 +531,7 @@ void TestReconstruction(int argc, char **argv) {
 	/* Load Image */
 	cout << " * Loading image (" << OriginalImageFile << ")..." << flush;
 	BoostDoubleMatrix XImage = LoadImage(OriginalImageFile, L, L);
+	XImage = NormalizeMatrix(XImage);
 	BoostDoubleVector XVect = MatrixToVector(XImage);
 	cout << "done." << endl;
 

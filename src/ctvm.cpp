@@ -404,12 +404,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		double numerator = inner_prod(Sk, Yk);
 		double denominator = inner_prod(Yk, Yk);	
 		double alpha = numerator/denominator;
-<<<<<<< HEAD
 		cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
-=======
-		// std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
 		ArmijoLoopCounter = 0;
->>>>>>> origin/eric-review
 		do 
 		{ 
 			alpha = rho * alpha;
@@ -426,15 +422,14 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 
 		Uk_1 = U;
 		U -= alpha * Dk;
-		for (unsigned long i = 0; i < U.size(); ++i) {
-			if (U(i) < 0) { U(i) = 0; }
-		}
 		innerstop = norm_2(U - Uk_1);
 
 //************************ Implement coefficents ************************
 		double Pk1 = eta*Pk + 1;
 		C = (eta*Pk*C + U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength))/Pk1;
 		Pk = Pk1;
+
+		std::cout<<"  * End AM Loop Iter ["<<LoopCounter<<"]  U Step Size : "<<alpha<<std::flush<<std::endl;
 		LoopCounter++;
 	} while ((innerstop > tol) && (LoopCounter < MaxIterations));
 }
@@ -495,8 +490,10 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 		Lambda = Lambda - mu*(prod(A, U) - y);
 
 		beta = coef*beta;
-		mu = coef*beta;
+		mu = coef*mu;
 
+		// cout<<"Outer Iter ["<<LoopCounter<<"] U: "<<U<<endl;
+		cout<<"End Outer Iter ["<<LoopCounter<<"] mu : "<<mu<<" | beta : "<<beta<<endl;
 		outerstop = norm_2(U - Uk_1);
 		LoopCounter++;
 	} while (outerstop > tol && LoopCounter < MaxIterations);
