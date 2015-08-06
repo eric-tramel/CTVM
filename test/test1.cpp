@@ -176,6 +176,38 @@ void TestGradient() {
 	cout << prefix << "Passed." << endl << endl;
 }
 
+void TestGradient(char* InputFile, char* OutputFile) {
+	using namespace std;
+	clock_t t;
+	unsigned int L = 128;
+
+	cout << "Gradient Test" << endl;
+	cout << "-------------" << endl;
+
+	/* Medium Resolution */
+	cout << prefix << "Loading image file into matrix at [" << L << "," << L << "]..." << flush;
+	t = clock();
+	BoostDoubleMatrix MediumImageMatrix = LoadImage(InputFile, L, L);
+	t = clock() - t;
+	cout << "done. " << ReportTime(t) << endl;
+
+	/* To Vector */
+	BoostDoubleVector ImageVect = MatrixToVector(MediumImageMatrix);
+
+	/* Compute Gradients */
+	cout << prefix << "Computing gradients..." << flush;
+	t = clock();
+	BoostDoubleMatrix Gradients = AllPixelGradients(ImageVect, L);
+	t = clock() - t;
+	cout << "done. " << ReportTime(t) << endl;
+
+	/* Get out just the horizontal */
+	BoostDoubleVector HorzGradients = GetCol(Gradients, 0);
+
+	/* Write as image */
+	WriteImage(NormalizeMatrix(VectorToMatrix(HorzGradients, L, L)), OutputFile);
+}
+
 void TestShrike(){
 	using namespace std;
 	// With the above settings we expect that the results should be:
@@ -318,7 +350,7 @@ void TestLagrangian(){
 	Lambda(1) = 0.5;
 	Lambda(2) = 0.5;
 	
-	/*Test Lagrangian function*/	
+	/* Test Lagrangian function */	
 	cout<<"Lagrangian Test"<<endl;
 	cout<<"---------------"<<endl;
 
@@ -337,8 +369,7 @@ void TestLagrangian(){
 	t = clock() - t;
 	cout<<"done. ["<<L<<"]. [247.1569...] Expected. "<<ReportTime(t)<<endl;
 
-
-
+	/* Calulating Langrangian on large dataset */
 	A = BoostDoubleMatrix(64*64,128*128);
 	W = BoostDoubleMatrix(128*128,2);
 	Nu = BoostDoubleMatrix(128*128,2);
@@ -376,10 +407,10 @@ void TestOnestep_Direction() {
 	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;
 
 	/* Init Gradient Dual Variables  */
-	W(0, 0) = -1; W(0, 1) = -1;
-	W(1, 0) = -1; W(1, 1) = -1;
-	W(2, 0) = -1; W(2, 1) = -1;
-	W(3, 0) = -1; W(3, 1) = -1;
+	W(0, 0) = -2; W(0, 1) = -1;
+	W(1, 0) = -2; W(1, 1) = 0;
+	W(2, 0) = 0; W(2, 1) = -1;
+	W(3, 0) = 0; W(3, 1) = 1;
 
 	/* Init Dual Lag. Multipliers */
 	Nu(0, 0) = 0.25; Nu(0, 1) = 0.25;
@@ -421,90 +452,73 @@ void TestOnestep_Direction() {
 void TestU_Subfunction() {
 	using namespace std;
 
-	BoostDoubleMatrix A(3, 4), W(4, 2), Nu(4, 2);
-	BoostDoubleVector U(4), B(3), Lambda(3);
-	double beta = 0.25;
-	double mu = 0.5;
+	BoostDoubleMatrix A(3, 9), W(9, 2), Nu(9, 2);
+	BoostDoubleVector U(9), B(3), Lambda(3);
+	double beta = 0.3333;
+	double mu = sqrt(2);
 	clock_t t;
 
 	/* Init Projections */
-	A(0, 0) = 1; A(0, 1) = 1; A(0, 2) = 1; A(0, 3) = 1;
-	A(1, 0) = 2; A(1, 1) = 2; A(1, 2) = 2; A(1, 3) = 2;
-	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;
+	A(0, 0) = 1; A(0, 1) = 1; A(0, 2) = 1; A(0, 3) = 1; A(0, 4) = 1; A(0, 5) = 1; A(0, 6) = 1; A(0, 7) = 1; A(0, 8) = 1;
+	A(1, 0) = 2; A(1, 1) = 2; A(1, 2) = 2; A(1, 3) = 2; A(1, 4) = 2; A(1, 5) = 2; A(1, 6) = 2; A(1, 7) = 2; A(1, 8) = 2;
+	A(2, 0) = 3; A(2, 1) = 3; A(2, 2) = 3; A(2, 3) = 3;	A(2, 4) = 3; A(2, 5) = 3; A(2, 6) = 3; A(2, 7) = 3; A(2, 8) = 3;
 
 	/* Init Gradient Dual Variables  */
-	W(0, 0) = -1; W(0, 1) = -1;
-	W(1, 0) = -1; W(1, 1) = -1;
-	W(2, 0) = -1; W(2, 1) = -1;
+	W(0, 0) = -1; W(0, 1) = 1;
+	W(1, 0) = 1; W(1, 1) = -1;
+	W(2, 0) = 1; W(2, 1) = 1;
 	W(3, 0) = -1; W(3, 1) = -1;
+	W(4, 0) = 0; W(4, 1) = 0;
+	W(5, 0) = -1; W(5, 1) = 1;
+	W(6, 0) = 1; W(6, 1) = -1;
+	W(7, 0) = 1; W(7, 1) = 1;
+	W(8, 0) = -1; W(8, 1) = -1;
 
 	/* Init Dual Lag. Multipliers */
-	Nu(0, 0) = 0.25; Nu(0, 1) = 0.25;
-	Nu(1, 0) = 0.25; Nu(1, 1) = 0.25;
-	Nu(2, 0) = 0.25; Nu(2, 1) = 0.25;
-	Nu(3, 0) = 0.25; Nu(3, 1) = 0.25;
+	Nu(0, 0) = 0.1; Nu(0, 1) = 0.2;
+	Nu(1, 0) = 0.3; Nu(1, 1) = 0.4;
+	Nu(2, 0) = 0.5; Nu(2, 1) = 0.6;
+	Nu(3, 0) = 0.7; Nu(3, 1) = 0.8;
+	Nu(4, 0) = 0.9; Nu(4, 1) = 1.0;
+	Nu(5, 0) = 1.1; Nu(5, 1) = 1.2;
+	Nu(6, 0) = 1.3; Nu(6, 1) = 1.4;
+	Nu(7, 0) = 1.5; Nu(7, 1) = 1.6;
+	Nu(8, 0) = 1.7; Nu(8, 1) = 1.8;
 
 	/* Init Image Vector */
-	U(0) = 1;
-	U(1) = 2;
-	U(2) = 3;
-	U(3) = 4;
+	U(0) = -2;
+	U(1) = 0;
+	U(2) = 1;
+	U(3) = -2.5;
+	U(4) = 3;
+	U(5) = 4.3;
+	U(6) = 1;
+	U(7) = 0;
+	U(8) = -1;
 
 	/* Init Observations */
-	B(0) = 3;
-	B(1) = 3;
+	B(0) = 1;
+	B(1) = 0;
 	B(2) = 3;
 
 	/* Init Observation Lag. Multipliers */
-	Lambda(0) = 0.5;
-	Lambda(1) = 0.5;
+	Lambda(0) = 0.25;
+	Lambda(1) = 0.1;
 	Lambda(2) = 0.5;
 
 	/*Test quadratic function*/
 	cout << "Quadratic function Test" << endl;
 	cout << "-----------------------" << endl;
-	cout << prefix << "Expected result: [241.5]" << endl;
+	cout << prefix << "Expected result: [111.841]" << endl;
 
-	cout << prefix << "Calculating quadratic value..." << flush;
+	cout << prefix << "Calculating quadratic value for U=[9]..." << flush;
 	t = clock();
-	double Q = U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, 2);
+	double Q = U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, 3);
 	t = clock() - t;
 	cout << "done. [" << Q << "]." << ReportTime(t) << endl;
 
 	cout << prefix << "Passed." << endl << endl;
 
-}
-
-void TestGradient(char* InputFile, char* OutputFile){
-	using namespace std;
-	clock_t t;
-	unsigned int L = 128;
-
-	cout<<"Gradient Test"<<endl;
-	cout<<"-------------"<<endl;
-
-	/* Medium Resolution */
-	cout<<prefix<<"Loading image file into matrix at ["<<L<<","<<L<<"]..."<<flush;
-	t = clock();
-	BoostDoubleMatrix MediumImageMatrix = LoadImage(InputFile,L,L);
-	t = clock() - t;
-	cout<<"done. "<<ReportTime(t)<<endl;
-
-	/* To Vector */
-	BoostDoubleVector ImageVect = MatrixToVector(MediumImageMatrix);
-
-	/* Compute Gradients */
-	cout<<prefix<<"Computing gradients..."<<flush;
-	t = clock();
-	BoostDoubleMatrix Gradients = AllPixelGradients(ImageVect,L);
-	t = clock() - t;
-	cout<<"done. "<<ReportTime(t)<<endl;
-
-	/* Get out just the horizontal */
-	BoostDoubleVector HorzGradients = GetCol(Gradients,0);
-
-	/* Write as image */
-	WriteImage(NormalizeMatrix(VectorToMatrix(HorzGradients,L,L)),OutputFile);
 }
 
 void TestReconstruction(int argc, char **argv) {
@@ -526,7 +540,7 @@ void TestReconstruction(int argc, char **argv) {
 	unsigned int N = L*L;
 	unsigned int M = MeasurementRate*N;     // Allow truncation
 
-	cout << "Running CS Experiment for L = "<<L<<" \\alpha = " << MeasurementRate << ", \\Delta = " << NoiseVariance << endl;
+	cout << "Running CS Experiment for L = "<<L<<" \\Alpha = " << MeasurementRate << ", \\Delta = " << NoiseVariance << endl;
 
 	/* Load Image */
 	cout << " * Loading image (" << OriginalImageFile << ")..." << flush;
@@ -572,7 +586,7 @@ int main(int argc, char **argv){
 		TestNeighborCheck();
 		TestGradient();
 		TestShrike();
-		// TestLagrangian();
+		TestLagrangian();
 		TestOnestep_Direction();
 		TestU_Subfunction();
 	}

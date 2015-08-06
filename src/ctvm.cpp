@@ -334,7 +334,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
 
 	// Residual Contribution
 	BoostDoubleVector Residual = prod(A, U) - B;
-	Q += -inner_prod(Lambda, Residual) + (mu / 2)*SquareNorm(Residual);
+	Q += -inner_prod(Lambda, Residual) + (mu / 2) * SquareNorm(Residual);
 
 	return Q;
 }
@@ -386,8 +386,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 
 	do
 	{
-		std::cout<<"  * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
-		// cout << "    U(k) = [" << U << "]" << endl;
+		std::cout<<"   * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
+		cout << "     U(k) = [" << U << "]" << endl;
 //*************************** "w sub-problem" ***************************
 		W = ApplyShrike(W,Nu,beta,ANISOTROPIC);
 
@@ -398,26 +398,23 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 
 		//******** alpha = onestep_gradient ********
 
-		std::cout << "   * U(k) - U(k-1) ="<<Sk<<std::endl;
-		// std::cout << "   * D(k) ="<<Dk<<std::endl;
-		std::cout << "   * D(k) - D(k-1) ="<<Yk<<std::endl;
+		//std::cout << "   * U(k) - U(k-1) ="<<Sk<<std::endl;
+		//std::cout << "   * D(k) ="<<Dk<<std::endl;
+		//std::cout << "   * D(k) - D(k-1) ="<<Yk<<std::endl;
 		double numerator = inner_prod(Sk, Yk);
 		double denominator = inner_prod(Yk, Yk);	
 		double alpha = numerator/denominator;
-<<<<<<< HEAD
-		cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
-=======
-		// std::cout << "done. ["<<numerator<<"/"<<denominator<<"="<<alpha<<"]"<< std::endl;
+
+		//cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
 		ArmijoLoopCounter = 0;
->>>>>>> origin/eric-review
 		do 
 		{ 
 			alpha = rho * alpha;
 			BoostDoubleVector U_alphad = U - alpha*Dk;
 			Qk = U_Subfunction(A, U_alphad, B, W, Nu, Lambda, beta, mu, SideLength);
 			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
-			cout << "       > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
-			cout << "         U - alpha *d: " << U_alphad << endl;
+			//cout << "         > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
+			//cout << "           U - alpha *d: " << U_alphad << endl;
 			//cout << " alpha: [" << alpha << "]" << flush << endl;
 			//cout << " Q(k): [" << Qk << "]" << flush << endl;
 			//cout << " armijo tol: [" << armijo_tol << "]" << flush << endl;
@@ -426,11 +423,11 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 
 		Uk_1 = U;
 		U -= alpha * Dk;
-		for (unsigned long i = 0; i < U.size(); ++i) {
+		/*for (unsigned long i = 0; i < U.size(); ++i) {
 			if (U(i) < 0) { U(i) = 0; }
-		}
+		}*/
 		innerstop = norm_2(U - Uk_1);
-
+		cout << " innerstop: [" << innerstop << "]" << flush << endl;
 //************************ Implement coefficents ************************
 		double Pk1 = eta*Pk + 1;
 		C = (eta*Pk*C + U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength))/Pk1;
@@ -487,7 +484,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	do
 	{
 		cout << "Outer Iter [" << LoopCounter +1 << "]" << endl;
-		// cout << " U* = [" << U << "]" << endl;
+		//cout << " U* = [" << U << "]" << endl;
 		Uk_1 = U;
 		Alternating_Minimisation(A, U, y, W, Nu, Lambda, beta, mu, L);
 		BoostDoubleMatrix Du = AllPixelGradients(U, L);
