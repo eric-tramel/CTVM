@@ -116,8 +116,6 @@ BoostDoubleVector CreateRandomVector(int length) {
 }
 
 
-
-
 void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile){
 /*
 * Function: WriteImage

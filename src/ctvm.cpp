@@ -256,7 +256,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector
 	for (unsigned long i = 0; i < n; ++i)
 	{
 		BoostDoubleVector DiU = Gradient2D(U, i);
-		for (int j = 0; j < n; ++j)
+		for (int j = 0; j < 2; ++j)
 		{
 			NUi(j) = NU(i, j);
 			Wi(j) = W(i, j);
@@ -308,7 +308,7 @@ BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVecto
 			{
 				NUi(j) = NU(i, j);
 				BoostDoubleVector Wi = Shrike(DiUk, NUi, beta);
-				W(j, i) = Wi(j);
+				W(i, j) = Wi(j);
 			}
 		}
 //*************************** "u sub-problem" ***************************
