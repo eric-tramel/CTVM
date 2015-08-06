@@ -387,10 +387,10 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	do
 	{
 		std::cout<<"   * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
-		cout << "     U(k) = [" << U << "]" << endl;
+		//cout << "     U(k) = [" << U << "]" << endl;
 //*************************** "w sub-problem" ***************************
-		W = ApplyShrike(W,Nu,beta,ANISOTROPIC);
-
+		W = ApplyShrike(AllPixelGradients(U, SideLength), Nu, beta, ANISOTROPIC);
+		cout << "     W(" << LoopCounter + 1 << ") = [" << W << "]" << endl;
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, Nu, Lambda, beta, mu, SideLength);
@@ -426,6 +426,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		/*for (unsigned long i = 0; i < U.size(); ++i) {
 			if (U(i) < 0) { U(i) = 0; }
 		}*/
+		//cout << "     U(k+1) = [" << U << "]" << endl;
 		innerstop = norm_2(U - Uk_1);
 		cout << " innerstop: [" << innerstop << "]" << flush << endl;
 //************************ Implement coefficents ************************
@@ -451,6 +452,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	*
 	* Output -- an (L x L) reconstructed matrix.
 	*/
+	using namespace std;
 
 	// unsigned long L = Sinogram.size1(); // Size of the sample (in pixels)
 	// unsigned long O = Sinogram.size2(); // Numbers of tilt angles
@@ -474,12 +476,11 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	BoostDoubleVector Lambda = BoostZeroVector(M);
 	// BoostDoubleVector B = MatrixToVector(Sinogram);
 
-	BoostDoubleMatrix Du = AllPixelGradients(U, L);
 	BoostDoubleMatrix Nu = BoostZeroMatrix(N, 2);
-	BoostDoubleMatrix W = ApplyShrike(Du, Nu, beta, ANISOTROPIC);	
+	BoostDoubleMatrix W = ApplyShrike(AllPixelGradients(U, L), Nu, beta, ANISOTROPIC);
 	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
-
-	using namespace std;
+	
+	cout << "W(0): [" << W << "]" << endl;
 	
 	do
 	{

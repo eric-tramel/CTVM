@@ -102,7 +102,6 @@ BoostDoubleMatrix CreateRandomMatrix(int rows, int cols){
     return RandomMatrix;
 }
 
-
 BoostDoubleVector SignVector(BoostDoubleVector AVector){
 /*
 * Function: SignVector
@@ -383,7 +382,6 @@ BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix){
 
 return AMatrixNormalized;
 }
-
 
 
 BoostDoubleVector MatrixToVector(BoostDoubleMatrix AMatrix){
