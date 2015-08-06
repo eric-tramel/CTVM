@@ -85,6 +85,63 @@ BoostDoubleMatrix LoadImage(const char* ImageFileName){
 return DBMImage;
 }
 
+BoostDoubleVector CreateRandomVector(int length) {
+	/*
+	* Function: CreateRandomVector
+	* ------------------------------
+	* Allocates a vector of the specified length and fills it with random
+	* entries drawn from a Normal distribution of variance 1.
+	*
+	* length: number of elements in the generated vector
+	*
+	* return -- A random vector of type BoostDoubleVector
+	*/
+	/* Matrix Allocation */
+	BoostDoubleVector RandomVector(length);
+
+	/* Random Number Generation */
+	boost::posix_time::ptime CurrentTick = boost::posix_time::microsec_clock::local_time();
+	boost::mt19937 RNG(static_cast<unsigned int>(CurrentTick.time_of_day().total_milliseconds()));     // Set the integer RNG engine. Time Based Seed.
+	boost::normal_distribution<> NormDist(0.0, 1.0);  // Specify the distribution with zero mean and unit variance
+	boost::variate_generator<boost::mt19937&,
+		boost::normal_distribution<> > RandNormValue(RNG, NormDist);    // Finally, build the number generator itself.
+
+																		/* Loop and Assign */
+	for (unsigned long i = 0; i < RandomVector.size(); ++i) {
+		RandomVector(i) = RandNormValue();
+	}
+
+	/* Return Filled Random Matrix */
+	return RandomVector;
+}
+
+BoostDoubleMatrix LoadImage(const char* ImageFileName) {
+	/*
+	* Function: LoadImage
+	* ----------------------------
+	* Attempts to load an image file from the specified location using ImageMagick.
+	* Subsequently,
+	* the ImageMagick image file is convereted to a matrix<double> and returned.
+	*
+	* return -- A random matrix of type `matrix<double>`.
+	*/
+	using namespace Magick;
+
+
+	Image RunTimeImage;
+	try {
+		RunTimeImage.read(ImageFileName);
+	}
+	catch (Exception &error_) {
+		std::cout << "Caught exception: " << error_.what() << std::endl;
+	}
+
+	return ImageToMatrix(RunTimeImage);
+}
+
+
+
+
 void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile){
 /*
 * Function: WriteImage

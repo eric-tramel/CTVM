@@ -19,6 +19,9 @@ typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
 typedef boost::numeric::ublas::zero_vector<double> BoostZeroVector;
 enum ImageFileType {PNG,JPG,TIFF};
 
+BoostDoubleMatrix LoadImage(const char* ImageFileName);
+BoostDoubleVector CreateRandomVector(int length);
+
 double MaximumEntry(BoostDoubleMatrix AMatrix);
 double MinimumEntry(BoostDoubleMatrix AMatrix);
 BoostDoubleMatrix NormalizeMatrix(BoostDoubleMatrix AMatrix);

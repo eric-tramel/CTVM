@@ -350,7 +350,8 @@ BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVecto
 return AL_MIN;
 }
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles) // Why TiltAngles?
+//BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles) // Why TiltAngles?
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y, unsigned long SideLength)
 {
 	/*
 	* Function: tval3_reconstruction
