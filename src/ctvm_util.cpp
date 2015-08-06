@@ -115,30 +115,6 @@ BoostDoubleVector CreateRandomVector(int length) {
 	return RandomVector;
 }
 
-BoostDoubleMatrix LoadImage(const char* ImageFileName) {
-	/*
-	* Function: LoadImage
-	* ----------------------------
-	* Attempts to load an image file from the specified location using ImageMagick.
-	* Subsequently,
-	* the ImageMagick image file is convereted to a matrix<double> and returned.
-	*
-	* return -- A random matrix of type `matrix<double>`.
-	*/
-	using namespace Magick;
-
-
-	Image RunTimeImage;
-	try {
-		RunTimeImage.read(ImageFileName);
-	}
-	catch (Exception &error_) {
-		std::cout << "Caught exception: " << error_.what() << std::endl;
-	}
-
-	return ImageToMatrix(RunTimeImage);
-}
-
 
 
 

@@ -356,51 +356,61 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	/*
 	* Function: tval3_reconstruction
 	* ------------------------------
-	* Input type: 'BoostDoubleMatrix (L,A)' + 'BoostDoubleVector (A)'
-	* L:size of the specimen, A:number of tilt angles
-	* Give a reconstructed image of electron tomography based on the TVAL3 method
-	* Output type: 'BoostDoubleMatrix (L,L)'
+	* Calculate the reconstructed image of the sample by the TVAL3 method.
+	*
+	* Input --
+	* A: an (M x N) projection matrix
+	* y: an (M x 1) set of observations
+	* SideLength: the side length for the target image, i.e. N = SideLength^2
+	*
+	* Output -- an (L x L) reconstructed matrix.
 	*/
-	unsigned long l = Sinogram.size1(); // Size of the sample (in pixels)
-	unsigned long o = Sinogram.size2(); // Numbers of tilt angles
-	unsigned long m = l * o; // Numbers of measurements
-	unsigned long n = l * l;
-	
-	double mu = 3;
-	double beta = sqrt(2);
-	double coef = 1.05;
+
+	// unsigned long L = Sinogram.size1(); // Size of the sample (in pixels)
+	// unsigned long O = Sinogram.size2(); // Numbers of tilt angles
+	// unsigned long M = L * O; // Numbers of measurements
+	// unsigned long N = L * L; // Size of rasterized Image vector
+	unsigned long M = A.size1();
+	unsigned long N = A.size2();
+	unsigned long L = SideLength; // allowing truncation
+
+	double mu = 1024.0;
+	double beta = 1024.0;
+	double coef = 1.0;
 	double outerstop;
-	double tol = 0.01;
+	double tol = 0.001;
+	unsigned int LoopCounter = 0;
+	unsigned int MaxIterations = 5;
 
-	BoostDoubleMatrix W (n, 2); W = BoostZeroMatrix(n, 2);// W(i,0) = 0 for all i
-	BoostDoubleMatrix Wk (n, 2); Wk = BoostZeroMatrix(n, 2);
-	BoostDoubleMatrix NU (n, 2); NU = BoostZeroMatrix(n, 2);
-	BoostDoubleMatrix A (m, n); A = BoostZeroMatrix(m, n);
-	BoostDoubleMatrix MIN (n, 3); MIN = BoostZeroMatrix(n, 3);
-	BoostDoubleMatrix X (l, l); X = BoostZeroMatrix(l, l);
-	
-	BoostDoubleVector U (n); U = BoostZeroVector(n); // U(0) = 0 for all i
-	BoostDoubleVector Uk (n); Uk = BoostZeroVector(n); 
-	BoostDoubleVector B (m); B = BoostZeroVector(m);
-	BoostDoubleVector LAMBDA (m); LAMBDA = BoostZeroVector(m);
+	// BoostDoubleVector U = BoostZeroVector(N); // U(0) = 0 for all i
+	BoostDoubleVector U = prod(trans(A), y);
+	BoostDoubleVector Uk = BoostZeroVector(N);
+	BoostDoubleVector LAMBDA = BoostZeroVector(M);
+	// BoostDoubleVector B = MatrixToVector(Sinogram);
 
-	A = CreateRandomMatrix(m, n);
-	B = MatrixToVector(Sinogram);
+	BoostDoubleMatrix Du = Gradient2DMatrix(U);
+	BoostDoubleMatrix NU = BoostZeroMatrix(N, 2);
+	BoostDoubleMatrix W = BoostZeroMatrix(N,2);
+	BoostDoubleMatrix Wk = BoostZeroMatrix(N, 2);
+	BoostDoubleMatrix MIN = BoostZeroMatrix(N, 3);
+	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
+
+	using namespace std;
 	
 	do
 	{
 		Wk = W;
 		Uk = U;
-		MIN = Alternating_Minimisation(A, Uk, B, Wk, NU, LAMBDA, beta, mu);
-		for (unsigned long i = 0; i < n; ++i)
+		MIN = Alternating_Minimisation(A, Uk, y, Wk, NU, LAMBDA, beta, mu);
+		for (unsigned long i = 0; i < N; ++i)
 		{
 			W(i, 0) = MIN(i, 0);
 			W(i, 1) = MIN(i, 1);
 			U(i) = MIN(i, 2);
 		}
 		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
-		NU = NU - beta*(DiU - W); // To verrify
-		LAMBDA = LAMBDA - mu*(prod(A, U) - B);
+		NU = NU - beta*(DiU - W); 
+		LAMBDA = LAMBDA - mu*(prod(A, U) - y);
 
 		beta = coef*beta;
 		mu = coef*beta;
@@ -408,6 +418,6 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 		outerstop = norm_2(U - Uk);
 	} while (outerstop > tol);
 
-	X = VectorToMatrix(U, l, l);
+	BoostDoubleMatrix X = VectorToMatrix(U, L, L);
 return X;
 }

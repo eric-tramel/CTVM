@@ -719,7 +719,7 @@ void TestReconstruction(int argc, char **argv) {
 	// Testing the tval3_reconstruction method --> need to call sinogram and tilt angles file...
 	cout << " * Computing the recorded image by the TVAL3 method..." << endl;
 	t = clock();
-	BoostDoubleMatrix XRecImage = tval3_reconstruction(A, y);
+	BoostDoubleMatrix XRecImage = tval3_reconstruction(A, y, L);
 	t = clock() - t;
 	cout << "done." << ReportTime(t) << endl;
 
