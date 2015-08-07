@@ -371,7 +371,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	double rho = 0.6;
 	double eta = 0.9995;
 	double Pk = 1; 
-	double C = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, SideLength, ANISOTROPIC);
+	double C = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, SideLength, ISOTROPIC);
 
 	double armijo_tol, Qk, innerstop;
 	double tol = 0.001;
@@ -389,8 +389,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		std::cout<<"   * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
 		//cout << "     U(k) = [" << U << "]" << endl;
 //*************************** "w sub-problem" ***************************
-		W = ApplyShrike(AllPixelGradients(U, SideLength), Nu, beta, ANISOTROPIC);
-		cout << "     W(" << LoopCounter + 1 << ") = [" << W << "]" << endl;
+		W = ApplyShrike(AllPixelGradients(U, SideLength), Nu, beta, ISOTROPIC);
+		//cout << "     W(" << LoopCounter + 1 << ") = [" << W << "]" << endl;
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, Nu, Lambda, beta, mu, SideLength);
@@ -413,9 +413,9 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 			BoostDoubleVector U_alphad = U - alpha*Dk;
 			Qk = U_Subfunction(A, U_alphad, B, W, Nu, Lambda, beta, mu, SideLength);
 			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
-			//cout << "         > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
+			cout << "         > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
 			//cout << "           U - alpha *d: " << U_alphad << endl;
-			//cout << " alpha: [" << alpha << "]" << flush << endl;
+			cout << " alpha: [" << alpha << "]" << flush << endl;
 			//cout << " Q(k): [" << Qk << "]" << flush << endl;
 			//cout << " armijo tol: [" << armijo_tol << "]" << flush << endl;
 			ArmijoLoopCounter++;
@@ -428,7 +428,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		}*/
 		//cout << "     U(k+1) = [" << U << "]" << endl;
 		innerstop = norm_2(U - Uk_1);
-		cout << " innerstop: [" << innerstop << "]" << flush << endl;
+		//cout << " innerstop: [" << innerstop << "]" << flush << endl;
 //************************ Implement coefficents ************************
 		double Pk1 = eta*Pk + 1;
 		C = (eta*Pk*C + U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength))/Pk1;
@@ -477,10 +477,10 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	// BoostDoubleVector B = MatrixToVector(Sinogram);
 
 	BoostDoubleMatrix Nu = BoostZeroMatrix(N, 2);
-	BoostDoubleMatrix W = ApplyShrike(AllPixelGradients(U, L), Nu, beta, ANISOTROPIC);
+	BoostDoubleMatrix W = ApplyShrike(AllPixelGradients(U, L), Nu, beta, ISOTROPIC);
 	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
 	
-	cout << "W(0): [" << W << "]" << endl;
+	//cout << "W(0): [" << W << "]" << endl;
 	
 	do
 	{
