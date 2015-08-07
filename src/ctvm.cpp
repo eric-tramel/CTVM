@@ -31,6 +31,37 @@ BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
 return Gradient;
 }
 
+BoostDoubleVector PeriodicPixelGradient(BoostDoubleVector X, unsigned long Index, 
+								unsigned long SideLength){
+/*
+* Function: PeriodicPixelGradient
+* -----------------------
+* Given a rasterized image vector, calculate the gradient vector at the
+* specified index. As we are assuming images, this function is used to
+* calculate the *two-dimensional* gradient vector. In this case, we assume a periodic
+* boundary condition, which requires that the edges be neighbors.
+*
+* Input --
+* X: a (N x 1) vector representing a rasterized image
+* Index: the pixel at which to calculate the gradient
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (2 x 1) pixel gradient vector.
+*/
+	BoostDoubleVector Gradient = BoostZeroVector(2);
+
+	// Horizontal Gradient Component
+	int RightIndex = PeriodicRightNeighbor(Index,SideLength);
+	Gradient(HORZ) = X[Index] - X[RightIndex];
+
+	// Vertical Gradient Component
+	int DownIndex = PeriodicDownNeighbor(Index,SideLength);
+	Gradient(VERT) = X[Index] - X[DownIndex];
+
+return Gradient;
+}
+
 BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLength){
 /*
 * Function: AllPixelGradients
@@ -50,6 +81,30 @@ BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLengt
 
 	for(unsigned long i = 0; i < N; ++i){
 		SetRow(AllGradients,PixelGradient(X,i,SideLength),i);
+	}
+
+return AllGradients;
+}
+
+BoostDoubleMatrix AllPeriodicPixelGradients(BoostDoubleVector X, unsigned long SideLength){
+/*
+* Function: AllPeriodicPixelGradients
+* ---------------------------
+* Given a rasterized image vector, calculate the gradient vectors at every pixel
+* and return the entire set of gradients as a matrix
+*
+* Input --
+* X: a (N x 1) vector representing a rasterized image
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (N x 2) pixel gradient vector.
+*/	
+	unsigned long N = X.size();
+	BoostDoubleMatrix AllGradients(N,2);
+
+	for(unsigned long i = 0; i < N; ++i){
+		SetRow(AllGradients,PeriodicPixelGradient(X,i,SideLength),i);
 	}
 
 return AllGradients;
@@ -89,6 +144,41 @@ BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long Sid
 		if(thisDownNeighbor > 0){
 			ImageVector(thisDownNeighbor) += -1* thisGradient(VERT);
 		}
+	}
+
+return ImageVector;
+}
+
+BoostDoubleVector PeriodicPixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength){
+/*
+* Function: PeriodicPixelGradientAdjointSum
+* ---------------------------------
+* Given a set of gradients at each pixel, calculate the adjoint sum, which is the 
+* adjoint of the gradient operation summed over each of the pixels.
+*
+*    					X = sum_{i=1:N} D_i^T * G_i
+*
+* where D_i represents the gradient matrix at pixel i, T is the transpose operator, and
+* G_i is the gradient vectore at pixel i. In other words, this function is a map from the
+* space of pixel gradients back to the image space.
+*
+* Input --
+* G: a (N x 2) matrix of pixel gradients
+* SideLength: assuming square image dimensions, the length of the image side.
+*             I.e. N = SideLength^2.
+*
+* Output -- A (N x 1) rasterized image vector.
+*/	
+	unsigned long N = G.size1();
+	BoostDoubleVector ImageVector = BoostZeroVector(N);
+	for(unsigned long i = 0; i < N; ++i){
+		int thisRightNeighbor = PeriodicRightNeighbor(i,SideLength);
+		int thisDownNeighbor = PeriodicDownNeighbor(i,SideLength);
+		BoostDoubleVector thisGradient = GetRow(G,i);
+
+		ImageVector(i) += thisGradient(HORZ) + thisGradient(VERT);
+		ImageVector(thisRightNeighbor) += -1* thisGradient(HORZ);
+		ImageVector(thisDownNeighbor) += -1* thisGradient(VERT);
 	}
 
 return ImageVector;
@@ -210,7 +300,7 @@ double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U,
 	double L = 0.0;
 
 	// Get all Gradients
-	BoostDoubleMatrix Du = AllPixelGradients(U,SideLength);
+	BoostDoubleMatrix Du = AllPeriodicPixelGradients(U,SideLength);
 
 	// Loop over pixels
 	BoostDoubleVector Dui;
@@ -285,7 +375,7 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 	// cout<<"    * Term3 :"<<TermThree<<endl;
 
 
-	Dk = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + Nu, SideLength) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), Lambda);
+	Dk = -PeriodicPixelGradientAdjointSum(beta*AllPeriodicPixelGradients(U, SideLength) + beta*W + Nu, SideLength) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), Lambda);
 
 return Dk;
 }
@@ -317,7 +407,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
 	double Q = 0.0;
 
 	// Get all Gradients
-	BoostDoubleMatrix Du = AllPixelGradients(U, SideLength);
+	BoostDoubleMatrix Du = AllPeriodicPixelGradients(U, SideLength);
 
 	// Loop over pixels
 	BoostDoubleVector Dui;
@@ -372,64 +462,78 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	double eta = 0.9995;
 	double Pk = 1; 
 	double C = Lagrangian(A, U, B, W, Nu, Lambda, beta, mu, SideLength, ANISOTROPIC);
-
+	// double Qk = U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength);
 	double armijo_tol, Qk, innerstop;
-	double tol = 0.001;
+	double tol = 0.00000001;
 
 	unsigned int LoopCounter = 0;
-	unsigned int MaxIterations = 5;
+	unsigned int MaxIterations = 100;
 
 	unsigned int ArmijoLoopCounter = 0;
-	unsigned int MaxArmijoIterations = 5;
+	unsigned int MaxArmijoIterations = 50;
 
-	BoostDoubleVector Uk_1 = BoostZeroVector(N);
+	BoostDoubleVector U_last = U;
+	BoostDoubleVector GradU = BoostZeroVector(N);
+	BoostDoubleVector GradU_last = BoostZeroVector(N);
+	BoostDoubleVector U_change = BoostZeroVector(N);
+	BoostDoubleVector GradU_change = BoostZeroVector(N);
+	BoostDoubleVector U_trial;
+	BoostDoubleMatrix W_last = W;
+	double Verifier;
+	double MinimumStepSize = 0.0000001;
+	cout<<"Minimum Step Size: "<<MinimumStepSize<<endl;
+	do{
+		//*************************** "w sub-problem" ***************************
+		W_last = W;
+		W = ApplyShrike(AllPeriodicPixelGradients(U,SideLength),Nu,beta,ISOTROPIC);
+		double W_convg = norm_2(MatrixToVector(W) - MatrixToVector(W_last))/N;
 
-	do
-	{
-		std::cout<<"  * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
-		// cout << "    U(k) = [" << U << "]" << endl;
-//*************************** "w sub-problem" ***************************
-		W = ApplyShrike(W,Nu,beta,ANISOTROPIC);
-
-//*************************** "u sub-problem" ***************************
-		BoostDoubleVector Sk = U - Uk_1;
-		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, Nu, Lambda, beta, mu, SideLength);
-		BoostDoubleVector Yk = Dk - Onestep_Direction(A, Uk_1, B, W, Nu, Lambda, beta, mu, SideLength);
+		//*************************** "u sub-problem" ***************************		
+		GradU_last = GradU;
+		GradU = Onestep_Direction(A,U_last,B,W,Nu,Lambda,beta,mu,SideLength);
+		Verifier = inner_prod(GradU,GradU)*delta;
 
 		//******** alpha = onestep_gradient ********
+		// Set set intial step-size
+		double alpha = 0.95;
+		if(LoopCounter > 0){
+			// Get change in point and gradient
+			U_change = U - U_last;
+			GradU_change = GradU - GradU_last;
 
-		std::cout << "   * U(k) - U(k-1) ="<<Sk<<std::endl;
-		// std::cout << "   * D(k) ="<<Dk<<std::endl;
-		std::cout << "   * D(k) - D(k-1) ="<<Yk<<std::endl;
-		double numerator = inner_prod(Sk, Yk);
-		double denominator = inner_prod(Yk, Yk);	
-		double alpha = numerator/denominator;
-		cout << " alpha = [" << numerator << " / " << denominator << " = " << alpha << "]" << endl;
-		ArmijoLoopCounter = 0;
-		do 
-		{ 
-			alpha = rho * alpha;
-			BoostDoubleVector U_alphad = U - alpha*Dk;
-			Qk = U_Subfunction(A, U_alphad, B, W, Nu, Lambda, beta, mu, SideLength);
-			armijo_tol = C - delta*alpha*inner_prod(Dk, Dk);
-			cout << "       > Armijo Iter [" << ArmijoLoopCounter + 1 << "]" << endl;
-			cout << "         U - alpha *d: " << U_alphad << endl;
-			//cout << " alpha: [" << alpha << "]" << flush << endl;
-			//cout << " Q(k): [" << Qk << "]" << flush << endl;
-			//cout << " armijo tol: [" << armijo_tol << "]" << flush << endl;
+			// Calculate a new alpha value
+			alpha = inner_prod(U_change,U_change) / inner_prod(U_change,GradU_change);
+		}
+		// Truncation?
+		// alpha = abs(alpha);
+		// alpha = (alpha < MinimumStepSize) ? MinimumStepSize : alpha;
+		// Conduct line search for optimal step-size
+		double init_alpha = alpha; // A debug precation
+		ArmijoLoopCounter = 0;		
+		do{
+			U_trial = U - alpha*GradU;
+			Qk = U_Subfunction(A, U_trial, B, W, Nu, Lambda, beta, mu, SideLength);
+			armijo_tol = C - alpha*Verifier;			
+
+			// cout << "    * "<<Qk<<">"<<armijo_tol<<"?"<<endl;
+
+			alpha *= rho;
 			ArmijoLoopCounter++;
-		} while ((Qk > armijo_tol) && (ArmijoLoopCounter < MaxArmijoIterations));
+		}while((Qk > armijo_tol) && (ArmijoLoopCounter < MaxArmijoIterations));
 
-		Uk_1 = U;
-		U -= alpha * Dk;
-		innerstop = norm_2(U - Uk_1);
+		U_last = U;
+		U -= alpha * GradU;
+		innerstop = norm_2(U - U_last)/N;
 
-//************************ Implement coefficents ************************
+		//************************ Implement coefficents ************************
 		double Pk1 = eta*Pk + 1;
 		C = (eta*Pk*C + U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength))/Pk1;
 		Pk = Pk1;
 
-		std::cout<<"  * End AM Loop Iter ["<<LoopCounter<<"]  U Step Size : "<<alpha<<std::flush<<std::endl;
+		cout<<"  * End AM Loop Iter ["<<LoopCounter<<"]."<<flush;
+		cout<<"  alpha : ["<<init_alpha<<"->"<<alpha<<"]"<<flush;
+		cout<<" | U converg. :  "<<innerstop<<flush;
+		cout<<" | W converg. :  "<<W_convg<<endl;
 		LoopCounter++;
 	} while ((innerstop > tol) && (LoopCounter < MaxIterations));
 }
@@ -458,45 +562,51 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	unsigned long N = A.size2();
 	unsigned long L = SideLength; // allowing truncation
 	
-	double mu = 1024.0;
-	double beta = 1024.0;
-	double coef = 1.0;
+	double mu = 256;
+	double beta = 64;
+	double coef = 2;
 	double outerstop;
-	double tol = 0.001;
+	double tol = 0.000001;
 	unsigned int LoopCounter = 0;
-	unsigned int MaxIterations = 5;
-	
-	// BoostDoubleVector U = BoostZeroVector(N); // U(0) = 0 for all i
-	BoostDoubleVector U = prod(trans(A),y);
-	BoostDoubleVector Uk_1 = BoostZeroVector(N); 
-	BoostDoubleVector Lambda = BoostZeroVector(M);
-	// BoostDoubleVector B = MatrixToVector(Sinogram);
+	unsigned int MaxIterations = 32;
 
-	BoostDoubleMatrix Du = AllPixelGradients(U, L);
+	char output_file[128]; //debug
+	
+	BoostDoubleVector U = prod(trans(A),y);
+	BoostDoubleVector U_last = BoostZeroVector(N); 
+	BoostDoubleVector Lambda = BoostZeroVector(M);
+	
+	// BoostDoubleMatrix Du = AllPixelGradients(U, L);
 	BoostDoubleMatrix Nu = BoostZeroMatrix(N, 2);
-	BoostDoubleMatrix W = ApplyShrike(Du, Nu, beta, ANISOTROPIC);	
-	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
+	BoostDoubleMatrix W = ApplyShrike(AllPeriodicPixelGradients(U,SideLength), Nu, beta, ISOTROPIC);		
 
 	using namespace std;
 	
-	do
-	{
-		cout << "Outer Iter [" << LoopCounter +1 << "]" << endl;
-		// cout << " U* = [" << U << "]" << endl;
-		Uk_1 = U;
+	do{
+		// Update W (gradient dual variables) and U
+		U_last = U;
 		Alternating_Minimisation(A, U, y, W, Nu, Lambda, beta, mu, L);
-		BoostDoubleMatrix Du = AllPixelGradients(U, L);
-		Nu = Nu - beta*(Du - W);
+
+		// Update Multipliers
+		Nu = Nu - beta*(AllPeriodicPixelGradients(U,L) - W);
 		Lambda = Lambda - mu*(prod(A, U) - y);
 
+		// Update Constraint Strength
 		beta = coef*beta;
 		mu = coef*mu;
 
-		// cout<<"Outer Iter ["<<LoopCounter<<"] U: "<<U<<endl;
+		// Estimate convergence
+		outerstop = norm_2(U - U_last)/N;
+
 		cout<<"End Outer Iter ["<<LoopCounter<<"] mu : "<<mu<<" | beta : "<<beta<<endl;
-		outerstop = norm_2(U - Uk_1);
+		
+		sprintf(output_file,"/Users/tramel/tmp/ctvm_outer_iter_%d.png",LoopCounter);
+
+		WriteImage(NormalizeMatrix(VectorToMatrix(U,L,L)),output_file);
+
 		LoopCounter++;
 	} while (outerstop > tol && LoopCounter < MaxIterations);
 
+// Return as an image
 return VectorToMatrix(U, L, L);
 }

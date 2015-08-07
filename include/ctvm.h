@@ -4,6 +4,7 @@
 #include <iostream>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <cstdio>
 #include "ctvm_util.h"
 
 
@@ -16,10 +17,15 @@ BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
 BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLength);
 BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength);
 
+
+
 // TODO: Implement the following
-// 2D Gradients...
-// BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector g, unsigned long index,
-//                                        unsigned int SideLength);
+// Periodic 2D Gradients...
+BoostDoubleVector PeriodicPixelGradient(BoostDoubleVector X, unsigned long Index,
+                                unsigned int SideLength);
+BoostDoubleMatrix AllPeriodicPixelGradients(BoostDoubleVector X, unsigned long SideLength);
+BoostDoubleVector PeriodicPixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength);
+
 // 3D Gradients...
 BoostDoubleVector VoxelGradient(BoostDoubleVector g, unsigned long index,
                                 unsigned int SideLength);
@@ -60,7 +66,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
                               BoostDoubleVector B, BoostDoubleMatrix &W, 
                               BoostDoubleMatrix Nu, BoostDoubleVector Lambda, 
                               double beta, double mu, 
-							  unsigned long SideLength);
+							                unsigned long SideLength);
 
 BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 									   unsigned long SideLength);

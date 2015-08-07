@@ -537,7 +537,7 @@ void TestReconstruction(int argc, char **argv) {
 
     /* Create Projection Matrix */
     cout<<" * Creating Random Matrix ("<<M<<"x"<<N<<")..."<<flush;
-    BoostDoubleMatrix A = CreateRandomMatrix(M,N);
+    BoostDoubleMatrix A = CreateRandomMatrix(M,N)/sqrt(N);
     cout<<"done."<<endl;
 
     /* Create Measurements */

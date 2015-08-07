@@ -541,6 +541,26 @@ int RightNeighbor(unsigned int Index, unsigned long SideLength){
 return ((Index>(SideLength*SideLength)-SideLength - 1) ? -1 : (Index+SideLength));
 }
 
+int PeriodicRightNeighbor(unsigned int Index, unsigned long SideLength){
+/*
+* Function: PeriodicRightNeighbor
+* ------------------------- 
+* Given a rasterized Image and a pixel index within this vector, return
+* the pixel index of its Right nearest neighbor. If the neighbor does not
+* exist because of a boundary, then the neighbor is set to the opposing boundary.
+*
+* ASSUMPTION: The image has been rasterized in column-major format.
+*
+* Input --
+* Index: a value such that `index < N-1` representing the central pixel
+* SideLength: assuming a square image, the length of one side of the image. 
+*             I.e. N = SideLength^2.
+*
+* Output -- the corresponding neighbor index.
+*/
+return ((Index>(SideLength*SideLength)-SideLength - 1) ? (Index%SideLength) : (Index+SideLength));
+}
+
 int DownNeighbor(unsigned int Index, unsigned long SideLength){
 /*
 * Function: DownNeighbor
@@ -559,6 +579,26 @@ int DownNeighbor(unsigned int Index, unsigned long SideLength){
 * Output -- the corresponding neighbor index.
 */
 return ((Index+1)%SideLength) ? (Index+1) : -1;
+}
+
+int PeriodicDownNeighbor(unsigned int Index, unsigned long SideLength){
+/*
+* Function: DownNeighbor
+* ------------------------- 
+* Given a rasterized Image and a pixel index within this vector, return
+* the pixel index of its Right nearest neighbor. If the neighbor does not
+* exist because of a boundary, return (-1).
+*
+* ASSUMPTION: The image has been rasterized in column-major format.
+*
+* Input --
+* Index: a value such that `index < N-1` representing the central pixel
+* SideLength: assuming a square image, the length of one side of the image. 
+*             I.e. N = SideLength^2.
+*
+* Output -- the corresponding neighbor index.
+*/
+return ((Index+1)%SideLength) ? (Index+1) : (Index - SideLength + 1);
 }
 
 double SquareNorm(BoostDoubleVector AVector){

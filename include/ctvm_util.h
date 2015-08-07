@@ -11,6 +11,7 @@
 #include <boost/random/normal_distribution.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <Magick++.h>
+#include <ctime>
 
 /* UBLAS Typecasts */
 typedef boost::numeric::ublas::matrix<double> BoostDoubleMatrix;
@@ -19,6 +20,18 @@ typedef boost::numeric::ublas::zero_matrix<double> BoostZeroMatrix;
 typedef boost::numeric::ublas::vector<double> BoostDoubleVector;
 typedef boost::numeric::ublas::scalar_vector<double> BoostScalarDoubleVector;
 typedef boost::numeric::ublas::zero_vector<double> BoostZeroVector;
+
+/* Helpful Debug Tools */
+// class StopWatch{
+//     private:
+//         clock_t LastClick;
+//         clock_t ElapsedTime;
+//     public:
+//         void StopWatch(void);
+//         void Reset(void);
+//         void Start(void);
+//         void Stop(void);
+// };
 
 /* Matrix Manipulation */
 BoostDoubleVector GetRow(BoostDoubleMatrix AMatrix,unsigned int row);
@@ -57,7 +70,9 @@ BoostDoubleVector CreateRandomVector(int length);
 
 /* Image Operations */
 int RightNeighbor(unsigned int index, unsigned long SideLength);
+int PeriodicRightNeighbor(unsigned int index, unsigned long SideLength);
 int DownNeighbor(unsigned int index, unsigned long SideLength);
+int PeriodicDownNeighbor(unsigned int index, unsigned long SideLength);
 
 /* File I/O */
 // Image
