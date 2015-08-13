@@ -54,7 +54,6 @@ BoostDoubleVector MakeUnitVector(BoostDoubleVector AVector);
 /* Matrix Generation */
 BoostDoubleMatrix CreateRandomMatrix(int rows, int cols);
 BoostDoubleVector CreateRandomVector(int length);
-<<<<<<< HEAD
 
 /* Image Operations */
 int RightNeighbor(unsigned int index, unsigned long SideLength);
@@ -63,8 +62,6 @@ int DownNeighbor(unsigned int index, unsigned long SideLength);
 /* File I/O */
 // Image
 BoostDoubleMatrix ImageToMatrix(Magick::Image AnImage);
-=======
->>>>>>> origin/master
 BoostDoubleMatrix LoadImage(const char* ImageFileName);
 BoostDoubleMatrix LoadImage(const char* ImageFileName, int newRows, int newCols);
 void WriteImage(BoostDoubleMatrix AMatrix, const char* OutputFile);
