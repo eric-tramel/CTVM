@@ -76,10 +76,50 @@ void TestImageMagick(char* test_image){
 	cout<<prefix<<"Reading image ("<<test_image<<")..."<<flush;
 	t = clock();
 	Image someImage;
+<<<<<<< HEAD
 	someImage.read(test_image);
 	t = clock() - t;
 	//cout<<"done. "<<ReportTime(t)<<endl;
 	cout<<"done. ["<<someImage.rows()<<"x"<<someImage.columns()<<"]. "<<ReportTime(t)<<endl;
+=======
+	someImage.read("C:\\data\\peppers.jpg");
+	std::cout << "    " << "Passed." << std::endl;
+
+	std::cout << "Creating Novel Image" << std::endl;
+	Image anotherImage;
+	anotherImage.size(Geometry(32, 32));         // Specify the dimensionality
+	Pixels anotherImageView(anotherImage);      // Get a view of the image
+	PixelPacket aPixel;
+	aPixel.red = ColorGray::scaleDoubleToQuantum(0.5);
+	aPixel.green = ColorGray::scaleDoubleToQuantum(0.5);
+	aPixel.blue = ColorGray::scaleDoubleToQuantum(0.5);
+	*(anotherImageView.get(16, 16, 1, 1)) = aPixel;
+	anotherImage.type(GrayscaleType);           // Specify the color type
+	anotherImageView.sync();
+	anotherImage.write("C:\\data\\testoutimage.png");
+	std::cout << "    " << "Passed." << std::endl;
+
+	/* Test CTVM Image Load */
+	std::cout << std::endl;
+	std::cout << "Testing CTVM Image Load." << std::endl;
+	BoostDoubleMatrix ImageMatrix = LoadImage("C:\\data\\peppers.jpg");
+	std::cout << "Image Data:" << std::endl;
+	std::cout << ImageMatrix(0, 0) << " " << ImageMatrix(0, 1) << " " << ImageMatrix(0, 3) << std::endl;
+	std::cout << ImageMatrix(1, 0) << " " << ImageMatrix(1, 1) << " " << ImageMatrix(1, 3) << std::endl;
+	std::cout << ImageMatrix(2, 0) << " " << ImageMatrix(2, 1) << " " << ImageMatrix(2, 3) << std::endl;
+	std::cout << "    " << "Passed." << std::endl;
+
+	std::cout << "Testing CTVM Image Write." << std::endl;
+	WriteImage(ImageMatrix, "C:\\data\\test_peppers.jpg");
+	std::cout << "    " << "Passed." << std::endl;
+
+	/* Initialisation */
+	BoostDoubleMatrix A(2, 4), Ad(3, 4), W(4, 2), Wd(4,2), NU(4, 2), NUd(4,2);
+	BoostDoubleVector U(4),Ud(4), U1(9), B(2), Bd(3), LAMBDA(2), LAMBDAd(3);
+
+	A(0, 0) = 1; A(0, 1) = 0; A(0, 2) = 1; A(0, 3) = 0;
+	A(1, 0) = 0; A(1, 1) = 1; A(1, 2) = 1; A(1, 3) = 1;
+>>>>>>> origin/master
 
 
 	cout<<prefix<<"Passed."<<endl<<endl;
@@ -421,6 +461,7 @@ void TestOnestep_Direction() {
 	/* Init Image Vector */
 	U(0) = 1;
 	U(1) = 2;
+<<<<<<< HEAD
 	U(2) = 3;
 	U(3) = 4;
 
@@ -439,6 +480,12 @@ void TestOnestep_Direction() {
 	cout << "-----------------------" << endl;
 
 	cout << prefix << "Expected result: [58.75  58.25  57.75  57.25]" << endl;
+=======
+	U(2) = 0;
+	U(3) = 1;
+
+	U1(0) = 1; U1(1) = 2; U1(2) = 0; U1(3) = 1; U1(4) = 3; U1(5) = -2; U1(6) = 0; U1(7) = -1; U1(8) = 0;
+>>>>>>> origin/master
 
 	cout << prefix << "Calculating direction value..." << flush;
 	t = clock();
@@ -579,6 +626,7 @@ int main(int argc, char **argv){
 	using namespace std;
 	cout<<endl;
 
+<<<<<<< HEAD
 	if (argc == 1) {
 		TestRasterization();
 		TestRandomMatrix();
@@ -590,6 +638,23 @@ int main(int argc, char **argv){
 		TestOnestep_Direction();
 		TestU_Subfunction();
 	}
+=======
+
+	/* Test One-step Direction */
+	std::cout << std::endl;
+	BoostDoubleVector d_k = Onestep_Direction(A, U, B, W, NU, LAMBDA, beta, mu);
+
+	std::cout << "One-step direction: " << d_k << std::endl; // Expected result: d_k = [-5 -1.65685 6.65685 2]
+	std::cout << "    " << "Passed." << std::endl;
+
+	/*Test Shrike function*/
+	std::cout << std::endl;
+	int ii = 1;
+	BoostDoubleVector DiUk = Gradient2D(U, ii);
+	BoostDoubleVector NUi (2);
+	for (int jj = 0; jj < 2; ++jj) { NUi(jj) = NU(ii, jj); }
+	BoostDoubleVector SHRIKE = Shrike(DiUk, NUi, beta);
+>>>>>>> origin/master
 
 	 if (argc == 3){
 	 // Only run tests requiring File I/O if the file names have been passed.

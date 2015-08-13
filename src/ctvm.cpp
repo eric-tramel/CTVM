@@ -146,6 +146,7 @@ BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu,
 return result;
 }
 
+<<<<<<< HEAD
 BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
 							  double beta, TVType ShrikeMode){
 /* 
@@ -182,6 +183,22 @@ BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
  	}
 return AllW;
 }
+=======
+double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu)
+{
+	/*
+	* Function: Lagrangian
+	* ----------------------------
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)'  + 'unsigned long' + 'unsigned long'
+	* Calculate the Augmented Lagrangian function developped by Chengbo Li in his thesis "An efficient algorithm for total variation regularization with applications to the single pixel camera and compressive sensing".
+	* Output type: 'double'.
+	*/
+	double L = 0;
+	unsigned long n = U.size();
+	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
+	BoostDoubleVector DiU (2); DiU = BoostZeroVector(2);
+	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
+>>>>>>> origin/master
 
 double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, 
 					 BoostDoubleVector B, BoostDoubleMatrix W, 
@@ -249,6 +266,7 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 	/*
 	* Function: Onestep_Direction
 	* ---------------------------
+<<<<<<< HEAD
 	* Calculate the direction for the gradient in the one-step steepest descent method.
 	* To understand this following command, one can separate it in two steps
 	* (that is, the sum over all the pixels) Du = AllPixelGradients(U,SideLength)
@@ -266,9 +284,15 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 	* SideLength: the side length for the target image, i.e. N = SideLength^2
 	*
 	* Output -- a decimal value for the cost.
+=======
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
+	* Give the direction of the one-step steepest descent gradient that minimize the "u-subproblem"
+	* Output type: 'BoostDoubleVector (N)'.
+>>>>>>> origin/master
 	*/
 	BoostDoubleVector Dk = BoostZeroVector(U.size());
 
+<<<<<<< HEAD
 	// BoostDoubleVector NegAdjSum = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + NU, SideLength);
 	// BoostDoubleVector TermTwo = mu*prod(trans(A), prod(A, U) - B);
 	// BoostDoubleVector TermThree = - prod(trans(A), LAMBDA);
@@ -286,6 +310,26 @@ BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector U,
 
 
 	Dk = -PixelGradientAdjointSum(beta*AllPixelGradients(U, SideLength) + beta*W + Nu, SideLength) + mu*prod(trans(A), prod(A, U) - B) - prod(trans(A), Lambda);
+=======
+	for (unsigned long i = 0; i < n; ++i)
+	{
+		BoostDoubleMatrix Di = Unit_Gradient2DMatrix(U, i);
+		BoostDoubleMatrix tDi = trans(Di);
+		BoostDoubleVector DiU = Gradient2D(U, i);
+		for (int j = 0; j < 2; ++j)
+		{
+			Wi(j) = W(i, j);
+			NUi(j) = NU(i, j);
+		}
+		BoostDoubleVector DiU_Wi = -DiU - Wi;
+		D = D + beta*prod(tDi, DiU_Wi) - prod(tDi, NUi);
+	}
+
+	BoostDoubleVector DIFF = prod(A, U) - B;
+	BoostDoubleMatrix tA = trans(A);
+
+	D = D + mu*prod(tA, DIFF) - prod(tA, LAMBDA);
+>>>>>>> origin/master
 
 return Dk;
 }
@@ -299,6 +343,7 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
 	/*
 	* Function: U_Subfunction
 	* -----------------------
+<<<<<<< HEAD
 	* Calculate the quadratic cost function for the give problem state.
 	*
 	* Input --
@@ -330,6 +375,29 @@ double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
 
 		BoostDoubleVector GradDiff = Dui - Wi;
 		Q += -inner_prod(Nui, GradDiff) + (beta / 2) * SquareNorm(GradDiff);
+=======
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
+	* Give the value of the quadratic function Qk(U) one-step steepest descent gradient that minimize the "u-subproblem"
+	* Output type: 'double'.
+	*/
+	double Q = 0;
+	unsigned long n = U.size();
+	BoostDoubleVector NUi (2); NUi = BoostZeroVector(2);
+	BoostDoubleVector Wi (2); Wi = BoostZeroVector(2);
+
+	for (unsigned long i = 0; i < n; ++i)
+	{
+		BoostDoubleVector DiU = Gradient2D(U, i);
+		for (int j = 0; j < 2; ++j)
+		{
+			NUi(j) = NU(i, j);
+			Wi(j) = W(i, j);
+		}
+		BoostDoubleVector DIFFk = DiU - Wi;
+		double square_norm_diffk = norm_2(DIFFk)*norm_2(DIFFk);
+
+		Q = Q - inner_prod(NUi, DIFFk) + (beta / 2) * square_norm_diffk;
+>>>>>>> origin/master
 	}
 
 	// Residual Contribution
@@ -348,6 +416,7 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	/*
 	* Function: Alternating_Minimisation
 	* ----------------------------------
+<<<<<<< HEAD
 	* Calculate the minima U* and Wi* of the augmented Lagrangian function.
 	*
 	* Input --
@@ -362,6 +431,11 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	* SideLength: the side length for the target image, i.e. N = SideLength^2
 	*
 	* Output -- None.
+=======
+	* Input type: 'BoostDoubleMatrix (M,N)' + 'BoostDoubleVector (N)' + 'BoostDoubleVector (M)' + 'BoostDoubleMatrix (N,2)' + 'BoostDobleMatrix (N,2)' + 'BoostDoubleVector (M)' + 'unsigned long' + 'unsigned long'
+	* Give the minima W(i,k+1) and U(k+1) of the augmented lagrangian function (W is a matrix of size (N,2) which is collected in AL_MIN(N,0 and 1), U is a vector of size (N) which is collected in AL_MIN(N,2)).
+	* Output type: 'BoostDoubleMatrix (N,3)'.
+>>>>>>> origin/master
 	*/
 
 	using namespace std;
@@ -389,8 +463,22 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		std::cout<<"   * AM Loop Iter [" << LoopCounter +1 << "]" << flush << endl;
 		//cout << "     U(k) = [" << U << "]" << endl;
 //*************************** "w sub-problem" ***************************
+<<<<<<< HEAD
 		W = ApplyShrike(AllPixelGradients(U, SideLength), Nu, beta, ISOTROPIC);
 		//cout << "     W(" << LoopCounter + 1 << ") = [" << W << "]" << endl;
+=======
+		for (unsigned long i = 0; i < n; ++i)
+		{
+			BoostDoubleVector DiUk = Gradient2D(Uk, i);
+			BoostDoubleVector NUi(2); NUi = BoostZeroVector(2);
+			for (int j = 0; j < 2; ++j)
+			{
+				NUi(j) = NU(i, j);
+				BoostDoubleVector Wi = Shrike(DiUk, NUi, beta);
+				W(i, j) = Wi(j);
+			}
+		}
+>>>>>>> origin/master
 //*************************** "u sub-problem" ***************************
 		BoostDoubleVector Sk = U - Uk_1;
 		BoostDoubleVector Dk = Onestep_Direction(A, U, B, W, Nu, Lambda, beta, mu, SideLength);
@@ -439,8 +527,13 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 	} while ((innerstop > tol) && (LoopCounter < MaxIterations));
 }
 
+<<<<<<< HEAD
 BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 									   unsigned long SideLength)
+=======
+//BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles) // Why TiltAngles?
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y, unsigned long SideLength)
+>>>>>>> origin/master
 {
 	/*
 	* Function: tval3_reconstruction
@@ -454,7 +547,10 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	*
 	* Output -- an (L x L) reconstructed matrix.
 	*/
+<<<<<<< HEAD
 	using namespace std;
+=======
+>>>>>>> origin/master
 
 	// unsigned long L = Sinogram.size1(); // Size of the sample (in pixels)
 	// unsigned long O = Sinogram.size2(); // Numbers of tilt angles
@@ -463,7 +559,11 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	unsigned long M = A.size1();
 	unsigned long N = A.size2();
 	unsigned long L = SideLength; // allowing truncation
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> origin/master
 	double mu = 1024.0;
 	double beta = 1024.0;
 	double coef = 1.0;
@@ -471,6 +571,7 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 	double tol = 0.001;
 	unsigned int LoopCounter = 0;
 	unsigned int MaxIterations = 5;
+<<<<<<< HEAD
 	
 	// BoostDoubleVector U = BoostZeroVector(N); // U(0) = 0 for all i
 	BoostDoubleVector U = prod(trans(A),y);
@@ -493,6 +594,38 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 		BoostDoubleMatrix Du = AllPixelGradients(U, L);
 		Nu = Nu - beta*(Du - W);
 		Lambda = Lambda - mu*(prod(A, U) - y);
+=======
+
+	// BoostDoubleVector U = BoostZeroVector(N); // U(0) = 0 for all i
+	BoostDoubleVector U = prod(trans(A), y);
+	BoostDoubleVector Uk = BoostZeroVector(N);
+	BoostDoubleVector LAMBDA = BoostZeroVector(M);
+	// BoostDoubleVector B = MatrixToVector(Sinogram);
+
+	BoostDoubleMatrix Du = Gradient2DMatrix(U);
+	BoostDoubleMatrix NU = BoostZeroMatrix(N, 2);
+	BoostDoubleMatrix W = BoostZeroMatrix(N,2);
+	BoostDoubleMatrix Wk = BoostZeroMatrix(N, 2);
+	BoostDoubleMatrix MIN = BoostZeroMatrix(N, 3);
+	// BoostDoubleMatrix A = CreateRandomMatrix(M, N);
+
+	using namespace std;
+	
+	do
+	{
+		Wk = W;
+		Uk = U;
+		MIN = Alternating_Minimisation(A, Uk, y, Wk, NU, LAMBDA, beta, mu);
+		for (unsigned long i = 0; i < N; ++i)
+		{
+			W(i, 0) = MIN(i, 0);
+			W(i, 1) = MIN(i, 1);
+			U(i) = MIN(i, 2);
+		}
+		BoostDoubleMatrix DiU = Gradient2DMatrix(U);
+		NU = NU - beta*(DiU - W); 
+		LAMBDA = LAMBDA - mu*(prod(A, U) - y);
+>>>>>>> origin/master
 
 		beta = coef*beta;
 		mu = coef*beta;
@@ -501,5 +634,11 @@ BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
 		LoopCounter++;
 	} while (outerstop > tol && LoopCounter < MaxIterations);
 
+<<<<<<< HEAD
 return VectorToMatrix(U, L, L);
 }
+=======
+	BoostDoubleMatrix X = VectorToMatrix(U, L, L);
+return X;
+}
+>>>>>>> origin/master
