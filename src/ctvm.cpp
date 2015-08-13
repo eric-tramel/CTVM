@@ -433,6 +433,8 @@ void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
 		double Pk1 = eta*Pk + 1;
 		C = (eta*Pk*C + U_Subfunction(A, U, B, W, Nu, Lambda, beta, mu, SideLength))/Pk1;
 		Pk = Pk1;
+
+		std::cout<<"  * AM Loop Iter ["<<LoopCounter<<"] U Convergence : "<<innerstop<<std::flush<<std::endl;
 		LoopCounter++;
 	} while ((innerstop > tol) && (LoopCounter < MaxIterations));
 }
