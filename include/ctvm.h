@@ -6,22 +6,63 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include "ctvm_util.h"
 
-BoostDoubleVector Gradient2D(BoostDoubleVector U, unsigned long pixel);
 
-BoostDoubleMatrix Gradient2DMatrix(BoostDoubleVector U);
 
-BoostDoubleMatrix Unit_Gradient2DMatrix(BoostDoubleVector U, unsigned long pixel);
+/* Gradient Operations */
+#define HORZ 0
+#define VERT 1
+BoostDoubleVector PixelGradient(BoostDoubleVector X, unsigned long Index,
+	unsigned int SideLength);
+BoostDoubleMatrix AllPixelGradients(BoostDoubleVector X, unsigned long SideLength);
+BoostDoubleVector PixelGradientAdjointSum(BoostDoubleMatrix G, unsigned long SideLength);
 
-double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu);
+// TODO: Implement the following
+// 2D Gradients...
+// BoostDoubleVector PixelGradientAdjoint(BoostDoubleVector g, unsigned long index,
+//                                        unsigned int SideLength);
+// 3D Gradients...
+BoostDoubleVector VoxelGradient(BoostDoubleVector g, unsigned long index,
+	unsigned int SideLength);
+BoostDoubleMatrix AllVoxelGradients(BoostDoubleVector X, unsigned int SideLength);
+BoostDoubleVector VoxelGradientAdjointSum(BoostDoubleVector X, unsigned long index,
+	unsigned int SideLength);
+// ENDTODO
 
-BoostDoubleVector Shrike(BoostDoubleVector DiUk, BoostDoubleVector NUi, double beta);
 
-BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk, BoostDoubleVector B, BoostDoubleMatrix Wk, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu);
+/* Shrinkage-like Operators */
+enum TVType { ISOTROPIC, ANISOTROPIC };
+BoostDoubleVector ShrikeIsotropic(BoostDoubleVector W, BoostDoubleVector Nu,
+	double beta);
+BoostDoubleVector ShrikeAnisotropic(BoostDoubleVector W, BoostDoubleVector Nu,
+	double beta);
+BoostDoubleMatrix ApplyShrike(BoostDoubleMatrix AllW, BoostDoubleMatrix AllNu,
+	double beta, TVType ShrikeMode);
 
-double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix Wk, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu);
+/* Optimization */
+double Lagrangian(BoostDoubleMatrix A, BoostDoubleVector U,
+	BoostDoubleVector B, BoostDoubleMatrix W,
+	BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+	double beta, double mu,
+	unsigned long SideLength, TVType GradNorm);
 
-BoostDoubleMatrix Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector U, BoostDoubleVector B, BoostDoubleMatrix W, BoostDoubleMatrix NU, BoostDoubleVector LAMBDA, double beta, double mu);
+BoostDoubleVector Onestep_Direction(BoostDoubleMatrix A, BoostDoubleVector Uk,
+	BoostDoubleVector B, BoostDoubleMatrix Wk,
+	BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+	double beta, double mu,
+	unsigned long SideLength);
 
-BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix Sinogram, BoostDoubleVector TiltAngles);
+double U_Subfunction(BoostDoubleMatrix A, BoostDoubleVector U,
+	BoostDoubleVector B, BoostDoubleMatrix Wk,
+	BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+	double beta, double mu, unsigned long SideLength);
+
+void Alternating_Minimisation(BoostDoubleMatrix A, BoostDoubleVector &U,
+	BoostDoubleVector B, BoostDoubleMatrix &W,
+	BoostDoubleMatrix Nu, BoostDoubleVector Lambda,
+	double beta, double mu,
+	unsigned long SideLength);
+
+BoostDoubleMatrix tval3_reconstruction(BoostDoubleMatrix A, BoostDoubleVector y,
+	unsigned long SideLength);
 
 #endif
